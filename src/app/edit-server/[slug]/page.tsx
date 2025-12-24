@@ -94,7 +94,7 @@ export default function EditServer() {
 
     const fetchServerData = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/servers/by-slug/${slug}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/servers/by-slug/${slug}`);
         const data = await res.json();
 
         setServerName(data.serverName);
@@ -139,7 +139,7 @@ export default function EditServer() {
       formData.append("description", description); // НОВОЕ ПОЛЕ
       if (imageFile) formData.append("image", imageFile);
 
-      const res = await fetch(`http://localhost:5000/servers/edit/${slug}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/servers/edit/${slug}`, {
         method: "PATCH", // Или PUT, зависит от твоего API
         headers: {
           Authorization: `Bearer ${accessToken}`,

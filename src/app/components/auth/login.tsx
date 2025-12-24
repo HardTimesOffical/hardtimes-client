@@ -21,7 +21,7 @@ export default function Login() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/auth/login",
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login`,
         { email, password },
         { withCredentials: true }
       );

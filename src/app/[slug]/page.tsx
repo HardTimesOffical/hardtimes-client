@@ -58,7 +58,7 @@ const handleVote = () => {
 
   const confirmVote = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/servers/${server._id}/vote`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/servers/${server._id}/vote`, {
         method: "POST",
         headers: { "Authorization": `Bearer ${accessToken}` }
       });
@@ -81,7 +81,7 @@ const handleVote = () => {
     const fetchServer = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:5000/servers/by-slug/${slug}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/servers/by-slug/${slug}`, {
           headers: {
             ...(accessToken ? { "Authorization": `Bearer ${accessToken}` } : {})
           }
