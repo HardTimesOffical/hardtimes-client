@@ -3,8 +3,7 @@ import axios from 'axios';
 export const refreshAccessToken = async (): Promise<string | null> => {
   try {
     const res = await axios.post(
-      'http://localhost:5000/auth/refresh', 
-      {}, 
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/refresh`,
       { withCredentials: true } // Обязательно для передачи куки с Refresh Token
     );
     

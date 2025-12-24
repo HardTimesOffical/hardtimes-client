@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 
 const WeeklyTimer = () => {
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, "");
 
   useEffect(() => {
     // 1. Получаем данные с сервера при монтировании
     const fetchTimer = async () => {
       try {
-        const response = await fetch('http://localhost:5000/votes/votes-info');
+        const response = await fetch(`${SERVER_URL}/votes/votes-info`);
         const data = await response.json();
         setTimeLeft(data.msLeft);
       } catch (error) {
