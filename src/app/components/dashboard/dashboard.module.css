@@ -1,0 +1,295 @@
+:root{
+  --bg:#071028;
+  --panel:#070C1D;
+  --muted:#D1D5DB;
+  --accent:#0b84ff;
+  --menu-heading: #747D89;
+  --menu-active: #ffffff;
+  --border: rgba(255, 255, 255, 0.055);
+}
+
+.container{
+  display:flex;
+  min-height:100vh;
+  background:linear-gradient(180deg,#051022 0%, #071735 100%);
+  width: 100%;
+}
+
+.sidebar{
+  width:200px;
+  background: var(--panel);
+  color:var(--foreground);
+  border-right: 1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  height:100vh;
+  z-index:200;
+}
+
+.logoWrap{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding-bottom:8px;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+  width: auto;
+}
+
+.buttonsWrap{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  flex:1 1 auto;
+  padding: 0 20px;
+}
+
+.actions{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:6px;
+  padding: 0 20px;
+}
+
+.profileWrap{
+  margin-top:8px;
+  position:relative;
+  padding: 15px 0;
+}
+
+/* separator that spans full sidebar width above profile area */
+.profileWrap::before{
+  content: "";
+  position: absolute;
+  left: -20px; /* match profile padding to reach sidebar edges */
+  right: -20px;
+  height: 1px;
+  background: var(--border);
+  top: 8px;
+}
+
+.sidebarTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.brand{
+  font-weight:700;
+  font-size:20px;
+  letter-spacing:1px;
+  height: 51px;
+  margin: 10px;
+  display: flex;
+  padding: 0;
+  align-items: center;
+}
+
+.nav{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.sectionTitle{
+  font-size:11px;
+  color:var(--menu-heading);
+  margin-top:12px;
+  margin-bottom:6px;
+  font-weight: bold;
+}
+
+.navItem{
+  display:block;
+  color:var(--muted);
+  padding:6px 12px;
+  border-radius:8px;
+  text-decoration:none;
+  transition:background .14s, color .12s;
+  width:100%;
+  box-sizing:border-box;
+  text-align: left;
+  font-size: 14px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.navItemActive {
+  color:var(--menu-active);
+  background:rgba(255,255,255,0.06);
+}
+
+.navItem.active{
+  color:var(--menu-active);
+  background:rgba(255,255,255,0.06);
+}
+
+.navItem:hover{
+  background:rgba(255,255,255,0.02);
+}
+
+.bottom{
+  margin-top:auto;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.addBtn{
+  background:transparent;
+  color:var(--muted);
+  border:none;
+  padding:10px 12px;
+  border-radius:8px;
+  cursor:pointer;
+  text-align:left;
+  display:block;
+  width:100%;
+  box-sizing:border-box;
+}
+.addBtn:hover{
+  background:rgba(255,255,255,0.02);
+  color:var(--menu-active);
+}
+
+.link{
+  color:var(--muted);
+  text-decoration:none;
+  font-size:13px;
+  padding:10px 12px;
+  display:block;
+  width:100%;
+  box-sizing:border-box;
+}
+
+.profile{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  margin-top:8px;
+  padding-top:10px;
+}
+
+
+.avatar{
+  width:40px;
+  height:40px;
+  border-radius:8px;
+  object-fit:cover;
+  background:linear-gradient(135deg,#123,#456);
+}
+
+.profileInfo{
+  display:flex;
+  flex-direction:column;
+}
+
+.name{
+  font-weight:600;
+}
+
+.email{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.main{
+  flex:1;
+  margin-left:200px;
+  width: calc(100% - 260px);
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+}
+
+/* account for fixed header (height 60px) */
+.main{ padding-top: 20px; }
+
+/* Hamburger button */
+.hamburger{
+  display:none;
+  position:fixed;
+  left:12px;
+  top:12px;
+  z-index:9999; /* ensure it's above header and overlays */
+  pointer-events:auto;
+  width:44px;
+  height:44px;
+  border-radius:8px;
+  background:rgba(10,18,30,0.6);
+  border:1px solid rgba(255,255,255,0.03);
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  flex-direction:column;
+  padding:8px;
+}
+.hamburger span{
+  display:block;
+  width:18px;
+  height:2px;
+  background:linear-gradient(90deg,#bcd6ff,#7fb8ff);
+  border-radius:2px;
+}
+
+/* utility to hide hamburger when sidebar is open */
+.hidden{ display:none !important }
+
+/* hide close button on desktop by default */
+.closeBtn{display:none}
+
+/* Overlay & mobile sidebar behaviour */
+.overlay{display:none}
+.sidebar.open{transform:translateX(0)}
+
+@media (max-width:900px){
+  .hamburger{display:flex}
+  .sidebar{
+    /* on mobile we slide the fixed sidebar */
+    transform:translateX(-110%);
+    transition:transform .18s ease;
+    width:220px;
+  }
+
+  /* place hamburger on the header, centered vertically (header height 60px, button 44px => top:8px) */
+  .hamburger{ left: 12px; right: auto; top:8px; }
+
+  .overlay{
+    display:block;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    z-index:65;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .12s ease;
+  }
+  .overlay.show{opacity:1;pointer-events:auto}
+
+  .closeBtn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:transparent;
+    border:none;
+    color:var(--muted);
+    font-size:22px;
+    cursor:pointer;
+    z-index:9998;
+    pointer-events:auto;
+  }
+}
+
+@media (max-width:900px){
+  .main{margin-left:0; padding: 10px;}
+}
+
+.content{
+  width:100%;
+  max-width:100%;
+}

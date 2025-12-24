@@ -1,0 +1,185 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.card {
+  display: flex;
+  flex-direction: column; /* Мобильный вид: всё в колонку */
+  background: #111827;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: background 0.2s;
+  max-width: 1200px;
+}
+
+.card:hover {
+  background: #161f31;
+}
+
+/* Секции карточки */
+.votesSection, .nameSection, .playersSection, .statusSection {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.imageSection {
+  position: relative;
+  width: 100%;
+}
+
+.banner {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.ipBadge {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #fff;
+}
+
+/* Текстовые стили */
+.serverName {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #d1d5db;
+}
+
+.label {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+
+.value {
+  font-size: 0.9rem;
+  color: #e5e7eb;
+}
+
+.statusText {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.online { color: #10b981; }
+.offline { color: #ef4444; }
+
+.star { color: #9ca3af; font-size: 1.2rem; }
+.voteCount { font-size: 0.75rem; color: #9ca3af; }
+
+/* Теги */
+.tagsRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: rgba(255, 255, 255, 0.05);
+  color: #9ca3af;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+}
+
+/* Позволяет дочерним элементам mobileRow вести себя как прямые дети .card */
+  .mobileRow {
+    display: flex; 
+    justify-content: space-evenly;
+  }
+
+/* Адаптация для ПК */
+@media (min-width: 780px) {
+  .card {
+    flex-direction: row; /* Горизонтальный ряд как на фото */
+    height: 80px; /* Фиксированная высота для ровной линии */
+  }
+
+  .votesSection {
+    width: 80px;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: none;
+  }
+
+  .nameSection {
+    width: 180px;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: none;
+    text-align: center;
+  }
+
+  .imageSection {
+    flex: 1; /* Растягивает баннер по центру */
+    height: 100%;
+  }
+
+  .banner {
+    height: 100%;
+    width: 100%;
+  }
+
+  .playersSection {
+    width: 140px;
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: none;
+  }
+
+  .statusSection {
+    width: 120px;
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 780px) { 
+    .card {
+    height: 200px; /* Фиксированная высота для ровной линии */
+  }
+
+  .votesSection {
+  height: 40px;
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  }
+
+  .nameSection {
+ height: 40px;
+  padding: 10px;
+  }
+
+  .imageSection {
+    flex: 1; /* Растягивает баннер по центру */
+    height: 100%;
+  }
+
+  .banner {
+    height: 100%;
+    width: 100%;
+  }
+
+  .playersSection {
+  height: 40px;
+  padding: 10px;
+  }
+
+  .statusSection {
+    height: 40px;
+  padding: 10px;
+  }
+}
