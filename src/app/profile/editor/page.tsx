@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import axios from "axios";
 
-export function ProfileEditor({ user }: { user: any }) {
+export default function ProfileEditor({ user }: { user: any }) {
   const auth = useAuth();
   const isOwner = auth.user?.id === user._id;
 

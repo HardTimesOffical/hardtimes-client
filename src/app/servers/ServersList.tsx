@@ -8,7 +8,6 @@ import WeeklyTimer from "../components/servercard/WeeklyTimer";
 
 interface Props {
   game: "java" | "bedrock" | "all";
-  rank?: number;
 }
 
 export default function ServerList({ game }: Props) {
@@ -18,7 +17,7 @@ export default function ServerList({ game }: Props) {
   const { user } = useAuth();
 
   useEffect(() => {
-    fetch(`http://localhost:5000/servers?game=${game}`)
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/servers?game=${game}`)
       .then(res => res.json())
       .then(data => {
         // СОРТИРОВКА:

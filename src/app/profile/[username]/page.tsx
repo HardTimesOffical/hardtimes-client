@@ -9,7 +9,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const { username } = await params;
 
   const res = await fetch(
-    `http://localhost:5000/users/${username}`,
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/users/${username}`,
     { cache: "no-store" }
   );
 
