@@ -88,8 +88,8 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, selected, multiple
 
 export default function Workbench() {
   const [serverName, setServerName] = useState("");
-  const [ipAddress, setIpAddress] = useState("");
-  const [gameType, setGameType] = useState("");
+  const [ips, setIps] = useState({ java: "", bedrock: "" });
+  const [gameType, setGameType] = useState(GAME_TYPES[0]);
   const [gameVersion, setGameVersion] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
@@ -99,9 +99,19 @@ export default function Workbench() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
   const { accessToken } = useAuth();
-  console.log("Access token:", accessToken);
 
-  const availableVersions = gameType ? GAME_VERSIONS[gameType] || [] : [];
+  useEffect(() => {
+    setGameVersion("");
+  }, [gameType]);
+
+  const availableVersions = (() => {
+    if (gameType === "JAVA & BEDROCK") {
+      // Если оба типа, принудительно берем версии для Java
+      return GAME_VERSIONS["Minecraft Java"] || [];
+    }
+    // В остальных случаях берем по ключу
+    return gameType ? GAME_VERSIONS[gameType] || [] : [];
+  })();
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -110,12 +120,19 @@ export default function Workbench() {
     setImagePreview(URL.createObjectURL(file));
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
       const formData = new FormData();
+      
+      // ЛОГИКА ОПРЕДЕЛЕНИЯ IP:
+      // Сохраняем как JSON только если это комбо, иначе просто строку
+      const finalIp = gameType === "JAVA & BEDROCK" 
+        ? JSON.stringify(ips) 
+        : (gameType === "Minecraft Bedrock" ? ips.bedrock : ips.java);
+
+      formData.append("ipAddress", finalIp);
       formData.append("serverName", serverName);
-      formData.append("ipAddress", ipAddress);
       formData.append("gameType", gameType);
       formData.append("gameVersion", gameVersion);
       formData.append("categories", JSON.stringify(categories));
@@ -123,35 +140,21 @@ export default function Workbench() {
       formData.append("languages", JSON.stringify(languages));
       formData.append("discord", discord);
       formData.append("website", website);
-      if (imageFile) {
-        formData.append("image", imageFile);
-      }
+      if (imageFile) formData.append("image", imageFile);
 
       const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/servers/add-server`, {
         method: "POST",
-         headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+        headers: { Authorization: `Bearer ${accessToken}` },
         body: formData,
       });
 
       if (!res.ok) throw new Error("Failed to add server");
-      const data = await res.json();
-      console.log("Server added:", data);
       alert("Server successfully added!");
-
-      // Очистка формы
+      
+      // Очистка с возвратом к дефолту
       setServerName("");
-      setIpAddress("");
-      setGameType("");
-      setGameVersion("");
-      setCategories([]);
-      setTags([]);
-      setLanguages([]);
-      setDiscord("");
-      setWebsite("");
-      setImageFile(null);
-      setImagePreview("");
+      setIps({ java: "", bedrock: "" });
+      setGameType(GAME_TYPES[0]);
     } catch (error) {
       console.error(error);
       alert("Error adding server");
@@ -160,27 +163,53 @@ export default function Workbench() {
 
   return (
 <div className="flex justify-center p-4">
-      {/* Добавлена ширина w-full и ограничение max-w-5xl */}
       <form className={`flex flex-col gap-4 w-full max-w-5xl ${styles.workbenchForm}`} onSubmit={handleSubmit}>
-        
-        {/* Изменено на flex-col md:flex-row */}
         <div className="flex flex-col md:flex-row gap-4">
           
-          {/* Левая колонка - убран styles.leftContainer (ширина теперь в CSS через медиа) */}
           <div className={`${styles.container} flex flex-col gap-2 flex-1`}>
             <div className={styles.sectionTitle}>SERVER NAME</div>
-            <input className={styles.input} type="text" placeholder="Server Name" value={serverName} onChange={e => setServerName(e.target.value)} />
-
-            <div className={styles.sectionTitle}>IP ADDRESS</div>
-            <input className={styles.input} type="text" placeholder="IP Address" value={ipAddress} onChange={e => setIpAddress(e.target.value)} />
+            <input className={styles.input} type="text" placeholder="My Awesome Server" value={serverName} onChange={e => setServerName(e.target.value)} />
 
             <div className={styles.sectionTitle}>GAME TYPE</div>
             <CustomSelect
-              options={GAME_TYPES}
+              options={[...GAME_TYPES, "JAVA & BEDROCK"]} 
               selected={gameType}
-              onChange={v => { setGameType(v as string); setGameVersion(""); }}
+              onChange={v => setGameType(v as string)}
               placeholder="Select Game Type"
             />
+
+            {/* БЛОК IP АДРЕСОВ */}
+            <div className="flex flex-col gap-2 mt-2">
+              {/* Поле Java: показываем для Java или для Комбо */}
+              {(gameType === "Minecraft Java" || gameType === "JAVA & BEDROCK") && (
+                <div className="flex flex-col gap-1">
+                  <div className={styles.sectionTitle} style={{fontSize: '10px', opacity: 0.8}}>JAVA IP</div>
+                  <input 
+                    className={styles.input} 
+                    type="text" 
+                    placeholder="mc.example.com" 
+                    value={ips.java} 
+                    onChange={e => setIps({...ips, java: e.target.value})} 
+                  />
+                </div>
+              )}
+
+              {gameType === "JAVA & BEDROCK" && <div className="border-t border-white/5 my-2" />}
+
+              {/* Поле Bedrock: показываем для Bedrock или для Комбо */}
+              {(gameType === "Minecraft Bedrock" || gameType === "JAVA & BEDROCK") && (
+                <div className="flex flex-col gap-1">
+                  <div className={styles.sectionTitle} style={{fontSize: '10px', opacity: 0.8}}>BEDROCK IP / PORT</div>
+                  <input 
+                    className={styles.input} 
+                    type="text" 
+                    placeholder="pe.example.com:19132" 
+                    value={ips.bedrock} 
+                    onChange={e => setIps({...ips, bedrock: e.target.value})} 
+                  />
+                </div>
+              )}
+            </div>
 
             <div className={styles.sectionTitle}>GAME VERSION</div>
             <CustomSelect
@@ -189,7 +218,6 @@ export default function Workbench() {
               onChange={v => setGameVersion(v as string)}
               placeholder="Select Game Version"
             />
-
             <div className={styles.sectionTitle}>CATEGORIES</div>
             <CustomSelect
               options={CATEGORIES}
@@ -199,6 +227,7 @@ export default function Workbench() {
               placeholder="Select Categories"
             />
           </div>
+
 
           {/* Правая колонка - изменена ширина w-full md:w-1/2 */}
           <div className="flex flex-col gap-4 w-full md:w-1/2">
