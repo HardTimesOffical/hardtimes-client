@@ -158,78 +158,84 @@ export default function EditServer() {
 
   return (
     <DashboardLayout>
-    <div className="flex justify-center p-4">
-      <form className={`flex flex-col gap-4 ${styles.workbenchForm}`} onSubmit={handleSubmit}>
-        <h2 className="text-white text-xl font-bold">Edit Server</h2>
-        
-        <div className="flex flex-row gap-2">
-          {/* Левая колонка */}
-          <div className={`${styles.container} ${styles.leftContainer} flex flex-col gap-4`}>
-            <div className={styles.sectionTitle}>SERVER NAME</div>
-            <input className={styles.input} type="text" value={serverName} onChange={e => setServerName(e.target.value)} />
+      <div className="flex justify-center p-4">
+        {/* Добавлен max-w-5xl для ограничения ширины на огромных мониторах */}
+        <form className={`flex flex-col gap-4 w-full max-w-5xl ${styles.workbenchForm}`} onSubmit={handleSubmit}>
+          <h2 className="text-white text-xl font-bold px-2">Edit Server</h2>
+          
+          {/* Изменено на flex-col md:flex-row (в ряд только от планшета) */}
+          <div className="flex flex-col md:flex-row gap-4">
+            
+            {/* Левая колонка - убран styles.leftContainer (ширина теперь в CSS через медиа) */}
+            <div className={`${styles.container} flex flex-col gap-2 flex-1`}>
+              <div className={styles.sectionTitle}>SERVER NAME</div>
+              <input className={styles.input} type="text" value={serverName} onChange={e => setServerName(e.target.value)} />
 
-            <div className={styles.sectionTitle}>IP ADDRESS</div>
-            <input className={styles.input} type="text" value={ipAddress} onChange={e => setIpAddress(e.target.value)} />
+              <div className={styles.sectionTitle}>IP ADDRESS</div>
+              <input className={styles.input} type="text" value={ipAddress} onChange={e => setIpAddress(e.target.value)} />
 
-            <div className={styles.sectionTitle}>GAME TYPE</div>
-            <CustomSelect options={GAME_TYPES} selected={gameType} onChange={(v:any) => { setGameType(v); setGameVersion(""); }} />
+              <div className={styles.sectionTitle}>GAME TYPE</div>
+              <CustomSelect options={GAME_TYPES} selected={gameType} onChange={(v:any) => { setGameType(v); setGameVersion(""); }} />
 
-            <div className={styles.sectionTitle}>GAME VERSION</div>
-            <CustomSelect options={availableVersions} selected={gameVersion} onChange={(v:any) => setGameVersion(v)} />
+              <div className={styles.sectionTitle}>GAME VERSION</div>
+              <CustomSelect options={availableVersions} selected={gameVersion} onChange={(v:any) => setGameVersion(v)} />
 
-            {/* ПОЛЕ ОПИСАНИЯ */}
-            <div className={styles.sectionTitle}>DESCRIPTION</div>
-            <textarea 
-              className={`${styles.input} h-32 resize-none p-2`} 
-              placeholder="Full server description..." 
-              value={description} 
-              onChange={e => setDescription(e.target.value)}
-            />
-          </div>
+              <div className={styles.sectionTitle}>DESCRIPTION</div>
+              <textarea 
+                className={`${styles.input} h-32 md:h-full resize-none p-2`} 
+                placeholder="Full server description..." 
+                value={description} 
+                onChange={e => setDescription(e.target.value)}
+              />
+            </div>
 
-          {/* Правая колонка */}
-          <div className="flex flex-col gap-4 w-1/2">
-            <div className={`${styles.container} flex flex-col gap-2`}>
-              <div className={styles.sectionTitle}>CATEGORIES</div>
-              <CustomSelect options={CATEGORIES} selected={categories} multiple onChange={(v:any) => setCategories(v)} />
+            {/* Правая колонка - изменена ширина w-full md:w-1/2 */}
+            <div className="flex flex-col gap-4 w-full md:w-1/2">
+              <div className={`${styles.container} flex flex-col gap-2`}>
+                <div className={styles.sectionTitle}>CATEGORIES</div>
+                <CustomSelect options={CATEGORIES} selected={categories} multiple onChange={(v:any) => setCategories(v)} />
 
-              <div className={styles.sectionTitle}>TAGS</div>
-              <CustomSelect options={TAGS} selected={tags} multiple onChange={(v:any) => setTags(v)} />
+                <div className={styles.sectionTitle}>TAGS</div>
+                <CustomSelect options={TAGS} selected={tags} multiple onChange={(v:any) => setTags(v)} />
 
-              <div className={styles.sectionTitle}>LANGUAGES</div>
-              <CustomSelect options={LANGUAGES} selected={languages} multiple onChange={(v:any) => setLanguages(v)} />
+                <div className={styles.sectionTitle}>LANGUAGES</div>
+                <CustomSelect options={LANGUAGES} selected={languages} multiple onChange={(v:any) => setLanguages(v)} />
 
-              <div className="flex flex-row gap-2">
-                <div className="flex flex-col gap-1 w-1/2">
-                  <div className={styles.sectionTitle}>DISCORD</div>
-                  <input className={styles.input} type="text" value={discord} onChange={e => setDiscord(e.target.value)} />
+                {/* Социалки: тоже делаем адаптивными (в ряд только на десктопе) */}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex flex-col gap-1 w-full sm:w-1/2">
+                    <div className={styles.sectionTitle}>DISCORD</div>
+                    <input className={styles.input} type="text" value={discord} onChange={e => setDiscord(e.target.value)} />
+                  </div>
+                  <div className="flex flex-col gap-1 w-full sm:w-1/2">
+                    <div className={styles.sectionTitle}>WEBSITE</div>
+                    <input className={styles.input} type="text" value={website} onChange={e => setWebsite(e.target.value)} />
+                  </div>
                 </div>
-                <div className="flex flex-col gap-1 w-1/2">
-                  <div className={styles.sectionTitle}>WEBSITE</div>
-                  <input className={styles.input} type="text" value={website} onChange={e => setWebsite(e.target.value)} />
-                </div>
+              </div>
+
+              {/* Контейнер изображения - убрана фиксированная h-40 для гибкости */}
+              <div className={`${styles.container} ${styles.imageContainer} min-h-[160px] flex flex-col items-center justify-center p-4`}>
+                <label className="cursor-pointer w-full flex flex-col items-center">
+                  {imagePreview ? (
+                    <img src={imagePreview} alt="Preview" className="max-h-40 w-full object-contain border border-white/10 rounded" />
+                  ) : (
+                    <span className="text-gray-400">Click to change image</span>
+                  )}
+                  <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                </label>
+              </div>
+
+              {/* Кнопки управления */}
+              <div className="w-full flex justify-end items-center gap-4 mt-2">
+                <button type="button" className="text-gray-400 hover:text-white transition-colors" onClick={() => router.back()}>Cancel</button>
+                <button className={styles.submit} type="submit">Save Changes</button>
               </div>
             </div>
 
-            <div className={`${styles.container} ${styles.imageContainer} h-40 flex flex-col items-center justify-center`}>
-              <label className="cursor-pointer">
-                {imagePreview ? (
-                  <img src={imagePreview} alt="Preview" className="h-40 w-full object-contain border" />
-                ) : (
-                  <span>Click to change image</span>
-                )}
-                <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-              </label>
-            </div>
-
-            <div className="w-full flex justify-end gap-2">
-              <button type="button" className="text-gray-400 mr-4" onClick={() => router.back()}>Cancel</button>
-              <button className={styles.submit} type="submit">Save Changes</button>
-            </div>
-          </div>
-        </div>  
-      </form>
-    </div>
+          </div>  
+        </form>
+      </div>
     </DashboardLayout>
   );
 }

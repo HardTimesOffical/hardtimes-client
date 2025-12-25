@@ -8,6 +8,76 @@
   --workbench-title: #d1d5dbd0;
 }
 
+/* ===== SETTINGS LAYOUT ===== */
+.settingsLayout {
+  display: flex;
+  gap: 30px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.sidebar {
+  width: 150px; /* Сузили меню */
+  flex-shrink: 0;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebarLink {
+  display: block;
+  padding: 10px 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--auth-text);
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background-color: transparent;
+}
+
+.sidebarLink:hover {
+  background: rgba(255,255,255,0.03);
+  color: var(--auth-text);
+}
+
+.content {
+  flex-grow: 1;
+  min-width: 0; /* предотвращает переполнение */
+  max-width: 500px;
+}
+
+@media (max-width: 768px) {
+  .settingsLayout {
+    flex-direction: column; /* Меню сверху, контент снизу */
+    gap: 20px;
+  }
+
+  .sidebar {
+    width: 100%; /* На мобилках во всю ширину */
+  }
+
+  .nav {
+    flex-direction: row; /* Ссылки в ряд */
+    overflow-x: auto; /* Если ссылок много, можно скроллить */
+    padding-bottom: 5px;
+  }
+
+  .sidebarLink {
+    white-space: nowrap;
+    background-color: var(--auth-bg);
+  }
+}
+
+.active {
+  background: rgba(255,255,255,0.06);
+  color: var(--auth-text);
+}
+
+
 .customSelectWrapper {
   position: relative;
   width: 100%;
@@ -114,41 +184,21 @@
 }
 
 .leftContainer {
-    /* Удалено width: 450px; */
+    /* Чтобы инпуты не слипались, и контейнер растягивался вертикально */
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    flex: 1; /* Чтобы занимал доступное пространство */
+    gap: 12px; /* Расстояние между инпутами */
+    width: 450px;
 }
 
 .container {
-    padding: 24px; /* Немного уменьшил паддинг для мобилок */
+    /* width: 100%; <- Убран, чтобы flex управлял шириной */
+    /* height: 100%; <- Убран */
+    /* ... остальные стили ... */
+    padding: 28px;
     background: var(--auth-bg);
     border-radius: 12px;
     border: 1px solid var(--auth-stroke);
-    width: 100%; /* Гарантируем заполнение */
-}
-
-@media (max-width: 640px) {
-    .container {
-        padding: 16px;
-    }
-    
-    .submit {
-        width: 100%; /* Кнопка во всю ширину на телефоне */
-        margin-top: 10px;
-    }
-
-    .sectionTitle {
-        margin-top: 8px;
-    }
-    
-    /* Делаем так, чтобы кнопки Save/Cancel были друг под другом или занимали больше места */
-    .w-full.flex.justify-end {
-        flex-direction: column-reverse;
-        align-items: stretch;
-        gap: 10px;
-    }
 }
 
 .heading {

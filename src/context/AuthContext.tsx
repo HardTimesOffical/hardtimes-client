@@ -11,12 +11,23 @@ interface AuthContextValue {
   setAccessToken: (token: string | null) => void;
   login: (token: string, user: User) => void;
   logout: () => void;
+  updateUser: (newData: Partial<User>) => void; // Добавляем эту строку
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const router = useRouter();
+  
+  const updateUser = (newData: Partial<User>) => {
+    setUser((prevUser) => {
+      if (!prevUser) return null;
+      const updated = { ...prevUser, ...newData };
+      // Сохраняем в localStorage, чтобы после перезагрузки данные остались
+      localStorage.setItem("user", JSON.stringify(updated));
+      return updated;
+    });
+  };
   
   const [accessToken, setAccessTokenState] = useState<string | null>(() => {
     if (typeof window !== "undefined") return localStorage.getItem("accessToken");
@@ -96,7 +107,7 @@ useEffect(() => {
   };
 
   return (
-    <AuthContext.Provider value={{ accessToken, user, setAccessToken: setAccessTokenState, login, logout }}>
+    <AuthContext.Provider value={{ accessToken, user, setAccessToken: setAccessTokenState, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

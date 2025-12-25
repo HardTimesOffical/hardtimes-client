@@ -127,7 +127,7 @@ export default function Workbench() {
         formData.append("image", imageFile);
       }
 
-      const res = await fetch("http://localhost:5000/servers/add-server", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/servers/add-server`, {
         method: "POST",
          headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -159,10 +159,15 @@ export default function Workbench() {
   };
 
   return (
-    <div className="flex justify-center p-4">
-      <form className={`flex flex-col gap-4 ${styles.workbenchForm}`} onSubmit={handleSubmit}>
-        <div className="flex flex-row gap-2">
-          <div className={`${styles.container} ${styles.leftContainer} flex flex-col gap-4`}>
+<div className="flex justify-center p-4">
+      {/* Добавлена ширина w-full и ограничение max-w-5xl */}
+      <form className={`flex flex-col gap-4 w-full max-w-5xl ${styles.workbenchForm}`} onSubmit={handleSubmit}>
+        
+        {/* Изменено на flex-col md:flex-row */}
+        <div className="flex flex-col md:flex-row gap-4">
+          
+          {/* Левая колонка - убран styles.leftContainer (ширина теперь в CSS через медиа) */}
+          <div className={`${styles.container} flex flex-col gap-2 flex-1`}>
             <div className={styles.sectionTitle}>SERVER NAME</div>
             <input className={styles.input} type="text" placeholder="Server Name" value={serverName} onChange={e => setServerName(e.target.value)} />
 
@@ -195,7 +200,8 @@ export default function Workbench() {
             />
           </div>
 
-          <div className="flex flex-col gap-4 w-1/2">
+          {/* Правая колонка - изменена ширина w-full md:w-1/2 */}
+          <div className="flex flex-col gap-4 w-full md:w-1/2">
             <div className={`${styles.container} flex flex-col gap-2`}>
               <div className={styles.sectionTitle}>TAGS</div>
               <CustomSelect
@@ -215,35 +221,38 @@ export default function Workbench() {
                 placeholder="Select Languages"
               />
 
-              <div className="flex flex-row gap-2">
-                <div className="flex flex-col gap-2">
+              {/* Социалки: адаптивный ряд */}
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex flex-col gap-1 w-full sm:w-1/2">
                   <div className={styles.sectionTitle}>DISCORD</div>
                   <input className={styles.input} type="text" placeholder="Discord" value={discord} onChange={e => setDiscord(e.target.value)} />
                 </div>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1 w-full sm:w-1/2">
                   <div className={styles.sectionTitle}>WEBSITE</div>
                   <input className={styles.input} type="text" placeholder="Website" value={website} onChange={e => setWebsite(e.target.value)} />
                 </div>
               </div>
             </div>
 
-            <div className={`${styles.container} ${styles.imageContainer} h-40 flex flex-col items-center justify-center`}>
-              <label className="cursor-pointer">
+            {/* Контейнер изображения */}
+            <div className={`${styles.container} ${styles.imageContainer} min-h-[160px] flex flex-col items-center justify-center p-4`}>
+              <label className="cursor-pointer w-full flex flex-col items-center text-center">
                 {imagePreview ? (
-                  <img src={imagePreview} alt="Preview" className="h-40 w-full object-contain border" />
+                  <img src={imagePreview} alt="Preview" className="max-h-40 w-full object-contain border border-white/10 rounded" />
                 ) : (
-                  <span>Click to upload gif or image</span>
+                  <span className="text-gray-400">Click to upload gif or image</span>
                 )}
                 <input type="file" accept="image/*,video/gif" onChange={handleImageChange} className="hidden" />
               </label>
             </div>
 
-            <div className="w-full flex justify-end">
+            <div className="w-full flex justify-end mt-2">
               <button className={styles.submit} type="submit">
                 + Add Server
               </button>
             </div>
           </div>
+
         </div>
       </form>
     </div>
