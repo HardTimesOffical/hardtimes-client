@@ -25,13 +25,6 @@ export default function DashboardLayout({ children }: PropsWithChildren) {
 			<aside className={`${styles.sidebar} ${open ? styles.open : ""}`}>
 				<div className={styles.logoWrap}>
 					<Link className={styles.brand} href="/"><img src="/icons/logo.svg" alt="Logo" /></Link>
-					<button
-						className={styles.closeBtn}
-						onClick={() => setOpen(false)}
-						aria-label="Close menu"
-					>
-						×
-					</button>
 				</div>
 
 				<div className={styles.buttonsWrap}>
@@ -73,7 +66,7 @@ export default function DashboardLayout({ children }: PropsWithChildren) {
 				onClick={() => setOpen(false)}
 			/>
 
-			<main className={`${styles.main} flex-1 p-7`}>
+			<main className={`${styles.main} flex-1`}>
 				<div className={styles.content}>{children}</div>
 			</main>
 		</div>

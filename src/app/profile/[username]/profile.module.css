@@ -34,13 +34,29 @@
 }
 
 .avatarWrapper {
-  width: 150px;
-  height: 150px;
-  border-radius: 20px;
-  padding: 4px;
-  background: #0b1224;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  width: 100px; /* или твой размер */
+  height: 100px;
+  border-radius: 24px; /* скругление как на макете */
+  overflow: hidden;
+  background: #1a1a1a;
+  border: 4px solid #121212;
+  position: relative;
+  z-index: 2;
+  margin-top: -75px; /* эффект наплыва на баннер */
+}
+
+.avatarPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #fbc02d 0%, #f9a825 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 40px; /* Большая буква для профиля */
+  font-weight: bold;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  user-select: none;
 }
 
 .avatar {
@@ -55,12 +71,19 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  min-width: 0; /* ВАЖНО для работы ellipsis во flex-контейнерах */
+  width: 100%;
 }
 
 .username {
   font-size: 2rem;
   font-weight: 700;
   margin: 0;
+  max-width: 100%; /* Ограничиваем по ширине родителя */
+  white-space: nowrap; /* Запрещаем перенос */
+  overflow: hidden; /* Прячем лишнее */
+  text-overflow: ellipsis; /* Добавляем троеточие */
+  display: block;
 }
 
 .badge {
@@ -81,7 +104,9 @@
 
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* Используем auto-fit: карточки сами будут перепрыгивать на новую строку, 
+     если им станет тесно (меньше 140px) */
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
   gap: 16px;
   margin-bottom: 40px;
 }
@@ -89,7 +114,7 @@
 .statCard {
   background: #0b1224;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 20px;
+  padding: 10px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;

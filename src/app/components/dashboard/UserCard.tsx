@@ -21,7 +21,7 @@ export default function UserCard() {
     const fetchUser = async () => {
       try {
         // api сам подставит токен и сам выкинет из аккаунта при 401
-        const res = await api.get(`/users/${auth.user!.username}`);
+        const res = await api.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${auth.user!.username}`);
         setUser(res.data);
       } catch (error) {
         console.error(error);
@@ -52,15 +52,22 @@ export default function UserCard() {
   }
 
   const avatarSrc = user.avatar || "/avatar.png";
+  const firstLetter = user.username ? user.username.charAt(0).toUpperCase() : "?";
 
   return (
     <Link href={`/profile/${user.username}`} className={styles.profileLink}>
       <div className={styles.profile}>
-        <img 
-          src={avatarSrc} 
-          alt="User Avatar" 
-          className={styles.avatar} 
-        />
+        {user.avatar ? (
+          <img 
+            src={user.avatar} 
+            alt="User Avatar" 
+            className={styles.avatar} 
+          />
+        ) : (
+          <div className={styles.avatarPlaceholder}>
+            {firstLetter}
+          </div>
+        )}
         <div className={styles.profileInfo}>
           <div className={styles.name}>{user.username}</div>
           <span className={styles.email}>{user.email}</span>

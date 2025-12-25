@@ -18,7 +18,7 @@ export default function ServerCard({ server, index }: ServerCardProps) {
       <div className={styles.card}>
         
         <div className={styles.mobileRow}>
-          <div className={styles.votesSection}>       
+          <div className={`${styles.votesSection} gap-1 items-center text-center`}>       
             <span className={styles.label}>Votes</span>     
             <span className={styles.voteCount}>  
               {server.votesWeekly ?? 0}

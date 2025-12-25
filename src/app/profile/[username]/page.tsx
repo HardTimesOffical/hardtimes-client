@@ -19,6 +19,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   const user = await res.json();
 
+  const firstLetter = user.username ? user.username.charAt(0).toUpperCase() : "?";
+
   const joinedDate = new Date(user.createdAt).toLocaleDateString('en-US', {
     month: 'short',
     year: 'numeric'
@@ -32,12 +34,18 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
       <div className={styles.content}>
         <div className={styles.profileSidebar}>
-          <div className={styles.avatarWrapper}>
-            <img 
-              src={user.avatar || "/default-avatar.png"} 
-              alt={user.username} 
-              className={styles.avatar}
-            />
+         <div className={styles.avatarWrapper}>
+            {user.avatar ? (
+              <img 
+                src={user.avatar} 
+                alt={user.username} 
+                className={styles.avatar}
+              />
+            ) : (
+              <div className={styles.avatarPlaceholder}>
+                {firstLetter}
+              </div>
+            )}
           </div>
           
           <div className={styles.mainInfo}>
@@ -49,10 +57,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
         <div className={styles.mainContent}>
           <div className={styles.statsGrid}>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>Servers</span>
-              <span className={styles.statValue}>{user.ownedServersCount || 0}</span>
-            </div>
             <div className={styles.statCard}>
               <span className={styles.statLabel}>Votes (Weekly)</span>
               <span className={styles.statValue}>{user.votesWeekly || 0}</span>

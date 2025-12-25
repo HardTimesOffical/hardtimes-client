@@ -176,26 +176,54 @@
 }
 
 
-.avatar{
-  width:40px;
-  height:40px;
-  border-radius:8px;
-  object-fit:cover;
-  background:linear-gradient(135deg,#123,#456);
+.avatar, .avatarPlaceholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; /* Круглая форма как у Google */
+  flex-shrink: 0;    /* Чтобы аватар не сжимался */
+}
+
+.avatarPlaceholder {
+  background-color: #fbc02d; /* Желтый цвет (Google style) */
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  text-shadow: 0px 1px 2px rgba(0,0,0,0.1);
+  user-select: none;
 }
 
 .profileInfo{
-  display:flex;
-  flex-direction:column;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0; /* ВАЖНО: позволяет флекс-элементу сжиматься меньше размера контента */
+  overflow: hidden;
 }
 
 .name{
-  font-weight:600;
+  font-weight: bold;
+  font-size: 16px;
+  white-space: nowrap;      /* Запрещаем перенос на новую строку */
+  overflow: hidden;         /* Прячем то, что не влезло */
+  text-overflow: ellipsis;  /* Добавляем три точки (...) */
+  width: 100%;
 }
 
 .email{
-  font-size:12px;
-  color:var(--muted);
+  font-size: 14px;
+  color: var(--muted);
+  white-space: nowrap;      /* Запрещаем перенос */
+  overflow: hidden;         /* Прячем лишнее */
+  text-overflow: ellipsis;  /* Добавляем три точки (...) */
+  width: 100%;
+}
+
+.skeleton {
+  background: #333;
+  animation: pulse 1.5s infinite ease-in-out;
 }
 
 .main{
@@ -205,6 +233,7 @@
   box-sizing: border-box;
   display: flex;
   justify-content: center;
+  padding: 10px;
 }
 
 /* account for fixed header (height 60px) */

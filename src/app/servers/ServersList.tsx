@@ -47,19 +47,19 @@ export default function ServerList({ game }: Props) {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-row gap-3 w-full">
-        <button className="blueBtn" onClick={handleAddServer}>
-          + Add Server
-        </button>
-        <div className="flex flex-row gap-3 block">
+    <div className="flex flex-col gap-3 w-fit">
+      <div className="flex flex-row justify-between gap-3 w-full">
+        <div className="flex flex-row gap-3 block p-3">
           <WeeklyTimer />
           <span className="text-sm flex items-center text-gray-500">
             Servers total : {servers.length}
           </span> 
         </div>
+          <button className="blueBtn" onClick={handleAddServer}>
+            + Add Server
+          </button>
       </div>
-      <div className="flex flex-col justify-center items-center block gap-1 w-full">
+      <div className="flex flex-col justify-center p-3 items-center block gap-2 w-full">
         {servers.map((server, index) => (
           /* Можно добавить index + 1, чтобы отображать место сервера в топе */
           <ServerCard key={server._id} server={server} rank={index + 1} />

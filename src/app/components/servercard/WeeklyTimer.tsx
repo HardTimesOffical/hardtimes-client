@@ -47,9 +47,9 @@ const WeeklyTimer = () => {
 
   return (
     <div style={styles.container}>
-      <span style={styles.label}>Сброс голосов через:</span>
+      <span style={styles.label}>Resetting votes in...</span>
       <div style={styles.timer}>
-        {t.days > 0 && <span>{t.days}д </span>}
+        {t.days > 0 && <span>{t.days}d </span>}
         <span>{t.hours}:{t.minutes}:{t.seconds}</span>
       </div>
     </div>
@@ -61,14 +61,14 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '10px',
-    padding: '10px 15px',
-    background: '#1a1a1a',
+    padding: '0 15px',
     color: '#fff',
     borderRadius: '8px',
-    fontFamily: 'monospace'
+    fontFamily: 'Nunito, sans-serif',
+    height: '15px',
   },
   label: { fontSize: '14px', color: '#888' },
-  timer: { fontWeight: 'bold', fontSize: '16px', color: '#4caf50' }
+  timer: { fontWeight: 'bold', fontSize: '14px', color: '#4caf50' }
 };
 
 export default WeeklyTimer;
