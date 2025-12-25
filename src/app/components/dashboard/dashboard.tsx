@@ -57,10 +57,7 @@ export default function DashboardLayout({ children }: PropsWithChildren) {
 							Bedrock
 						  </Link>
 
-						<div className={styles.sectionTitle}>MY SERVERS</div>
-						<Link className={styles.navItem} href="#">
-							Servers
-						</Link>
+						<div className={styles.sectionTitle}>INFO</div>
 					</nav>
                 </div>
 					<div className={styles.dashboardmodule}>
