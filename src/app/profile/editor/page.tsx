@@ -21,7 +21,7 @@ export default function ProfileEditor({ user }: { user: any }) {
   const save = async () => {
     try {
       // 2. ENV: Используем переменную окружения вместо localhost
-      const apiUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
+      const apiUrl = process.env.NEXT_PUBLIC_SERVER_URL;
       
       await axios.put(
         `${apiUrl}/users/${user._id}`,

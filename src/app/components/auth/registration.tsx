@@ -25,36 +25,36 @@ export default function Registration() {
         }));
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-        setSuccess('');
+const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
 
-        if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
-            return;
-        }
+    // ДОБАВЬТЕ ЭТУ СТРОКУ:
+    console.log("DEBUG: Отправка на URL ->", process.env.NEXT_PUBLIC_SERVER_URL);
 
-        if (formData.password.length < 6) {
-            setError('Password must be at least 6 characters');
-            return;
-        }
+    if (formData.password !== formData.confirmPassword) {
+        setError('Passwords do not match');
+        return;
+    }
 
-        try {
-            // Register
-            await axios.post(
-                'http://localhost:5000/auth/register',
-                {
-                    username: formData.username,
-                    email: formData.email,
-                    password: formData.password,
-                },
-                { withCredentials: true }
-            );
+    try {
+        const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
+        
+        // Регистрация
+        await axios.post(
+            `${SERVER_URL}/auth/register`,
+            {
+                username: formData.username,
+                email: formData.email,
+                password: formData.password,
+            },
+            { withCredentials: true }
+        );
 
             // Auto-login to receive tokens (refresh cookie) and accessToken
             const loginRes = await axios.post(
-                'http://localhost:5000/auth/login',
+                `${SERVER_URL}/auth/login`,
                 { email: formData.email, password: formData.password },
                 { withCredentials: true }
             );
