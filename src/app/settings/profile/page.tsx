@@ -39,7 +39,7 @@ const save = async () => {
   setSuccess(false);
 
   try {
-    const userId = auth.user?.id || auth.user?._id;
+    const userId = auth.user?.id;
     
     // 1. Отправляем запрос на сервер
     await axios.put(
@@ -51,7 +51,7 @@ const save = async () => {
       }
     );
 
-    // 2. ОБЯЗАТЕЛЬНО: Обновляем данные в контексте
+    // 2. ОБЯЗАТЕЛЬНО: Овввбновляем данные в контексте
     // Теперь сайт сразу "узнает" твое новое имя и аватар
     auth.updateUser({ 
       username: name, 
@@ -61,7 +61,7 @@ const save = async () => {
     setSuccess(true);
     setTimeout(() => setSuccess(false), 3000);
   } catch (err: any) {
-    setError("Ошибка при сохранении");
+    setError("Ошибка при сохранении изменений");
   } finally {
     setLoading(false);
   }
@@ -71,7 +71,7 @@ const save = async () => {
     <div className={styles.container}>
       <h1 className={styles.heading}>Профиль</h1>
       <p className={styles.description}>
-        Измените информацию, которая отображается публично
+        Измените информацию, которая отображается публично в вашем профиле.
       </p>
 
       <div className={styles.form}>
