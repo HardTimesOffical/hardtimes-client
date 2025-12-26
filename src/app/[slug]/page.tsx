@@ -196,7 +196,7 @@ const renderIPs = () => {
             {/* Карточки параметров */}
             <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl">
               <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <span className="w-1 h-5 bg-blue-500 rounded-full"></span>
+                <span className="h-5 rounded-full"></span>
                 Информация
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -212,7 +212,7 @@ const renderIPs = () => {
                   <p className="opacity-40 text-[10px] uppercase font-bold tracking-wider mb-1">IP Адрес (click to copy)</p>
                   {renderIPs()}
                 </div>
-                <div className="p-4 bg-white/5 rounded-xl border border-white/5">
+                <div className="p-4 bg-white/4 rounded-xl flex flex-col justify-between border border-white/5">
                   <p className="opacity-40 text-[10px] uppercase font-bold tracking-wider mb-1">Рейтинг</p>
                   <p className="font-bold text-yellow-500 text-lg">⭐ {server.votesWeekly}</p>
                 </div>
@@ -222,7 +222,7 @@ const renderIPs = () => {
               {server.description && (
                 <div className="mt-8">
                   <h3 className="text-sm font-bold opacity-40 uppercase mb-3">Описание</h3>
-                  <div className="text-white/80 leading-relaxed whitespace-pre-wrap bg-white/5 p-4 rounded-xl italic border-l-2 border-blue-500/50">
+                  <div className="text-white/80 leading-relaxed whitespace-pre-wrap bg-white/5 p-4 rounded-xl italic">
                     {server.description}
                   </div>
                 </div>

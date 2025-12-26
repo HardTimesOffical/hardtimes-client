@@ -28,6 +28,12 @@
   max-width: 1200px;
 }
 
+.icon {
+  display: flex;
+  width: 23px;
+  height: 23px;
+}
+
 .blueBtn {
   background-color: #0068C9;
   color: white;
@@ -38,6 +44,7 @@
   cursor: pointer;
   font-weight: 600;
   width: fit-content;
+  max-height: 40px;
 }
 
 .list-con {

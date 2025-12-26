@@ -1,0 +1,25 @@
+{
+  "server": {
+    "about": "About Server",
+    "version": "Version",
+    "gameType": "Game Type",
+    "ipAddress": "IP Address (click to copy)",
+    "votes": "Weekly Votes",
+    "description": "Description",
+    "voteBtn": "Vote Now",
+    "editBtn": "Edit Server",
+    "copied": "Copied!"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error occurred"
+  },
+  "settings": {
+    "langTitle": "Выбор языка",
+    "language": "Language"
+  },
+  "lang": {
+    "english": "English",
+    "russian": "Russian"
+  }
+}

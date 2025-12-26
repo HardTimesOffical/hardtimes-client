@@ -5,6 +5,7 @@ import Link from "next/link";
 import styles from "./dashboard.module.css";
 import AuthSlot from "./AuthSlot";
 import { usePathname } from "next/navigation";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 export default function DashboardLayout({ children }: PropsWithChildren) {
 	const [open, setOpen] = useState(false);

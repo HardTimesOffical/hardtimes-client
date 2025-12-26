@@ -64,6 +64,9 @@
   font-size: 0.75rem;
   color: #9ca3af;
   margin-bottom: 4px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 
 .value {

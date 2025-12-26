@@ -46,7 +46,8 @@ const WeeklyTimer = () => {
   const t = formatTime(timeLeft);
 
   return (
-    <div style={styles.container}>
+    <div className='p-1 flex flex-row gap-2'>
+      <img className='icon' src="/icons/reset.svg"/>
       <span style={styles.label}>Resetting votes in...</span>
       <div style={styles.timer}>
         {t.days > 0 && <span>{t.days}d </span>}

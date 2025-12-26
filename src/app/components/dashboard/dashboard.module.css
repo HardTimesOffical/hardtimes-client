@@ -233,7 +233,7 @@
   box-sizing: border-box;
   display: flex;
   justify-content: center;
-  padding: 10px;
+  padding: 0 10px;
 }
 
 /* account for fixed header (height 60px) */

@@ -11,17 +11,29 @@
 /* ===== SETTINGS LAYOUT ===== */
 .settingsLayout {
   display: flex;
-  gap: 30px;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 20px;
+  gap: 10px;
+  min-height: 500px;
+  width: 100%;
+  max-width: 800px; /* Ограничиваем общую ширину для ПК */
+  margin: 0 auto;    /* Центрируем всю раскладку */
 }
 
 .sidebar {
-  width: 150px; /* Сузили меню */
+  width: 250px;
   flex-shrink: 0;
 }
 
+.backButton {
+  display: none; 
+  align-self: flex-start; /* Кнопка назад всегда слева */
+  margin-bottom: 20px;
+  color: #3b82f6;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+/* Навигация */
 .nav {
   display: flex;
   flex-direction: column;
@@ -46,29 +58,62 @@
 
 .content {
   flex-grow: 1;
-  min-width: 0; /* предотвращает переполнение */
-  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Центрируем форму по горизонтали внутри контента */
 }
 
 @media (max-width: 768px) {
-  .settingsLayout {
-    flex-direction: column; /* Меню сверху, контент снизу */
-    gap: 20px;
+.settingsLayout {
+    flex-direction: column;
+    gap: 0;
+    padding: 0 15px;
+    align-items: center; /* Центрируем всё на мобилках */
   }
 
-  .sidebar {
-    width: 100%; /* На мобилках во всю ширину */
+.sidebar {
+    width: 100%;
+    max-width: 450px; /* Чтобы меню не было слишком широким на мобилках */
   }
 
-  .nav {
-    flex-direction: row; /* Ссылки в ряд */
-    overflow-x: auto; /* Если ссылок много, можно скроллить */
-    padding-bottom: 5px;
+  .backButton {
+    display: flex; /* Показываем на мобилках */
+    align-items: center;
   }
 
-  .sidebarLink {
-    white-space: nowrap;
+  /* Если мы в корне настроек (/settings) */
+  .settingsLayout.showMenu .content {
+    display: none; /* Скрываем контент, показываем только меню */
+  }
+  .settingsLayout.showMenu .sidebar {
+    width: 100%;
+  }
+
+  .settingsLayout.showContent .sidebar {
+    display: none; /* Скрываем меню, показываем только контент */
+  }
+  .settingsLayout.showContent .content {
+    width: 100%;
+  }
+
+.nav {
+    flex-direction: column; /* МЕНЮ ТЕПЕРЬ ВЕРТИКАЛЬНОЕ */
+    gap: 5px;
+    overflow-x: hidden;
     background-color: var(--auth-bg);
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+.sidebarLink {
+    text-align: left; /* Текст в кнопках меню по центру */
+    padding: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-radius: 10px 10px 0 0;
+  }
+
+.container {
+    max-width: 100%; /* На мобилках форма на всю доступную ширину */
   }
 }
 
@@ -192,13 +237,12 @@
 }
 
 .container {
-    /* width: 100%; <- Убран, чтобы flex управлял шириной */
-    /* height: 100%; <- Убран */
-    /* ... остальные стили ... */
-    padding: 28px;
-    background: var(--auth-bg);
-    border-radius: 12px;
-    border: 1px solid var(--auth-stroke);
+  width: 100%;
+  max-width: 550px; /* Ограничиваем ширину формы для красоты */
+  padding: 28px;
+  background: var(--auth-bg);
+  border-radius: 12px;
+  border: 1px solid var(--auth-stroke);
 }
 
 .heading {

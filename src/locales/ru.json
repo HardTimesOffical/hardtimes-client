@@ -1,0 +1,26 @@
+{
+  "server": {
+    "about": "О сервере",
+    "version": "Версия",
+    "gameType": "Тип игры",
+    "ipAddress": "IP Адрес (нажми для копии)",
+    "votes": "Голосов за неделю",
+    "description": "Описание",
+    "voteBtn": "Проголосовать",
+    "editBtn": "Редактировать",
+    "copied": "Скопировано!"
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Произошла ошибка"
+  },
+    "settings": {
+    "langTitle": "Language",
+    "language": "Language"
+  },
+    "lang": {
+    "english": "Английский",
+    "russian": "Русский"
+  }
+  
+}
