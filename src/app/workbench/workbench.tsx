@@ -99,6 +99,7 @@ export default function Workbench() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
   const { accessToken } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setGameVersion("");
@@ -122,6 +123,10 @@ export default function Workbench() {
 
 const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     try {
       const formData = new FormData();
       
@@ -158,6 +163,7 @@ const handleSubmit = async (e: FormEvent) => {
     } catch (error) {
       console.error(error);
       alert("Error adding server");
+      setIsSubmitting(false);
     }
   };
 
@@ -276,8 +282,13 @@ const handleSubmit = async (e: FormEvent) => {
             </div>
 
             <div className="w-full flex justify-end mt-2">
-              <button className={styles.submit} type="submit">
-                + Add Server
+              <button 
+                className={styles.submit} 
+                type="submit"
+                disabled={isSubmitting} // 4. Сама блокировка визуально и технически
+                style={{ opacity: isSubmitting ? 0.6 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
+              >
+                {isSubmitting ? "Adding..." : "+ Add Server"}
               </button>
             </div>
           </div>
