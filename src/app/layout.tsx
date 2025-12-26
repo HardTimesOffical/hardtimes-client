@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "./components/header/header";
 import { AuthProvider } from "../context/AuthContext";
 import Script from "next/script";
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,6 +47,7 @@ export default function RootLayout({
           {children}
         </AuthProvider>
       </body>
+      <GoogleAnalytics gaId="G-J39EH619BR" />
     </html>
   );
 }
