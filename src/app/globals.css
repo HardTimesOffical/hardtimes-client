@@ -78,10 +78,11 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   min-height: 100vh;
+  height: auto;
 }
 
 html {
-  height: 100%;
+  height: auto;
 }
 
 /* Utility classes for accent usage */

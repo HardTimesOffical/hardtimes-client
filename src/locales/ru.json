@@ -14,13 +14,26 @@
     "loading": "Загрузка...",
     "error": "Произошла ошибка"
   },
-    "settings": {
-    "langTitle": "Language",
-    "language": "Language"
+  "dashboard": {
+    "general": "Главная",
+    "info": "Информация",
+    "addServer": "+ Добавить",
+    "settings": "Настройки",
+    "signOut": "Выйти",
+    "language": "Язык",
+    "title": "Настройки",
+    "profile": "Профиль"
   },
-    "lang": {
+  "settings": {
+    "appearanceTitle": "Внешний вид",
+    "langTitle": "Язык",
+    "language": "Язык",
+    "title": "Настройки",
+    "profile": "Профиль",
+    "security": "Безопасность"
+  },
+  "lang": {
     "english": "Английский",
     "russian": "Русский"
   }
-  
 }

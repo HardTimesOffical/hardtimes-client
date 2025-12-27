@@ -14,9 +14,23 @@
     "loading": "Loading...",
     "error": "Error occurred"
   },
+  "dashboard": {
+    "general": "General",
+    "info": "Info",
+    "addServer": "Add Server +",
+    "settings": "Settings",
+    "signOut": "Sign Out",
+    "language": "Language",
+    "title": "Settings",
+    "profile": "Profile"
+  },
   "settings": {
-    "langTitle": "Выбор языка",
-    "language": "Language"
+    "appearanceTitle": "Language",
+    "langTitle": "Language",
+    "language": "Language",
+    "title": "Settings",
+    "profile": "Profile",
+    "security": "Security"
   },
   "lang": {
     "english": "English",

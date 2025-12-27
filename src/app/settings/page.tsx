@@ -2,9 +2,11 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { language, setLanguage, t } = useLanguage();
 
   useEffect(() => {
     // Если ширина экрана больше 768px, сразу кидаем в профиль

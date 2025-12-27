@@ -47,7 +47,7 @@ export default function ServerList({ game }: Props) {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="flex flex-col gap-3 w-fit">
+    <div className="flex flex-col gap-3 w-fit mb-5">
       <div className="flex flex-row justify-between gap-3 w-full">
         <div className="flex flex-row gap-3 block p-3">
           <WeeklyTimer />

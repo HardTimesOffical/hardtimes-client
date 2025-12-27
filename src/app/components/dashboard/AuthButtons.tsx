@@ -4,9 +4,11 @@ import React, { useState, useEffect } from 'react';
 import Link from "next/link";
 import { useAuth } from "../../../context/AuthContext";
 import styles from "./dashboard.module.css";
+import { useLanguage } from '@/context/LanguageContext';
 
 
 export default function AuthButtons() {
+  const { t } = useLanguage();
   const auth = useAuth();
   const [mounted, setMounted] = useState(false);
 
@@ -22,10 +24,10 @@ if (!mounted) {
     return (
       <>
         <Link className={styles.navItem} href="/workbench">
-          Add Server +
+         {t.dashboard.addServer}
         </Link>
         <Link href="/settings" className={styles.navItem}>
-          Settings
+          {t.dashboard.settings}
         </Link>
 
         <button
@@ -34,7 +36,7 @@ if (!mounted) {
             await auth.logout();
           }}
         >
-          Sign Out
+          {t.dashboard.signOut}
         </button>
       </>
     );

@@ -6,6 +6,7 @@ import { AuthProvider } from "../context/AuthContext";
 import Script from "next/script";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { LanguageProvider } from "@/context/LanguageContext";
+import Footer from "./components/footer/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,6 +49,7 @@ export default function RootLayout({
           <LanguageProvider>
             <Header />
             {children}
+            <Footer />
           </LanguageProvider>
         </AuthProvider>
       </body>

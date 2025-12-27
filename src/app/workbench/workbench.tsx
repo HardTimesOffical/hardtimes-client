@@ -9,6 +9,7 @@ import { TAGS } from "@/constants/tags";
 import { LANGUAGES } from "@/constants/languages";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import InfoBlock from "../components/blocks/InfoBlock";
 
 interface CustomSelectProps {
   options: string[];
@@ -168,8 +169,14 @@ const handleSubmit = async (e: FormEvent) => {
   };
 
   return (
-<div className="flex justify-center p-4">
+  <div className="flex justify-center p-4">
       <form className={`flex flex-col gap-4 w-full max-w-5xl ${styles.workbenchForm}`} onSubmit={handleSubmit}>
+        <div className="w-full max-w-5xl">
+        <InfoBlock 
+          title="Important" 
+          text="Additional information can be added in the server editor only after publication." 
+        />
+      </div>
         <div className="flex flex-col md:flex-row gap-4">
           
           <div className={`${styles.container} flex flex-col gap-2 flex-1`}>
@@ -275,7 +282,7 @@ const handleSubmit = async (e: FormEvent) => {
                 {imagePreview ? (
                   <img src={imagePreview} alt="Preview" className="max-h-40 w-full object-contain border border-white/10 rounded" />
                 ) : (
-                  <span className="text-gray-400">Click to upload gif or image</span>
+                  <span className="text-gray-400">Click to upload gif or image | 470x60</span>
                 )}
                 <input type="file" accept="image/*,video/gif" onChange={handleImageChange} className="hidden" />
               </label>

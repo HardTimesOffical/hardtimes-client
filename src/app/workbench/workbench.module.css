@@ -8,6 +8,7 @@
   --workbench-title: #d1d5dbd0;
 }
 
+
 .customSelectWrapper {
   position: relative;
   width: 100%;
@@ -316,8 +317,9 @@
 }
 
 @media (max-width: 480px) {
-  .container {
-    margin: 20px 12px;
+.container {
+    /* margin: 20px 12px; <--- УДАЛИТЕ ИЛИ ЗАКОММЕНТИРУЙТЕ ЭТО */
+    width: 100%; /* Вместо маржинов растягиваем на всю ширину */
     padding: 18px;
     border-radius: 10px;
   }

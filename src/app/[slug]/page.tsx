@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import DashboardLayout from "@/app/components/dashboard/dashboard";
 import Link from "next/link";
+import InfoBlock from "@/app/components/blocks/InfoBlock";
 
 export default function ServerPage() {
   const { slug } = useParams();
@@ -262,6 +263,12 @@ const renderIPs = () => {
                 </p>
               )}
               {!accessToken && <p className="text-[10px] text-white/30 mt-3 uppercase tracking-tighter">Login required to vote</p>}
+              <div>
+                <InfoBlock 
+                title="" 
+                text="Ads may be shown."
+              />
+              </div>
             </div>
 
             <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl space-y-4">

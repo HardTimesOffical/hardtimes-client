@@ -10,7 +10,7 @@ export default function AppearanceSettings() {
   return (
     <div className={styles.container}>
       <h1 className={styles.heading}>
-        {t.settings.appearanceTitle || "Внешний вид"}
+        {t.settings.appearanceTitle}
       </h1>
       
       {/* Убрали flex (чтобы не сжималось) и дали полную ширину */}
