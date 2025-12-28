@@ -27,49 +27,45 @@ export default function Login() {
       );
 
       const data = res.data;
+      if (!data?.accessToken) throw new Error("No access token received");
 
-      if (!data?.accessToken) {
-        throw new Error("No access token received");
-      }
-
-      // сохраняем в контекст
       auth.login(data.accessToken, data.user);
-
-      router.push("/"); // или /dashboard
+      router.push("/"); 
     } catch (err: any) {
-      console.error("Login error", err);
-      const message =
-        err?.response?.data?.message ||
-        err.message ||
-        "Login failed";
+      const message = err?.response?.data?.message || err.message || "Login failed";
       setError(message);
     }
   };
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>Sign In</h2>
+      <header className={styles.header}>
+        <h2 className={styles.heading}>Sign In</h2>
+        <p className={styles.subheading}>Enter your details to access your account</p>
+      </header>
 
       <form className={styles.form} onSubmit={handleSubmit}>
-        <div>
-          <label className={styles.label} htmlFor="email">Email:</label>
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="email">Email</label>
           <input
             className={styles.input}
             type="email"
             id="email"
+            placeholder="mail@example.com"
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
           />
         </div>
 
-        <div>
-          <label className={styles.label} htmlFor="password">Password:</label>
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="password">Password</label>
           <div className={styles.inputWrap}>
             <input
               className={styles.input}
               type={showPassword ? "text" : "password"}
               id="password"
+              placeholder="••••••••"
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
@@ -79,18 +75,21 @@ export default function Login() {
               className={styles.eyeButton}
               onClick={() => setShowPassword(s => !s)}
             >
-              {showPassword ? "👁️" : "👁"}
+              {showPassword ? "🔒" : "👁️"}
             </button>
           </div>
         </div>
 
-        {error && <p className={styles.error}>{error}</p>}
-        <div className="pt-4 flex flex-row justify-end">
-            <button className={styles.submit} type="submit">
-             Sign In
-            </button>
-        </div>
-        <Link href="/register">Doesn't have an account?</Link>
+        {error && <div className={styles.errorBox}>{error}</div>}
+
+        <button className={styles.submit} type="submit">
+          Continue
+        </button>
+
+        <footer className={styles.footer}>
+          <span>Don't have an account?</span>
+          <Link href="/register" className={styles.link}>Create account</Link>
+        </footer>
       </form>
     </div>
   );

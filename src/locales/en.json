@@ -17,7 +17,7 @@
   "dashboard": {
     "general": "General",
     "info": "Info",
-    "addServer": "Add Server +",
+    "addServer": "Add Server",
     "settings": "Settings",
     "signOut": "Sign Out",
     "language": "Language",
@@ -32,8 +32,23 @@
     "profile": "Profile",
     "security": "Security"
   },
+  "security": {
+    "securityTitle": "Security",
+    "password": "Change password",
+    "current": "Current password",
+    "new": "New password",
+    "repeat": "Repeat password",
+    "change": "Change Password",
+    "wait": "Обновление...",
+    "successfull": "Успешная смена пароля",
+    "not_equal": "The passwords don't match",
+    "error": "Error changing password"
+  },
   "lang": {
     "english": "English",
     "russian": "Russian"
+  },
+  "workbench": {
+    "workbench_faq": "Additional information can be added in the server editor only after publication."
   }
 }

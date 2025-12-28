@@ -24,9 +24,11 @@ if (!mounted) {
     return (
       <>
         <Link className={styles.navItem} href="/workbench">
+        <img src="/icons/plus.svg" className='icon'/>
          {t.dashboard.addServer}
         </Link>
         <Link href="/settings" className={styles.navItem}>
+          <img src="/icons/settings.svg" className='icon'/>
           {t.dashboard.settings}
         </Link>
 
@@ -36,6 +38,7 @@ if (!mounted) {
             await auth.logout();
           }}
         >
+          <img src="/icons/sign_out.svg" className='icon'/>
           {t.dashboard.signOut}
         </button>
       </>

@@ -10,6 +10,7 @@ import { LANGUAGES } from "@/constants/languages";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import InfoBlock from "../components/blocks/InfoBlock";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface CustomSelectProps {
   options: string[];
@@ -101,6 +102,7 @@ export default function Workbench() {
   const [imagePreview, setImagePreview] = useState<string>("");
   const { accessToken } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { t } = useLanguage()
 
   useEffect(() => {
     setGameVersion("");
@@ -174,7 +176,7 @@ const handleSubmit = async (e: FormEvent) => {
         <div className="w-full max-w-5xl">
         <InfoBlock 
           title="Important" 
-          text="Additional information can be added in the server editor only after publication." 
+          text={t.workbench.workbench_faq}
         />
       </div>
         <div className="flex flex-col md:flex-row gap-4">

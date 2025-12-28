@@ -65,6 +65,13 @@ export default function DashboardLayout({ children }: PropsWithChildren) {
                         >
                             Discord
                         </Link>
+                        <Link
+                            className={styles.navItem}
+                            href="https://onlybuilders.ru/feed"
+                            target="_blank"
+                        >
+                            For Builders
+                        </Link>
                     </nav>
                 </div>
                 <div className={styles.dashboardmodule}>

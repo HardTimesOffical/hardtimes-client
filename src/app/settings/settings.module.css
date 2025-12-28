@@ -41,7 +41,9 @@
 }
 
 .sidebarLink {
-  display: block;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   padding: 10px 15px;
   border-radius: 8px;
   text-decoration: none;
@@ -49,6 +51,7 @@
   font-size: 14px;
   transition: all 0.2s ease;
   background-color: transparent;
+  gap: 10px;
 }
 
 .sidebarLink:hover {
@@ -110,6 +113,9 @@
     padding: 15px;
     border-bottom: 1px solid rgba(255,255,255,0.05);
     border-radius: 10px 10px 0 0;
+    display: flex;
+    flex-direction: row;
+    gap: 3px;
   }
 
 .container {

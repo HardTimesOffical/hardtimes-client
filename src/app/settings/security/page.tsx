@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import axios from "axios";
 import styles from "../settings.module.css";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function SecuritySettings() {
   const auth = useAuth();
@@ -22,6 +23,8 @@ export default function SecuritySettings() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const { t } = useLanguage();
+
   if (auth.user === null) {
     return <div className={styles.container}>Загрузка...</div>;
   }
@@ -32,7 +35,7 @@ export default function SecuritySettings() {
     setSuccess(false);
 
     if (next !== confirm) {
-      setError("Новые пароли не совпадают");
+      setError(`${t.security.not_equal}`);
       return;
     }
 
@@ -56,7 +59,7 @@ export default function SecuritySettings() {
       setNext("");
       setConfirm("");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Ошибка при смене пароля");
+      setError(err.response?.data?.message || `${t.security.error}`);
     } finally {
       setLoading(false);
     }
@@ -101,18 +104,18 @@ export default function SecuritySettings() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.heading}>Безопасность</h1>
+      <h1 className={styles.heading}>{t.security.securityTitle}</h1>
       <div className={styles.form}>
-        <label className={styles.label}>Смена пароля</label>
+        <label className={styles.label}>{t.security.password}</label>
         {success && (
           <div style={{ color: '#2e7d32', backgroundColor: '#edf7ed', padding: '10px', borderRadius: '8px', marginBottom: '15px' }}>
-            ✅ Пароль успешно обновлен!
+            ✅ {t.security.successfull}!
           </div>
         )}
 
-        {renderInput("Текущий пароль", current, setCurrent, showCurrent, () => setShowCurrent(!showCurrent))}
-        {renderInput("Новый пароль", next, setNext, showNext, () => setShowNext(!showNext))}
-        {renderInput("Подтвердите пароль", confirm, setConfirm, showConfirm, () => setShowConfirm(!showConfirm))}
+        {renderInput(`${t.security.current}`, current, setCurrent, showCurrent, () => setShowCurrent(!showCurrent))}
+        {renderInput(`${t.security.new}`, next, setNext, showNext, () => setShowNext(!showNext))}
+        {renderInput(`${t.security.repeat}`, confirm, setConfirm, showConfirm, () => setShowConfirm(!showConfirm))}
 
         {error && <div style={{ color: '#d32f2f', marginBottom: '15px' }}>{error}</div>}
 
@@ -121,7 +124,7 @@ export default function SecuritySettings() {
           onClick={submit}
           disabled={loading || !current || !next}
         >
-          {loading ? "Обновление..." : "Изменить пароль"}
+          {loading ? `${t.security.wait}` : `${t.security.change}`}
         </button>
       </div>
     </div>

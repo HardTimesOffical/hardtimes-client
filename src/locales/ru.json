@@ -17,7 +17,7 @@
   "dashboard": {
     "general": "Главная",
     "info": "Информация",
-    "addServer": "+ Добавить",
+    "addServer": "Добавить",
     "settings": "Настройки",
     "signOut": "Выйти",
     "language": "Язык",
@@ -25,15 +25,31 @@
     "profile": "Профиль"
   },
   "settings": {
-    "appearanceTitle": "Внешний вид",
+    "appearanceTitle": "Смена языка",
     "langTitle": "Язык",
     "language": "Язык",
     "title": "Настройки",
     "profile": "Профиль",
     "security": "Безопасность"
   },
+    "security": {
+    "securityTitle": "Безопасность",
+    "password": "Смена пароля",
+    "current": "Текущий пароль",
+    "new": "Новый пароль",
+    "repeat": "Повторите пароль",
+    "change": "Сменить Пароль",
+    "wait": "Обновление...",
+    "successfull": "Успешная смена пароля",
+    "not_equal": "Пароли не совпадают",
+    "error": "Ошибка при смене пароля"
+  },
+  
   "lang": {
     "english": "Английский",
     "russian": "Русский"
+  },
+  "workbench": {
+    "workbench_faq": "Дополнительную информацию можно добавить в редакторе сервера только после публикации."
   }
 }

@@ -103,20 +103,18 @@
   font-weight: bold;
 }
 
-.navItem{
-  display:block;
-  color:var(--muted);
-  padding:6px 12px;
-  border-radius:8px;
-  text-decoration:none;
-  transition:background .14s, color .12s;
-  width:100%;
-  box-sizing:border-box;
-  text-align: left;
-  font-size: 14px;
+.navItem {
   display: flex;
-  flex-direction: row;
-  gap: 10px;
+  align-items: center; /* Центрируем иконку и текст по вертикали */
+  color: var(--muted);
+  padding: 10px 14px;  /* Увеличили с 6px 12px */
+  border-radius: 10px; /* Сделали скругление чуть мягче */
+  text-decoration: none;
+  transition: background .14s, color .12s;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 15px;     /* Увеличили с 14px */
+  gap: 12px;           /* Увеличили расстояние между иконкой и текстом */
 }
 
 .navItemActive {
@@ -227,7 +225,6 @@
 }
 
 .main{
-  flex:1;
   margin-left:200px;
   width: calc(100% - 260px);
   box-sizing: border-box;
@@ -283,6 +280,17 @@
     transform:translateX(-110%);
     transition:transform .18s ease;
     width:220px;
+  }
+
+  .navItem {
+    padding: 14px 16px; /* Еще больше на телефонах для удобства нажатия */
+    font-size: 18px;    /* Комфортный размер текста для мобилок */
+  }
+
+  .sectionTitle {
+    font-size: 12px;    /* Сделали заголовки секций чуть читабельнее */
+    margin-top: 20px;
+    padding-left: 4px;
   }
 
   /* place hamburger on the header, centered vertically (header height 60px, button 44px => top:8px) */

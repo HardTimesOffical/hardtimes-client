@@ -16,43 +16,42 @@ export default function Registration() {
 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
+
+    const auth = useAuth();
+    const router = useRouter();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value,
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        setSuccess('');
 
-    // ДОБАВЬТЕ ЭТУ СТРОКУ:
-    console.log("DEBUG: Отправка на URL ->", process.env.NEXT_PUBLIC_SERVER_URL);
+        if (formData.password !== formData.confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
 
-    if (formData.password !== formData.confirmPassword) {
-        setError('Passwords do not match');
-        return;
-    }
+        try {
+            const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
+            
+            // 1. Регистрация
+            await axios.post(
+                `${SERVER_URL}/auth/register`,
+                {
+                    username: formData.username,
+                    email: formData.email,
+                    password: formData.password,
+                },
+                { withCredentials: true }
+            );
 
-    try {
-        const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
-        
-        // Регистрация
-        await axios.post(
-            `${SERVER_URL}/auth/register`,
-            {
-                username: formData.username,
-                email: formData.email,
-                password: formData.password,
-            },
-            { withCredentials: true }
-        );
-
-            // Auto-login to receive tokens (refresh cookie) and accessToken
+            // 2. Авто-логин
             const loginRes = await axios.post(
                 `${SERVER_URL}/auth/login`,
                 { email: formData.email, password: formData.password },
@@ -61,74 +60,63 @@ const handleSubmit = async (e: React.FormEvent) => {
 
             const data = loginRes.data;
             if (data && data.accessToken) {
-                // use context to set token and user
-                try {
-                    const user = data.user || { id: data.id, email: formData.email, username: formData.username };
-                    auth.login(data.accessToken, user);
-                } catch {
-                    localStorage.setItem('accessToken', data.accessToken);
-                }
+                const user = data.user || { id: data.id, email: formData.email, username: formData.username };
+                auth.login(data.accessToken, user);
             }
 
             setSuccess('Registration successful!');
-            setFormData({ username: '', email: '', password: '', confirmPassword: '' });
-            try {
-                router.push('/');
-            } catch {}
+            router.push('/');
         } catch (err: any) {
-            console.error('Registration error', err);
-            if (err?.response) {
-                console.error('Response status:', err.response.status);
-                console.error('Response data:', err.response.data);
-            }
             const message = err?.response?.data?.message || err.message || 'Unexpected error';
             setError(message);
         }
     };
 
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirm, setShowConfirm] = useState(false);
-    const auth = useAuth();
-    const router = useRouter();
-
     return (
         <div className={styles.container}>
-            <h2 className={styles.heading}>Create Account</h2>
+            <header className={styles.header}>
+                <h2 className={styles.heading}>Create Account</h2>
+                <p className={styles.subheading}>Join our community today</p>
+            </header>
+
             <form className={styles.form} onSubmit={handleSubmit}>
-                <div>
-                    <label className={styles.label} htmlFor="username">Username:</label>
+                <div className={styles.field}>
+                    <label className={styles.label} htmlFor="username">Username</label>
                     <input
                         className={styles.input}
                         type="text"
                         id="username"
                         name="username"
+                        placeholder="Steve"
                         value={formData.username}
                         onChange={handleChange}
                         required
                     />
                 </div>
 
-                <div>
-                    <label className={styles.label} htmlFor="email">Email:</label>
+                <div className={styles.field}>
+                    <label className={styles.label} htmlFor="email">Email</label>
                     <input
                         className={styles.input}
                         type="email"
                         id="email"
                         name="email"
+                        placeholder="steve@minecraft.net"
                         value={formData.email}
                         onChange={handleChange}
                         required
                     />
                 </div>
 
-                <div>
-                    <label className={styles.label} htmlFor="password">Password:</label>
+                <div className={styles.field}>
+                    <label className={styles.label} htmlFor="password">Password</label>
                     <div className={styles.inputWrap}>
                         <input
                             className={styles.input}
                             type={showPassword ? 'text' : 'password'}
                             id="password"
                             name="password"
+                            placeholder="••••••••"
                             value={formData.password}
                             onChange={handleChange}
                             required
@@ -136,22 +124,22 @@ const handleSubmit = async (e: React.FormEvent) => {
                         <button
                             type="button"
                             className={styles.eyeButton}
-                            aria-label={showPassword ? 'Hide password' : 'Show password'}
                             onClick={() => setShowPassword(s => !s)}
                         >
-                            {showPassword ? '👁️' : '👁'}
+                            {showPassword ? '🔒' : '👁️'}
                         </button>
                     </div>
                 </div>
 
-                <div>
-                    <label className={styles.label} htmlFor="confirmPassword">Confirm Password:</label>
+                <div className={styles.field}>
+                    <label className={styles.label} htmlFor="confirmPassword">Confirm Password</label>
                     <div className={styles.inputWrap}>
                         <input
                             className={styles.input}
                             type={showConfirm ? 'text' : 'password'}
                             id="confirmPassword"
                             name="confirmPassword"
+                            placeholder="••••••••"
                             value={formData.confirmPassword}
                             onChange={handleChange}
                             required
@@ -159,28 +147,24 @@ const handleSubmit = async (e: React.FormEvent) => {
                         <button
                             type="button"
                             className={styles.eyeButton}
-                            aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
                             onClick={() => setShowConfirm(s => !s)}
                         >
-                            {showConfirm ? '👁️' : '👁'}
+                            {showConfirm ? '🔒' : '👁️'}
                         </button>
                     </div>
                 </div>
 
-                {error && <p className={styles.error}>{error}</p>}
-                {success && <p className={styles.footer}>{success}</p>}
+                {error && <div className={styles.errorBox}>{error}</div>}
+                {success && <div className={styles.successBox}>{success}</div>}
 
-                <div className={styles.actions}>
-                    <div className={styles.oauth}>
-                        <button type="button" aria-label="Sign in with Google" className={styles.oauthButton}>G</button>
-                        <button type="button" aria-label="Sign in with Apple" className={styles.oauthButton}>A</button>
-                    </div>
+                <button className={styles.submit} type="submit">
+                    Sign Up
+                </button>
 
-                    <div className={styles.signupWrap}>
-                        <button className={styles.submit} type="submit">Sign Up</button>
-                    </div>
-                </div>
-                <Link href="/login">Already have an account?</Link>
+                <footer className={styles.footer}>
+                    <span>Already have an account?</span>
+                    <Link href="/login" className={styles.link}>Sign In</Link>
+                </footer>
             </form>
         </div>
     );

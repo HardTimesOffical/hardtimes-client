@@ -31,7 +31,8 @@ export default function SettingsLayout({ children }: { children: ReactNode }) {
               🔒 {t.settings.security}
             </Link>
             <Link href="/settings/language" className={styles.sidebarLink}>
-              🎨 {t.settings.language}
+            <img src="/icons/lang.svg" className="icon"/>
+              {t.settings.language}
             </Link>
           </nav>
         </aside>
