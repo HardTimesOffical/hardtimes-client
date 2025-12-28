@@ -25,8 +25,45 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "ServerSwamp - Minecraft Server List",
-  description: "Discover and promote the best Minecraft servers on ServerSwamp. Join our community to find your next adventure!",
+  metadataBase: new URL('https://serverswamp.ru'), // Укажи свой домен
+  title: {
+    default: "ServerSwamp — Мониторинг серверов Майнкрафт",
+    template: "%s | ServerSwamp" 
+  },
+  description: "ServerSwamp — лучший список серверов Minecraft. Найдите идеальный сервер для игры или продвигайте свой проект в нашем топе серверов Java и Bedrock.",
+  keywords: ["сервера майнкрафт", "мониторинг серверов", "minecraft servers", "сервера 1.21", "бесплатный донат"],
+  openGraph: {
+    title: "ServerSwamp — Найди свой идеальный сервер Minecraft",
+    description: "Рейтинг и мониторинг серверов Minecraft. Честный топ, отзывы и удобный поиск.",
+    url: 'https://serverswamp.com',
+    siteName: 'ServerSwamp',
+    images: [
+      {
+        url: '#', // Положи картинку в /public (1200x630)
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: 'ru_RU',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ServerSwamp',
+    description: 'Лучший мониторинг серверов Minecraft',
+    images: ['#'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({

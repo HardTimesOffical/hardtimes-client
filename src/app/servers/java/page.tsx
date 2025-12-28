@@ -1,7 +1,12 @@
-"use client";
 
 import ServerList from "../ServersList";
 import DashboardLayout from "@/app/components/dashboard/dashboard";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Сервера Майнкрафт Java Edition",
+  description: "Актуальный список серверов Minecraft Java Edition. Рейтинг, онлайн и лучшие проекты.",
+};
 
 export default function JavaServersPage() {
   return (
