@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import DashboardLayout from "@/app/components/dashboard/dashboard";
 import Link from "next/link";
 import InfoBlock from "@/app/components/blocks/InfoBlock";
+import LoadingCrystal from "../components/loading/LoadingCrystal";
 
 export default function ServerPage() {
   const { slug } = useParams();
@@ -154,7 +155,11 @@ const renderIPs = () => {
     fetchServer();
   }, [slug, accessToken]);
 
-  if (loading || !server) return <DashboardLayout><div className="p-10 text-center">Загрузка...</div></DashboardLayout>;
+  if (loading || !server) return <DashboardLayout>
+                                  <div className="relative w-full h-[60vh] flex items-center justify-center">
+                                    <LoadingCrystal />
+                                  </div>
+                                 </DashboardLayout>;
   if (error) return <DashboardLayout><div className="p-10 text-center">Сервер не найден</div></DashboardLayout>;
 
   const isOnline = server.status?.online;

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import ServerCard from "../components/servercard/ServerCard";
 import { useAuth } from "@/context/AuthContext";
 import WeeklyTimer from "../components/servercard/WeeklyTimer";
+import LoadingCrystal from "../components/loading/LoadingCrystal";
 
 interface Props {
   game: "java" | "bedrock" | "all";
@@ -44,7 +45,9 @@ export default function ServerList({ game }: Props) {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="relative w-full h-[60vh] flex items-center justify-center">
+                        <LoadingCrystal />
+                      </div>;
 
   return (
     <div className="flex flex-col gap-3 w-fit mb-5">
