@@ -7,13 +7,14 @@
 
 .card {
   display: flex;
-  flex-direction: column; /* Мобильный вид: всё в колонку */
+  flex-direction: column;
   background: #111827;
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 8px;
   overflow: hidden;
   transition: background 0.2s;
   max-width: 1200px;
+  width: 100%;
 }
 
 .card:hover {
@@ -27,19 +28,31 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+/* Стили мобильных рядов */
+.mobileRow {
+  display: flex; 
+  justify-content: space-evenly;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.mobileRow:last-child {
+  border-bottom: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .imageSection {
   position: relative;
   width: 100%;
+  flex: 1; /* Позволяет блоку расти */
+  min-width: 0; /* Важно для работы flex внутри контейнеров */
 }
 
 .banner {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
-  object-fit: cover;
+  object-fit: cover; /* Заполняет пространство без искажения */
 }
 
 .ipBadge {
@@ -51,6 +64,21 @@
   border-radius: 4px;
   font-size: 0.75rem;
   color: #fff;
+  z-index: 10;
+}
+
+.nameSection {
+  width: 150px; /* Твоя фиксированная ширина */
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* Добавляем это, чтобы контейнер не раздувался текстом */
+  min-width: 0; 
+  overflow: hidden;
 }
 
 /* Текстовые стили */
@@ -58,20 +86,25 @@
   font-weight: 500;
   font-size: 0.95rem;
   color: #d1d5db;
+  
+  /* Магия обрезки текста */
+  width: 100%;           /* Занимать всю ширину родителя */
+  text-align: center;    /* Центрировать текст */
+  white-space: nowrap;   /* Запретить перенос на новую строку */
+  overflow: hidden;      /* Скрыть то, что не поместилось */
+  text-overflow: ellipsis; /* Добавить три точки (...) в конце */
 }
 
 .label {
   font-size: 0.75rem;
   color: #9ca3af;
-  margin-bottom: 4px;
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
+  margin-bottom: 2px;
 }
 
-.value {
+.value, .voteCount {
   font-size: 0.9rem;
   color: #e5e7eb;
+  font-weight: 600;
 }
 
 .statusText {
@@ -79,110 +112,115 @@
   font-weight: 500;
 }
 
+.noImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: inherit;
+}
+
+.noImagePlaceholder span {
+  color: #4b5563;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+/* Добавим легкий эффект при наведении на всю карточку */
+.card:hover .noImagePlaceholder {
+  background: linear-gradient(135deg, #2563eb10 0%, #111827 100%);
+  border-color: rgba(37, 99, 235, 0.2);
+}
+
+.card:hover .noImagePlaceholder span {
+  color: #6b7280;
+}
+
 .online { color: #10b981; }
 .offline { color: #ef4444; }
-
-.star { color: #9ca3af; font-size: 1.2rem; }
-.voteCount { font-size: 0.75rem; color: #9ca3af; }
-
-/* Теги */
-.tagsRow {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.tag {
-  background: rgba(255, 255, 255, 0.05);
-  color: #9ca3af;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.7rem;
-}
-
-/* Позволяет дочерним элементам mobileRow вести себя как прямые дети .card */
-  .mobileRow {
-    display: flex; 
-    justify-content: space-evenly;
-  }
 
 /* Адаптация для ПК */
 @media (min-width: 780px) {
   .card {
-    flex-direction: row; /* Горизонтальный ряд как на фото */
-    height: 80px; /* Фиксированная высота для ровной линии */
+    flex-direction: row;
+    height: 85px; /* Немного увеличил высоту для баланса */
+    align-items: stretch; /* Растягивает все секции по высоте */
   }
 
+  .mobileRow {
+    display: contents; /* Разрывает мобильную обертку, превращая детей в прямых детей .card */
+  }
+
+  /* Левые секции */
   .votesSection {
-    width: 80px;
+    width: 70px; /* Уменьшил фиксированную ширину */
+    flex-shrink: 0;
     border-right: 1px solid rgba(255, 255, 255, 0.05);
-    border-bottom: none;
   }
 
   .nameSection {
-    width: 180px;
+    width: 150px; /* Уменьшил, чтобы дать больше места баннеру */
+    flex-shrink: 0;
     border-right: 1px solid rgba(255, 255, 255, 0.05);
-    border-bottom: none;
-    text-align: center;
+    padding: 0 10px;
   }
 
+  /* ЦЕНТРАЛЬНАЯ СЕКЦИЯ - БАННЕР */
   .imageSection {
-    flex: 1; /* Растягивает баннер по центру */
-    height: 100%;
+    flex: 3; /* Занимает в 3 раза больше веса, чем другие гибкие блоки */
+    min-width: 300px; /* Минимальный порог баннера */
   }
 
-  .banner {
-    height: 100%;
-    width: 100%;
-  }
-
+  /* Правые секции */
   .playersSection {
-    width: 140px;
+    width: 120px;
+    flex-shrink: 0;
     border-left: 1px solid rgba(255, 255, 255, 0.05);
-    border-bottom: none;
   }
 
   .statusSection {
-    width: 120px;
+    width: 100px;
+    flex-shrink: 0;
     border-left: 1px solid rgba(255, 255, 255, 0.05);
-    border-bottom: none;
   }
 }
 
+/* Адаптация для мобильных */
 @media (max-width: 780px) { 
-    .card {
-    height: 200px; /* Фиксированная высота для ровной линии */
-  }
-
-  .votesSection {
-  height: 40px;
-  padding: 10px;
-  display: flex;
-  flex-direction: row;
-  }
-
-  .nameSection {
- height: 40px;
-  padding: 10px;
+  .card {
+    height: auto; 
   }
 
   .imageSection {
-    flex: 1; /* Растягивает баннер по центру */
-    height: 100%;
+    /* Уменьшаем высоту с 180px до более аккуратных 80-100px */
+    height: 100px; 
+    flex: none; /* Отключаем растягивание */
   }
 
-  .banner {
-    height: 100%;
-    width: 100%;
+  /* Делаем информационные блоки компактнее */
+  .votesSection, .nameSection, .playersSection, .statusSection {
+    padding: 8px;
   }
 
-  .playersSection {
-  height: 40px;
-  padding: 10px;
+  .serverName {
+    font-size: 0.85rem; /* Чуть меньше шрифт на мобилках */
   }
 
-  .statusSection {
-    height: 40px;
-  padding: 10px;
+  .ipBadge {
+    bottom: 4px;
+    left: 4px;
+    font-size: 0.65rem;
+    padding: 1px 6px;
+  }
+
+  /* Если название секции (Label) занимает много места, можно уменьшить */
+  .label {
+    font-size: 0.65rem;
+    margin-bottom: 0;
   }
 }

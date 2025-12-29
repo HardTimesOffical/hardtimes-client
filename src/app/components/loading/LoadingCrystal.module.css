@@ -100,6 +100,41 @@
   opacity: 0.8;
 }
 
+@media (max-width: 768px) {
+  .scene {
+    /* Уменьшаем общую область сцены */
+    transform: scale(0.8); 
+  }
+
+  .overlay {
+    /* Немного сокращаем отступ до текста */
+    gap: 15px; 
+  }
+
+  .crystalContainer {
+    /* Делаем кристалл еще изящнее на маленьких экранах */
+    width: 24px;
+    height: 42px;
+    filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.5));
+  }
+
+  .text {
+    /* Уменьшаем шрифт и межбуквенное расстояние */
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  .orbit1 {
+    width: 60px;
+    height: 30px;
+  }
+
+  .orbit2 {
+    width: 45px;
+    height: 70px;
+  }
+}
+
 /* Анимации */
 @keyframes float {
   0%, 100% { transform: translateY(0) rotate(0deg); }

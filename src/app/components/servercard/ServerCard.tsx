@@ -53,20 +53,24 @@ export default function ServerCard({ server, rank, contextGame = "all" }: Server
               </h3>
             </div>
           </div>
-
           <div className={styles.imageSection}>
-            <img
-              src={server.imageUrl || "/server-placeholder.png"}
-              alt={server.serverName}
-              className={styles.banner}
-            />
-            {/* Выводим правильный IP */}
+            {server.imageUrl ? (
+              <img
+                src={server.imageUrl}
+                alt={server.serverName}
+                className={styles.banner}
+              />
+            ) : (
+              <div className={styles.noImagePlaceholder}>
+                <span>No image</span>
+              </div>
+            )}
+            
             <div className={styles.ipBadge}>
               {contextGame === "bedrock" && server.gameType === "JAVA & BEDROCK" ? "PE: " : "IP: "}
               {displayIp()}
             </div>
           </div>
-
           <div className={styles.mobileRow}>
             <div className={styles.playersSection}>
               <span className={styles.label}>Players</span>
