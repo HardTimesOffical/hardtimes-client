@@ -1,8 +1,13 @@
 export const TAGS = [
   "New",
-  "Popular",
   "Event",
   "Mini-Game",
   "Whitelist",
   "Custom",
+  "Building",
+  "Cozy",
+  "Kit-Pvp",
+  "SkyBlock",
+  "Social Project",
+  "Datapacks"
 ];

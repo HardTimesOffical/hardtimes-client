@@ -23,6 +23,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'hourly',
       priority: 0.8,
     },
+    {
+      url: `${baseUrl}/servers/hytale`,
+      lastModified: new Date(),
+      changeFrequency: 'hourly',
+      priority: 0.8,
+    },
   ]
 
   // 2. Динамические страницы серверов

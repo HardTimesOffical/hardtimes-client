@@ -8,11 +8,32 @@
   --border: rgba(255, 255, 255, 0.055);
 }
 
+.container[data-theme="java"] {
+    --accent-color: #22c55e; /* Зеленый */
+    --glow-opacity: 0.15;
+    --bg-gradient: radial-gradient(circle at top left, #0a1a0f, #05080f);
+}
+
+/* Настройки для Bedrock */
+.container[data-theme="bedrock"] {
+    --accent-color: #f97316; /* Оранжевый */
+    --glow-opacity: 0.15;
+    --bg-gradient: radial-gradient(circle at top left, #1a110a, #05080f);
+}
+
+/* Настройки для страницы сервера */
+.container[data-theme="server"] {
+    --accent-color: #a855f7; /* Фиолетовый/Премиум */
+    --glow-opacity: 0.2;
+    --bg-gradient: linear-gradient(135deg, #020408 0%, #05080f 100%);
+}
+
 .container{
   display:flex;
   min-height:100vh;
   background:linear-gradient(180deg,#051022 0%, #071735 100%);
   width: 100%;
+  
 }
 
 .sidebar{

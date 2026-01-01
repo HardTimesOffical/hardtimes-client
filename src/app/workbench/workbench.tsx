@@ -90,7 +90,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, selected, multiple
 
 export default function Workbench() {
   const [serverName, setServerName] = useState("");
-  const [ips, setIps] = useState({ java: "", bedrock: "" });
+  const [ips, setIps] = useState({ java: "", bedrock: "", hytale: "" });
   const [gameType, setGameType] = useState(GAME_TYPES[0]);
   const [gameVersion, setGameVersion] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
@@ -126,49 +126,58 @@ export default function Workbench() {
 
 const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
     if (isSubmitting) return;
     setIsSubmitting(true);
 
     try {
-      const formData = new FormData();
-      
-      // ЛОГИКА ОПРЕДЕЛЕНИЯ IP:
-      // Сохраняем как JSON только если это комбо, иначе просто строку
-      const finalIp = gameType === "JAVA & BEDROCK" 
-        ? JSON.stringify(ips) 
-        : (gameType === "Minecraft Bedrock" ? ips.bedrock : ips.java);
+        const formData = new FormData();
+        
+        // Четкое распределение IP по типам игр
+        let finalIp = "";
+        if (gameType === "JAVA & BEDROCK") {
+            finalIp = JSON.stringify({ java: ips.java, bedrock: ips.bedrock });
+        } else if (gameType === "Hytale") {
+            finalIp = ips.hytale; // Берем из своего поля
+        } else if (gameType === "Minecraft Bedrock") {
+            finalIp = ips.bedrock;
+        } else {
+            finalIp = ips.java;
+        }
 
-      formData.append("ipAddress", finalIp);
-      formData.append("serverName", serverName);
-      formData.append("gameType", gameType);
-      formData.append("gameVersion", gameVersion);
-      formData.append("categories", JSON.stringify(categories));
-      formData.append("tags", JSON.stringify(tags));
-      formData.append("languages", JSON.stringify(languages));
-      formData.append("discord", discord);
-      formData.append("website", website);
-      if (imageFile) formData.append("image", imageFile);
+        if (!finalIp) {
+            alert("Пожалуйста, введите IP адрес сервера");
+            setIsSubmitting(false);
+            return;
+        }
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/servers/add-server`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}` },
-        body: formData,
-      });
+        formData.append("ipAddress", finalIp);
+        formData.append("serverName", serverName);
+        formData.append("gameType", gameType);
+        formData.append("gameVersion", gameVersion || "TBA"); // Hytale версии еще нет
+        formData.append("categories", JSON.stringify(categories));
+        formData.append("tags", JSON.stringify(tags));
+        formData.append("languages", JSON.stringify(languages));
+        formData.append("discord", discord);
+        formData.append("website", website);
+        
+        if (imageFile) formData.append("image", imageFile);
 
-      if (!res.ok) throw new Error("Failed to add server");
-      alert("Server successfully added!");
-      
-      // Очистка с возвратом к дефолту
-      setServerName("");
-      setIps({ java: "", bedrock: "" });
-      setGameType(GAME_TYPES[0]);
-    } catch (error) {
-      console.error(error);
-      alert("Error adding server");
-      setIsSubmitting(false);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/servers/add-server`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${accessToken}` },
+            body: formData,
+        });
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.message || "Ошибка при добавлении");
+
+        alert("Сервер Hytale успешно добавлен!");
+    } catch (error: any) {
+        console.error(error);
+        alert(error.message);
+        setIsSubmitting(false);
     }
-  };
+};
 
   return (
   <div className="flex justify-center p-4">
@@ -224,6 +233,21 @@ const handleSubmit = async (e: FormEvent) => {
                   />
                 </div>
               )}
+                {gameType === "Hytale" && (
+                  <div className="flex flex-col gap-1">
+                    <div className={styles.sectionTitle} style={{fontSize: '10px', color: '#a855f7'}}>
+                        HYTALE SERVER ADDRESS
+                    </div>
+                    <input 
+                      className={styles.input} 
+                      type="text" 
+                      placeholder="hytale.example.com" 
+                      value={ips.hytale} 
+                      onChange={e => setIps({...ips, hytale: e.target.value})} 
+                      style={{ borderColor: 'rgba(168, 85, 247, 0.3)' }} // Фиолетовая рамка для стиля
+                    />
+                  </div>
+                )}
             </div>
 
             <div className={styles.sectionTitle}>GAME VERSION</div>

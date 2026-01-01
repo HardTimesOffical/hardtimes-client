@@ -5,4 +5,8 @@ export const CATEGORIES = [
   "Roleplay",
   "Factions",
   "Hardcore",
+  "Mini-Games",
+  "Vanilla",
+  "SMP",
+  "Modded"
 ];

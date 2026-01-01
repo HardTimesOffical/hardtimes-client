@@ -134,27 +134,37 @@ export default function ServerPageClient({ slug, initialData }: Props) {
   };
 
   useEffect(() => {
-    // Делаем запрос только если данных нет (например, переход по прямой ссылке в SPA)
-    if (!initialData && slug) {
-      const fetchServer = async () => {
-        try {
-          setLoading(true);
-          const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/servers/by-slug/${slug}`, {
-            headers: { ...(accessToken ? { "Authorization": `Bearer ${accessToken}` } : {}) }
-          });
-          if (!res.ok) throw new Error("Not found");
-          const data = await res.json();
-          setServer(data);
-          setError(false);
-        } catch (err) {
-          setError(true);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchServer();
-    }
-  }, [slug, accessToken, initialData]);
+  // Выполняем запрос в двух случаях:
+  // 1. Если данных вообще нет (initialData пустой)
+  // 2. Если данные есть, но появился токен (нужно проверить права владельца)
+  const shouldFetch = !initialData || (accessToken && !server?.isOwner);
+
+  if (shouldFetch && slug) {
+    const fetchServer = async () => {
+      try {
+        if (!server) setLoading(true); // Показываем лоадер только если данных совсем нет
+        
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/servers/by-slug/${slug}`, {
+          headers: { 
+            ...(accessToken ? { "Authorization": `Bearer ${accessToken}` } : {}) 
+          }
+        });
+        
+        if (!res.ok) throw new Error("Not found");
+        const data = await res.json();
+        
+        setServer(data); // Здесь придет isOwner: true, если токен верный
+        setError(false);
+      } catch (err) {
+        console.error(err);
+        if (!server) setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchServer();
+  }
+}, [slug, accessToken]); // Следим за изменением токена
 
   if (loading && !server) {
     return (

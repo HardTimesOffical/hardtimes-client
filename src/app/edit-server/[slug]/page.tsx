@@ -174,8 +174,9 @@ export default function EditServer() {
       });
 
       if (!res.ok) throw new Error("Failed to update server");
+      const updatedData = await res.json();
       alert("Server successfully updated!");
-      router.back(); 
+      router.push(`/${updatedData.slug}`);
     } catch (error) {
       console.error(error);
       alert("Error updating server");
@@ -217,6 +218,21 @@ export default function EditServer() {
                   <div className="flex flex-col gap-1">
                     <div className={styles.sectionTitle} style={{fontSize: '10px', opacity: 0.8}}>BEDROCK IP / PORT</div>
                     <input className={styles.input} type="text" placeholder="pe.example.com:19132" value={ips.bedrock} onChange={e => setIps({...ips, bedrock: e.target.value})} />
+                  </div>
+                )}
+                {/* Добавляем || gameType === "Hytale" */}
+                {(gameType === "Minecraft Java" || gameType === "JAVA & BEDROCK" || gameType === "Hytale") && (
+                  <div className="flex flex-col gap-1">
+                    <div className={styles.sectionTitle} style={{fontSize: '10px', opacity: 0.8}}>
+                      {gameType === "Hytale" ? "SERVER IP" : "JAVA IP"}
+                    </div>
+                    <input 
+                      className={styles.input} 
+                      type="text" 
+                      placeholder="play.example.com" 
+                      value={ips.java} 
+                      onChange={e => setIps({...ips, java: e.target.value})} 
+                    />
                   </div>
                 )}
               </div>

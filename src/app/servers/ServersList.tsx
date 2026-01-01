@@ -9,7 +9,7 @@ import LoadingCrystal from "../components/loading/LoadingCrystal";
 import Pagination from "../components/blocks/Pagination";
 
 interface Props {
-  game: "java" | "bedrock" | "all";
+  game: "java" | "bedrock" | "hytale" |  "all";
 }
 
 export default function ServerList({ game }: Props) {
