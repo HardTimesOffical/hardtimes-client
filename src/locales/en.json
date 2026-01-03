@@ -59,6 +59,9 @@
     "info": "Information",
     "edit": "Edit",
     "rating": "Rating",
-    "description": "Description"
+    "description": "Description",
+    "stats": "Statistics",
+    "statsTitle": "Activity history",
+    "maininfo": "General"
   } 
 }

@@ -7,6 +7,7 @@ import Link from "next/link";
 import InfoBlock from "@/app/components/blocks/InfoBlock";
 import LoadingCrystal from "../components/loading/LoadingCrystal";
 import { useLanguage } from "@/context/LanguageContext";
+import ServerChart from "../components/stats/ServerChart";
 
 interface Props {
   slug: string;
@@ -15,7 +16,9 @@ interface Props {
 
 export default function ServerPageClient({ slug, initialData }: Props) {
   const { accessToken } = useAuth();
-  const { t } = useLanguage()
+  const { t } = useLanguage();
+  const [activeTab, setActiveTab] = useState<'info' | 'stats'>('info');
+  const [stats, setStats] = useState<any[]>([]);
 
   // Сразу ставим данные из пропсов, чтобы SEO видело контент
   const [server, setServer] = useState<any>(initialData);
@@ -24,6 +27,21 @@ export default function ServerPageClient({ slug, initialData }: Props) {
   const [voteLoading, setVoteLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+  if (server?._id) {
+    // Запрашиваем статистику за последний день
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/statistics/${server._id}/stats?days=1`)
+      .then(res => res.json())
+      .then(data => {
+        // На бэкенде мы возвращаем массив дней, берем последний день и его точки
+        if (data && data.length > 0) {
+          setStats(data[data.length - 1].points || []);
+        }
+      })
+      .catch(err => console.error("Stats loading error:", err));
+  }
+}, [server?._id]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -214,39 +232,66 @@ export default function ServerPageClient({ slug, initialData }: Props) {
             </div>
           </div>
         </div>
+        <div className="flex gap-1 p-1 bg-white/5 rounded-xl border border-white/5 w-fit">
+          <button 
+            onClick={() => setActiveTab('info')}
+            className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'info' ? 'bg-blue-600 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}
+          >
+            {t.serverPage.maininfo}
+          </button>
+          <button 
+            onClick={() => setActiveTab('stats')}
+            className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'stats' ? 'bg-blue-600 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}
+          >
+            {t.serverPage.stats || "Статистика"}
+          </button>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2 space-y-6">
-            <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl">
-              <h2 className="text-lg font-bold mb-4 flex items-center gap-2">{t.serverPage.info}</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 bg-white/5 rounded-xl border border-white/5">
-                  <p className="opacity-40 text-[10px] uppercase font-bold tracking-wider mb-1">{t.serverPage.version}</p>
-                  <p className="font-semibold text-blue-400">{server.gameVersion}</p>
-                </div>
-                <div className="p-4 bg-white/5 rounded-xl border border-white/5">
-                  <p className="opacity-40 text-[10px] uppercase font-bold tracking-wider mb-1">{t.serverPage.type}</p>
-                  <p className="font-semibold text-purple-400">{server.gameType}</p>
-                </div>
-                <div className="p-4 bg-white/5 rounded-xl border border-white/5 overflow-hidden">
-                  <p className="opacity-40 text-[10px] uppercase font-bold tracking-wider mb-1">{t.serverPage.ip} (click to copy)</p>
-                  {renderIPs()}
-                </div>
-                <div className="p-4 bg-white/4 rounded-xl flex flex-col justify-between border border-white/5">
-                  <p className="opacity-40 text-[10px] uppercase font-bold tracking-wider mb-1">{t.serverPage.rating}</p>
-                  <p className="font-bold text-yellow-500 text-lg">⭐ {server.votesWeekly}</p>
+             {activeTab === 'info' && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl">
+                  <h2 className="text-lg font-bold mb-4">{t.serverPage.info}</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="p-4 bg-white/5 rounded-xl border border-white/5">
+                      <p className="opacity-40 text-[10px] uppercase font-bold mb-1">{t.serverPage.version}</p>
+                      <p className="font-semibold text-blue-400">{server.gameVersion}</p>
+                    </div>
+                    <div className="p-4 bg-white/5 rounded-xl border border-white/5">
+                      <p className="opacity-40 text-[10px] uppercase font-bold mb-1">{t.serverPage.type}</p>
+                      <p className="font-semibold text-purple-400">{server.gameType}</p>
+                    </div>
+                    <div className="p-4 bg-white/5 rounded-xl border border-white/5 sm:col-span-2">
+                      <p className="opacity-40 text-[10px] uppercase font-bold mb-1">{t.serverPage.ip}</p>
+                      {renderIPs()}
+                    </div>
+                  </div>
+
+                  {server.description && (
+                    <div className="mt-8">
+                      <h3 className="text-sm font-bold opacity-40 uppercase mb-3">{t.serverPage.description}</h3>
+                      <div className="text-white/80 leading-relaxed whitespace-pre-wrap bg-white/5 p-4 rounded-xl italic border border-white/5">
+                        {server.description}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
-
-              {server.description && (
-                <div className="mt-8">
-                  <h3 className="text-sm font-bold opacity-40 uppercase mb-3">{t.serverPage.description}</h3>
-                  <div className="text-white/80 leading-relaxed whitespace-pre-wrap bg-white/5 p-4 rounded-xl italic">
-                    {server.description}
+            )}
+            {activeTab === 'stats' && (
+              <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <h2 className="text-lg font-bold mb-6 italic">{t.serverPage.stats || "Онлайн анализ"}</h2>
+                {stats.length > 0 ? (
+                  <ServerChart data={stats} />
+                ) : (
+                  <div className="h-[300px] flex flex-col items-center justify-center bg-white/5 rounded-xl border border-dashed border-white/10 gap-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                    <p className="text-white/20 text-xs italic">Загрузка данных или сбор статистики...</p>
                   </div>
-                </div>
-              )}
-
+                )}
+              </div>
+            )}
               <div className="mt-8 flex flex-wrap gap-2">
                 {server.categories?.map((c: string) => (
                   <span key={c} className="px-3 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg text-xs font-medium">{c}</span>
@@ -255,7 +300,6 @@ export default function ServerPageClient({ slug, initialData }: Props) {
                   <span key={t} className="px-3 py-1 bg-white/5 text-white/40 border border-white/10 rounded-lg text-xs hover:text-white transition">#{t}</span>
                 ))}
               </div>
-            </div>
           </div>
 
           <div className="space-y-6">
