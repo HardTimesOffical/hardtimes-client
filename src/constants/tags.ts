@@ -9,5 +9,6 @@ export const TAGS = [
   "Kit-Pvp",
   "SkyBlock",
   "Social Project",
-  "Datapacks"
+  "Datapacks",
+  "Grief"
 ];

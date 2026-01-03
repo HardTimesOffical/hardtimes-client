@@ -8,5 +8,6 @@ export const CATEGORIES = [
   "Mini-Games",
   "Vanilla",
   "SMP",
-  "Modded"
+  "Modded",
+  "Anarchy"
 ];

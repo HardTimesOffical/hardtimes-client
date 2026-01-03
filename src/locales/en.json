@@ -50,5 +50,15 @@
   },
   "workbench": {
     "workbench_faq": "Additional information can be added in the server editor only after publication."
-  }
+  },
+  "serverPage": {
+    "copy": "Copied!",
+    "version": "Version",
+    "type": "Game Type",
+    "ip": "IP Address",
+    "info": "Information",
+    "edit": "Edit",
+    "rating": "Rating",
+    "description": "Description"
+  } 
 }
