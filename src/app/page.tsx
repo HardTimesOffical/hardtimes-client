@@ -2,6 +2,7 @@
 import { Metadata } from "next";
 import DashboardLayout from "./components/dashboard/dashboard";
 import ServerList from "./servers/ServersList";
+import GlobalChat from "./components/chat/GlobalChat";
 
 // Метаданные теперь будут работать, так как компонент серверный
 export const metadata: Metadata = {
@@ -20,6 +21,7 @@ export default function Home() {
         <div style={{ paddingTop: 12 }}>
           {/* ServerList должен сам внутри себя быть 'use client', если он использует стейты */}
           <ServerList game="all" />
+              <GlobalChat/>
         </div>
       </DashboardLayout>
     </div>

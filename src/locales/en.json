@@ -63,5 +63,13 @@
     "stats": "Statistics",
     "statsTitle": "Activity history",
     "maininfo": "General"
-  } 
+  },
+  "chat": {
+    "chat": "Chat",
+    "reply": "Reply",
+    "online": "Online",
+    "loading": "Loading...",
+    "load_more": "Load More",
+    "message": "Message"
+  }
 }
