@@ -21,7 +21,6 @@ export default function Home() {
         <div style={{ paddingTop: 12 }}>
           {/* ServerList должен сам внутри себя быть 'use client', если он использует стейты */}
           <ServerList game="all" />
-              <GlobalChat/>
         </div>
       </DashboardLayout>
     </div>
