@@ -6,8 +6,6 @@ import { io, Socket } from "socket.io-client";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 
-const socket: Socket = io(process.env.NEXT_PUBLIC_SERVER_URL as string);
-
 interface MessageData {
   _id: string;
   authorName: string;
@@ -28,6 +26,7 @@ export default function GlobalChat() {
   
   const { user } = useAuth();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const socketRef = useRef<Socket | null>(null)
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -83,23 +82,42 @@ export default function GlobalChat() {
     }
   };
 
-  useEffect(() => {
+useEffect(() => {
+    // Инициализируем сокет только один раз при монтировании
+    if (!socketRef.current) {
+      const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
+      console.log("Connecting to socket at:", serverUrl); // Проверь это в консоли браузера!
+
+      socketRef.current = io(serverUrl as string, {
+        transports: ["websocket"], // Форсируем использование вебсокетов (важно для Nginx)
+        upgrade: false
+      });
+
+      socketRef.current.on("connect", () => console.log("✅ Socket connected!"));
+      socketRef.current.on("connect_error", (err) => console.error("❌ Socket error:", err));
+    }
+
     if (isOpen && messages.length === 0) loadMessages(true);
+
     const handleReceive = (msg: MessageData) => {
       setMessages((prev) => [...prev, msg]);
-      if (scrollRef.current) {
-        const isNearBottom = scrollRef.current.scrollHeight - scrollRef.current.scrollTop <= scrollRef.current.clientHeight + 150;
-        if (isNearBottom) setTimeout(scrollToBottom, 50);
-      }
+      // ... логика скролла
     };
-    socket.on("receive_message", handleReceive);
-    return () => { socket.off("receive_message", handleReceive); };
+
+    socketRef.current.on("receive_message", handleReceive);
+
+    return () => {
+      socketRef.current?.off("receive_message", handleReceive);
+    };
   }, [isOpen]);
 
-  const handleSend = (e: React.FormEvent) => {
+const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !user) return;
-    socket.emit("send_message", {
+    if (!newMessage.trim() || !user || !socketRef.current) return;
+
+    console.log("Sending message...", newMessage);
+
+    socketRef.current.emit("send_message", {
       message: newMessage,
       authorName: user.username,
       userId: (user as any)._id || user.id,
