@@ -19,6 +19,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'info' | 'stats'>('info');
   const [stats, setStats] = useState<any[]>([]);
+  const defaultDescription = `Добро пожаловать на наш официальный игровой проект — современный многопользовательский сервер с уникальной инфраструктурой. Мы предлагаем пользователям не просто мониторинг, а полноценный игровой мир на мощном хостинге с защитой от DDoS-атак и минимальным пингом. Наш проект регулярно входит в топ серверов благодаря профессиональной администрации, честному античиту и уникальному контенту. Здесь вы найдете активный чат, систему кланов, регулярные ивенты и сбалансированную экономику. Присоединяйтесь к лучшему комьюнити прямо сейчас!`;
 
   // Сразу ставим данные из пропсов, чтобы SEO видело контент
   const [server, setServer] = useState<any>(initialData);
@@ -268,14 +269,15 @@ export default function ServerPageClient({ slug, initialData }: Props) {
                     </div>
                   </div>
 
-                  {server.description && (
-                    <div className="mt-8">
-                      <h3 className="text-sm font-bold opacity-40 uppercase mb-3">{t.serverPage.description}</h3>
-                      <div className="text-white/80 leading-relaxed whitespace-pre-wrap bg-white/5 p-4 rounded-xl italic border border-white/5">
-                        {server.description}
-                      </div>
+                  <div className="mt-8">
+                    <h3 className="text-sm font-bold opacity-40 uppercase mb-3">
+                      {t.serverPage.description}
+                    </h3>
+                    <div className="text-white/80 leading-relaxed whitespace-pre-wrap bg-white/5 p-4 rounded-xl italic border border-white/5">
+                      {/* Если описание есть — покажет его, если пусто (null/undefined/"") — покажет наш SEO-текст */}
+                      {server.description || defaultDescription}
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
             )}
