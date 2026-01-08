@@ -211,28 +211,41 @@ const handleSend = (e: React.FormEvent) => {
             ))}
           </div>
 
-          {/* INPUT AREA: Темная, чтобы не отвлекать */}
-          <form onSubmit={handleSend} className="p-2 bg-[#0b1224] flex items-center gap-2 border-t border-white/5 shrink-0">
-            <div className="flex-1 bg-white/[0.03] rounded-lg border border-white/5 flex items-center px-2.5 py-1.5 focus-within:border-indigo-500/30 transition-all">
-              <input 
-                id="chat-input" 
-                autoComplete="off" 
-                value={newMessage} 
-                onChange={(e) => setNewMessage(e.target.value)} 
-                placeholder={t.chat.message} 
-                className="bg-transparent flex-1 text-[13px] text-slate-200 focus:outline-none placeholder:text-white/10" 
-              />
-            </div>
-            <button 
-              type="submit" 
-              disabled={!newMessage.trim()} 
-              className="bg-gradient-to-tr from-indigo-600 to-violet-600 p-2 rounded-lg text-white hover:brightness-110 transition disabled:opacity-20 disabled:grayscale shrink-0"
-            >
-              <svg className="w-4 h-4 rotate-90" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
-              </svg>
-            </button>
-          </form>
+          {/* INPUT AREA: Проверка авторизации */}
+          <div className="p-2 bg-[#0b1224] border-t border-white/5 shrink-0">
+            {user ? (
+              <form onSubmit={handleSend} className="flex items-center gap-2">
+                <div className="flex-1 bg-white/[0.03] rounded-lg border border-white/5 flex items-center px-2.5 py-1.5 focus-within:border-indigo-500/30 transition-all">
+                  <input 
+                    id="chat-input" 
+                    autoComplete="off" 
+                    value={newMessage} 
+                    onChange={(e) => setNewMessage(e.target.value)} 
+                    placeholder={t.chat.message} 
+                    className="bg-transparent flex-1 text-[13px] text-slate-200 focus:outline-none placeholder:text-white/10" 
+                  />
+                </div>
+                <button 
+                  type="submit" 
+                  disabled={!newMessage.trim()} 
+                  className="bg-gradient-to-tr from-indigo-600 to-violet-600 p-2 rounded-lg text-white hover:brightness-110 transition disabled:opacity-20 disabled:grayscale shrink-0"
+                >
+                  <svg className="w-4 h-4 rotate-90" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+                  </svg>
+                </button>
+              </form>
+            ) : (
+              <div className="flex items-center justify-center p-2 rounded-lg bg-indigo-500/5 border border-indigo-500/10 text-center">
+                <p className="text-[11px] text-indigo-300/80 font-medium">
+                  {"You must be logged in to chat."}
+                  <Link href="/login" className="ml-2 underline hover:text-indigo-200 transition-colors uppercase font-bold tracking-tighter">
+                    Login
+                  </Link>
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
