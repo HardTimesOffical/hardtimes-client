@@ -10,6 +10,9 @@ RUN npm run build
 FROM node:20-alpine AS runner
 WORKDIR /app
 
+ARG NEXT_PUBLIC_SERVER_URL
+ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
+
 ENV NODE_ENV production
 
 COPY --from=builder /app/public ./public
