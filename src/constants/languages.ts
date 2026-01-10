@@ -5,4 +5,5 @@ export const LANGUAGES = [
   "German",
   "French",
   "Portuguese",
+  "Chinese"
 ];
