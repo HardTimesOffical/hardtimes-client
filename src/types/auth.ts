@@ -4,8 +4,10 @@ export interface User {
   username: string;
   email: string;
   id: string;
+  _id?: string;
   avatar?: string;
   bio?: string;
+  balance: number;
   // Добавьте сюда все остальные поля пользователя
 }
 

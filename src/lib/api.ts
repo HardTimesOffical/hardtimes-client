@@ -1,8 +1,12 @@
 import axios from 'axios';
+import { useState } from 'react';
 
 const api = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_SERVER_URL}`,
-  withCredentials: true,
+  // Берем URL из .env.local
+  baseURL: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:5000/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 api.interceptors.request.use((config) => {
@@ -16,17 +20,33 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Если сервер ответил 401 — это конец.
     if (error.response?.status === 401) {
-      console.log("!!! API DETECTED 401 - KICKING USER !!!");
-      
       if (typeof window !== 'undefined') {
-        localStorage.clear(); // Удаляем ВСЁ
-        window.location.href = '/login'; // Жесткая перезагрузка страницы
+        const isLoginPage = window.location.pathname === '/login';
+        const token = localStorage.getItem('accessToken');
+
+        // Если токена и так нет, и мы на логине — ничего не делаем
+        if (isLoginPage && !token) {
+          return Promise.reject(error);
+        }
+
+        console.log("!!! API DETECTED 401 - REDIRECTING !!!");
+        localStorage.clear();
+
+        // Редирект только если мы НЕ на странице логина
+        if (!isLoginPage) {
+          window.location.href = '/login';
+        }
       }
     }
     return Promise.reject(error);
   }
 );
 
+
 export default api;
+
+export const getMe = async () => {
+  const { data } = await api.get('/users/me');
+  return data; // Здесь будет твой IUser с полем balance
+};

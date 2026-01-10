@@ -50,7 +50,7 @@ export default function DashboardLayout({ children, variant }: DashboardProps) {
             <aside className={`${styles.sidebar} ${open ? styles.open : ""}`}>
                 <div className={styles.logoWrap}>
                     <Link className={styles.brand} href="/">
-                        <img src="/icons/logo.svg" alt="Logo" />
+                        HardTimes
                     </Link>
                 </div>
 

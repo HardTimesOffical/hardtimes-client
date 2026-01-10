@@ -22,7 +22,7 @@
 }
 
 /* Секции карточки */
-.votesSection, .nameSection, .playersSection, .statusSection {
+ .nameSection, .playersSection, .statusSection {
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -30,6 +30,12 @@
   align-items: center;
 }
 
+.votesSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 /* Стили мобильных рядов */
 .mobileRow {
   display: flex; 

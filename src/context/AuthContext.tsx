@@ -65,14 +65,17 @@ useEffect(() => {
     if (!accessToken) return;
 
     try {
-      await api.get('/users/me'); 
+      // 1. Получаем свежие данные пользователя (с актуальным балансом)
+      const { data } = await api.get('/users/me'); 
+      
+      // 2. ОБЯЗАТЕЛЬНО обновляем стейт, чтобы во всем приложении баланс стал актуальным
+      setUser(data); 
+      localStorage.setItem("user", JSON.stringify(data));
+      
     } catch (err: any) {
       if (err.response?.status === 401) {
         console.log("Token is invalid, clearing state...");
-        // ОБНУЛЯЕМ СОСТОЯНИЕ (Интерфейс сразу изменится)
-        setAccessTokenState(null);
-        setUser(null);
-        localStorage.clear();
+        clearAuthData();
         router.push('/');
       }
     }

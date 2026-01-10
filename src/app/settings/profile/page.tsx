@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios"; // Добавьте AxiosError в импорт
 import styles from "../settings.module.css";
 
 
@@ -34,15 +34,18 @@ export default function ProfileSettings() {
   }
 
 const save = async () => {
+  const userId = (auth.user as any)?._id || (auth.user as any)?.id;
+
+  if (!userId) {
+    setError("ID пользователя не найден");
+    return;
+  }
+
   setLoading(true);
   setError("");
-  setSuccess(false);
-
+  
   try {
-    const userId = auth.user?.id;
-    
-    // 1. Отправляем запрос на сервер
-    await axios.put(
+    const response = await axios.put(
       `${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`,
       { username: name, avatar },
       {
@@ -51,17 +54,12 @@ const save = async () => {
       }
     );
 
-    // 2. ОБЯЗАТЕЛЬНО: Овввбновляем данные в контексте
-    // Теперь сайт сразу "узнает" твое новое имя и аватар
-    auth.updateUser({ 
-      username: name, 
-      avatar: avatar 
-    });
-
+    auth.updateUser(response.data);
     setSuccess(true);
     setTimeout(() => setSuccess(false), 3000);
-  } catch (err: any) {
-    setError("Ошибка при сохранении изменений");
+  } catch (err: unknown) { // Используем unknown для безопасности
+    const axiosError = err as AxiosError<{ message: string }>; // Приводим к типу AxiosError
+    setError(axiosError.response?.data?.message || "Ошибка при сохранении изменений");
   } finally {
     setLoading(false);
   }

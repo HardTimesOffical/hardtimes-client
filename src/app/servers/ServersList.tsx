@@ -22,34 +22,44 @@ export default function ServerList({ game }: Props) {
   const pageSize = 10;
 
   useEffect(() => {
-    setLoading(true);
-    // Сбрасываем страницу на первую при смене категории игры
-    setCurrentPage(1);
+  setLoading(true);
+  // Сбрасываем страницу на первую при смене категории игры
+  setCurrentPage(1);
 
-    // ВАЖНО: Если получаешь 404, проверь этот путь. 
-    // Если API внутри Next.js, лучше писать так: `/api/servers?game=${game}`
-    const apiUrl = process.env.NEXT_PUBLIC_SERVER_URL 
-      ? `${process.env.NEXT_PUBLIC_SERVER_URL}/servers?game=${game}`
-      : `/api/servers?game=${game}`;
+  const apiUrl = process.env.NEXT_PUBLIC_SERVER_URL 
+    ? `${process.env.NEXT_PUBLIC_SERVER_URL}/servers?game=${game}`
+    : `/api/servers?game=${game}`;
 
-    fetch(apiUrl)
-      .then(res => {
-        if (!res.ok) throw new Error(`Error: ${res.status}`);
-        return res.json();
-      })
-      .then(data => {
-        // Сортировка по недельным голосам
-        const sortedServers = data.sort((a: any, b: any) => {
-          return (b.votesWeekly || 0) - (a.votesWeekly || 0);
-        });
-        setServers(sortedServers);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Fetch error:", err);
-        setLoading(false);
+  fetch(apiUrl)
+    .then(res => {
+      if (!res.ok) throw new Error(`Error: ${res.status}`);
+      return res.json();
+    })
+    .then(data => {
+      // Сортировка: сначала те, у кого больше premiumVotes, затем по votesWeekly
+      const sortedServers = data.sort((a: any, b: any) => {
+        const aPremium = a.premiumVotes || 0;
+        const bPremium = b.premiumVotes || 0;
+        const aWeekly = a.votesWeekly || 0;
+        const bWeekly = b.votesWeekly || 0;
+
+        // 1. Сравниваем премиум-бусты
+        if (aPremium !== bPremium) {
+          return bPremium - aPremium; // Больше бустов = выше в списке
+        }
+
+        // 2. Если бустов поровну (или у обоих 0), сравниваем обычные голоса
+        return bWeekly - aWeekly; // Больше голосов = выше в списке
       });
-  }, [game]);
+
+      setServers(sortedServers);
+      setLoading(false);
+    })
+    .catch(err => {
+      console.error("Fetch error:", err);
+      setLoading(false);
+    });
+}, [game]);
 
   // ЛОГИКА ПАГИНАЦИИ (Вырезаем нужный кусок массива)
   const currentServers = useMemo(() => {
