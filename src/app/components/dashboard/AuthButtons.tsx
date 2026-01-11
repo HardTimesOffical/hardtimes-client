@@ -25,11 +25,11 @@ if (!mounted) {
       <>
         <Link className={styles.navItem} href="/workbench">
         <img src="/icons/plus.svg" className='icon'/>
-         {t.dashboard.addServer}
+         Сервер
         </Link>
         <Link href="/settings" className={styles.navItem}>
           <img src="/icons/settings.svg" className='icon'/>
-          {t.dashboard.settings}
+          Настройки
         </Link>
 
         <button
@@ -39,7 +39,7 @@ if (!mounted) {
           }}
         >
           <img src="/icons/sign_out.svg" className='icon'/>
-          {t.dashboard.signOut}
+          Выйти
         </button>
       </>
     );
@@ -47,7 +47,7 @@ if (!mounted) {
 
   return (
     <Link className={styles.navItem} href="/login">
-      Sign In
+      Войти
     </Link>
   );
 }

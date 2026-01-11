@@ -184,22 +184,22 @@ const handleSubmit = async (e: FormEvent) => {
       <form className={`flex flex-col gap-4 w-full max-w-5xl ${styles.workbenchForm}`} onSubmit={handleSubmit}>
         <div className="w-full max-w-5xl">
         <InfoBlock 
-          title="Important" 
-          text={t.workbench.workbench_faq}
+          title="Важно" 
+          text="Дополнительную информацию можно добавить в редакторе сервера только после публикации."
         />
       </div>
         <div className="flex flex-col md:flex-row gap-4">
           
           <div className={`${styles.container} flex flex-col gap-2 flex-1`}>
-            <div className={styles.sectionTitle}>SERVER NAME</div>
-            <input className={styles.input} type="text" placeholder="My Awesome Server" value={serverName} onChange={e => setServerName(e.target.value)} />
+            <div className={styles.sectionTitle}>НАЗВАНИЕ СЕРВЕРА</div>
+            <input className={styles.input} type="text" placeholder="Мой уютный сервер" value={serverName} onChange={e => setServerName(e.target.value)} />
 
-            <div className={styles.sectionTitle}>GAME TYPE</div>
+            <div className={styles.sectionTitle}>ТИП ИГРЫ</div>
             <CustomSelect
               options={[...GAME_TYPES, "JAVA & BEDROCK"]} 
               selected={gameType}
               onChange={v => setGameType(v as string)}
-              placeholder="Select Game Type"
+              placeholder="Выберите тип игры"
             />
 
             {/* БЛОК IP АДРЕСОВ */}
@@ -236,7 +236,7 @@ const handleSubmit = async (e: FormEvent) => {
                 {gameType === "Hytale" && (
                   <div className="flex flex-col gap-1">
                     <div className={styles.sectionTitle} style={{fontSize: '10px', color: '#a855f7'}}>
-                        HYTALE SERVER ADDRESS
+                        HYTALE IP
                     </div>
                     <input 
                       className={styles.input} 
@@ -250,20 +250,20 @@ const handleSubmit = async (e: FormEvent) => {
                 )}
             </div>
 
-            <div className={styles.sectionTitle}>GAME VERSION</div>
+            <div className={styles.sectionTitle}>ВЕРСИЯ ИГРЫ</div>
             <CustomSelect
               options={availableVersions}
               selected={gameVersion}
               onChange={v => setGameVersion(v as string)}
-              placeholder="Select Game Version"
+              placeholder="Выберите версию игры"
             />
-            <div className={styles.sectionTitle}>CATEGORIES</div>
+            <div className={styles.sectionTitle}>КАТЕГОРИИ</div>
             <CustomSelect
               options={CATEGORIES}
               selected={categories}
               multiple
               onChange={v => setCategories(v as string[])}
-              placeholder="Select Categories"
+              placeholder="Выберите категории"
             />
           </div>
 
@@ -271,22 +271,22 @@ const handleSubmit = async (e: FormEvent) => {
           {/* Правая колонка - изменена ширина w-full md:w-1/2 */}
           <div className="flex flex-col gap-4 w-full md:w-1/2">
             <div className={`${styles.container} flex flex-col gap-2`}>
-              <div className={styles.sectionTitle}>TAGS</div>
+              <div className={styles.sectionTitle}>ТЕГИ</div>
               <CustomSelect
                 options={TAGS}
                 selected={tags}
                 multiple
                 onChange={v => setTags(v as string[])}
-                placeholder="Select Tags"
+                placeholder="Выберите теги"
               />
 
-              <div className={styles.sectionTitle}>LANGUAGES</div>
+              <div className={styles.sectionTitle}>ЯЗЫКИ</div>
               <CustomSelect
                 options={LANGUAGES}
                 selected={languages}
                 multiple
                 onChange={v => setLanguages(v as string[])}
-                placeholder="Select Languages"
+                placeholder="Выберите языки"
               />
 
               {/* Социалки: адаптивный ряд */}
@@ -296,8 +296,8 @@ const handleSubmit = async (e: FormEvent) => {
                   <input className={styles.input} type="text" placeholder="Discord" value={discord} onChange={e => setDiscord(e.target.value)} />
                 </div>
                 <div className="flex flex-col gap-1 w-full sm:w-1/2">
-                  <div className={styles.sectionTitle}>WEBSITE</div>
-                  <input className={styles.input} type="text" placeholder="Website" value={website} onChange={e => setWebsite(e.target.value)} />
+                  <div className={styles.sectionTitle}>САЙТ</div>
+                  <input className={styles.input} type="text" placeholder="САЙТ" value={website} onChange={e => setWebsite(e.target.value)} />
                 </div>
               </div>
             </div>
@@ -308,7 +308,7 @@ const handleSubmit = async (e: FormEvent) => {
                 {imagePreview ? (
                   <img src={imagePreview} alt="Preview" className="max-h-40 w-full object-contain border border-white/10 rounded" />
                 ) : (
-                  <span className="text-gray-400">Click to upload gif or image | 470x60</span>
+                  <span className="text-gray-400">Нажмите чтобы загрузить GIF | 470x60</span>
                 )}
                 <input type="file" accept="image/*,video/gif" onChange={handleImageChange} className="hidden" />
               </label>
@@ -321,7 +321,7 @@ const handleSubmit = async (e: FormEvent) => {
                 disabled={isSubmitting} // 4. Сама блокировка визуально и технически
                 style={{ opacity: isSubmitting ? 0.6 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
               >
-                {isSubmitting ? "Adding..." : "+ Add Server"}
+                {isSubmitting ? "Добалвение..." : "+ Добавить"}
               </button>
             </div>
           </div>

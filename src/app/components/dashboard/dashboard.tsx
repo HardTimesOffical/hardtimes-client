@@ -56,7 +56,7 @@ export default function DashboardLayout({ children, variant }: DashboardProps) {
 
                 <div className={styles.buttonsWrap}>
                     <nav className={styles.nav}>
-                        <div className={styles.sectionTitle}>{t.dashboard.general}</div>
+                        <div className={styles.sectionTitle}>ГЛАВНАЯ</div>
                         
                         <Link
                             className={`${styles.navItem} ${isJavaPage ? styles.navItemActive : ""}`}
@@ -82,13 +82,13 @@ export default function DashboardLayout({ children, variant }: DashboardProps) {
                             Hytale
                         </Link>
 
-                        <div className={styles.sectionTitle}>{t.dashboard.info}</div>
+                        <div className={styles.sectionTitle}>ИНФОРМАЦИЯ</div>
                         <Link
                             className={styles.navItem}
                             href="https://discord.gg/KHU93fphJK"
                             target="_blank"
                         >
-                            Discord
+                            Телеграм
                         </Link>
                     </nav>
                 </div>

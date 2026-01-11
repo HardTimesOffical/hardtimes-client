@@ -64,7 +64,7 @@ export default function Registration() {
                 auth.login(data.accessToken, user);
             }
 
-            setSuccess('Registration successful!');
+            setSuccess('Успешная Регистрация!');
             router.push('/');
         } catch (err: any) {
             const message = err?.response?.data?.message || err.message || 'Unexpected error';
@@ -75,19 +75,19 @@ export default function Registration() {
     return (
         <div className={styles.container}>
             <header className={styles.header}>
-                <h2 className={styles.heading}>Create Account</h2>
-                <p className={styles.subheading}>Join our community today</p>
+                <h2 className={styles.heading}>Создать аккаунт</h2>
+                <p className={styles.subheading}>Присоединяйся к нам прямо сейчас!</p>
             </header>
 
             <form className={styles.form} onSubmit={handleSubmit}>
                 <div className={styles.field}>
-                    <label className={styles.label} htmlFor="username">Username</label>
+                    <label className={styles.label} htmlFor="username">Логин</label>
                     <input
                         className={styles.input}
                         type="text"
                         id="username"
                         name="username"
-                        placeholder="Steve"
+                        placeholder="Вася228"
                         value={formData.username}
                         onChange={handleChange}
                         required
@@ -109,7 +109,7 @@ export default function Registration() {
                 </div>
 
                 <div className={styles.field}>
-                    <label className={styles.label} htmlFor="password">Password</label>
+                    <label className={styles.label} htmlFor="password">Пароль</label>
                     <div className={styles.inputWrap}>
                         <input
                             className={styles.input}
@@ -132,7 +132,7 @@ export default function Registration() {
                 </div>
 
                 <div className={styles.field}>
-                    <label className={styles.label} htmlFor="confirmPassword">Confirm Password</label>
+                    <label className={styles.label} htmlFor="confirmPassword">Подтвердите пароль</label>
                     <div className={styles.inputWrap}>
                         <input
                             className={styles.input}
@@ -158,12 +158,12 @@ export default function Registration() {
                 {success && <div className={styles.successBox}>{success}</div>}
 
                 <button className={styles.submit} type="submit">
-                    Sign Up
+                   Продолжить
                 </button>
 
                 <footer className={styles.footer}>
-                    <span>Already have an account?</span>
-                    <Link href="/login" className={styles.link}>Sign In</Link>
+                    <span>Уже есть аккаунт?</span>
+                    <Link href="/login" className={styles.link}>Войти</Link>
                 </footer>
             </form>
         </div>

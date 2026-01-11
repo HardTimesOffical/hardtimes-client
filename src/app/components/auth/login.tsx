@@ -32,7 +32,7 @@ export default function Login() {
       auth.login(data.accessToken, data.user);
       router.push("/"); 
     } catch (err: any) {
-      const message = err?.response?.data?.message || err.message || "Login failed";
+      const message = err?.response?.data?.message || err.message || "Ошибка входа";
       setError(message);
     }
   };
@@ -40,8 +40,8 @@ export default function Login() {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h2 className={styles.heading}>Sign In</h2>
-        <p className={styles.subheading}>Enter your details to access your account</p>
+        <h2 className={styles.heading}>Войти</h2>
+        <p className={styles.subheading}>Введите свои данные чтобы войти в аккаунт</p>
       </header>
 
       <form className={styles.form} onSubmit={handleSubmit}>
@@ -59,7 +59,7 @@ export default function Login() {
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label} htmlFor="password">Password</label>
+          <label className={styles.label} htmlFor="password">Пароль</label>
           <div className={styles.inputWrap}>
             <input
               className={styles.input}
@@ -83,12 +83,12 @@ export default function Login() {
         {error && <div className={styles.errorBox}>{error}</div>}
 
         <button className={styles.submit} type="submit">
-          Continue
+          Продолжить
         </button>
 
         <footer className={styles.footer}>
-          <span>Don't have an account?</span>
-          <Link href="/register" className={styles.link}>Create account</Link>
+          <span>Нету аккаунта?</span>
+          <Link href="/register" className={styles.link}>Создать аккаунт</Link>
         </footer>
       </form>
     </div>

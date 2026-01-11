@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const server = await getServerData(slug);
 
   if (!server) {
-    return { title: 'Сервер не найден | MinePromo' };
+    return { title: 'Сервер не найден | HardTimes' };
   }
 
   const title = `${server.serverName} - Мониторинг серверов Minecraft`;
