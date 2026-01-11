@@ -69,8 +69,8 @@ export default function UserCard() {
           </div>
         )}
         <div className={styles.profileInfo}>
-          <div className={styles.name}>{user.username}</div>
-          <span className={styles.email}>{user.email}</span>
+          <div translate="no" className={styles.name}>{user.username}</div>
+          <span translate="no" className={styles.email}>{user.email}</span>
         </div>
       </div>
     </Link>

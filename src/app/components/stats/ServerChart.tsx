@@ -35,7 +35,7 @@ export default function ServerChart({ data }: ServerChartProps) {
       <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50" />
       
       <h3 className="text-white/40 text-[10px] uppercase font-black tracking-[0.2em] mb-6 italic">
-        {t.serverPage.statsTitle || "Live Player Activity"}
+        {t.serverPage.statsTitle || "Активность игроков"}
       </h3>
       
       <ResponsiveContainer width="100%" height="80%">

@@ -55,7 +55,7 @@ export default function ServerCard({ server, rank, contextGame = "all" }: any) {
               {hasPremium ? (
                 /* Премиум Буст на всё пространство */
                 <div className="flex flex-col items-center justify-center w-full h-full bg-blue-500/10 border border-blue-500/30 shadow-[inset_0_0_10px_rgba(59,130,246,0.1)] group">
-                  <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest leading-none mb-1">
+                  <span translate="no" className="text-[10px] font-black text-blue-400 uppercase tracking-widest leading-none mb-1">
                     Boost
                   </span>
                   <div className="flex items-center gap-1.5">

@@ -44,11 +44,11 @@ export const BoostModal = ({ isOpen, onClose, serverName, userBalance, onPurchas
         </button>
 
         <div className="text-center mb-6">
-          <h2 className="text-xl font-black text-white italic uppercase tracking-tight">Буст сервера</h2>
-          <p className="text-blue-400/60 text-[11px] mt-1 truncate px-2">{serverName}</p>
+          <h2 className="text-xl font-black text-white italic uppercase tracking-tight" translate="no">Буст сервера</h2>
+          <p className="text-blue-400/60 text-[11px] mt-1 truncate px-2" translate="no">{serverName}</p>
           
           <div className="mt-3 inline-flex items-center gap-2 bg-blue-500/5 border border-blue-500/10 px-3 py-1 rounded-full">
-             <span className="text-[9px] text-zinc-500 uppercase font-bold">Баланс:</span>
+             <span className="text-[9px] text-zinc-500 uppercase font-bold" translate="no">Баланс:</span>
              <span className="text-blue-400 font-black text-xs">{userBalance.toLocaleString()} HC</span>
           </div>
         </div>
@@ -67,7 +67,7 @@ export const BoostModal = ({ isOpen, onClose, serverName, userBalance, onPurchas
               <div className="flex justify-between items-center">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-black text-lg text-white">+{opt.votes}</span>
+                    <span className="font-black text-lg text-white" translate="no">+{opt.votes}</span>
                     <span className="text-[9px] font-bold bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded-md uppercase">Голосов</span>
                   </div>
                   <p className="text-[10px] text-white/40 mt-0.5">{opt.days} дней</p>

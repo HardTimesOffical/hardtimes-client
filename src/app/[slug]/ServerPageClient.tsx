@@ -147,66 +147,72 @@ export default function ServerPageClient({ slug, initialData }: Props) {
 
   const isOnline = server.status?.online;
 
-  // ИСПРАВЛЕННЫЙ Хелпер для отрисовки IP
+  // Хелпер для отрисовки IP
   const renderIpBlock = () => {
-    // 1. Проверка на строку
-    if (typeof server.ipAddress === 'string') {
-      const currentIp = server.ipAddress;
+    let ipData = server.ipAddress;
+
+    if (typeof ipData === 'string' && (ipData.startsWith('{') || ipData.includes('"java"'))) {
+      try {
+        ipData = JSON.parse(ipData);
+      } catch (e) {
+        console.error("Ошибка парсинга JSON в ipAddress:", e);
+      }
+    }
+
+    if (typeof ipData === 'object' && ipData !== null) {
+      const ipObj = ipData as { java?: string; bedrock?: string };
       return (
-        <div 
-          onClick={() => copyToClipboard(currentIp, 'main')}
-          className="p-4 bg-white/5 rounded-xl border border-white/5 cursor-pointer hover:bg-white/10 transition group"
-        >
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="opacity-40 text-[10px] uppercase font-bold mb-1">IP Address</p>
-              <p className="font-mono text-white group-hover:text-blue-400 transition">{currentIp}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+          {ipObj.java && (
+            <div onClick={() => copyToClipboard(ipObj.java!, 'java')} className="p-4 bg-white/5 rounded-2xl border border-white/10 cursor-pointer hover:border-blue-500/50 transition-all group shadow-lg">
+              <div className="flex justify-between items-center text-left">
+                <div>
+                  <p className="opacity-40 text-[10px] uppercase font-black mb-1 text-blue-400">Java Edition IP</p>
+                  <p className="font-mono text-sm text-white group-hover:text-blue-300 transition">{ipObj.java}</p>
+                </div>
+                <div className="text-[10px] font-bold text-blue-500 bg-blue-500/10 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition">
+                  {copyStatus === 'java' ? 'СКОПИРОВАНО' : 'КОПИРОВАТЬ'}
+                </div>
+              </div>
             </div>
-            <span className="text-[10px] text-blue-500 font-bold opacity-0 group-hover:opacity-100 transition">
-              {copyStatus === 'main' ? 'COPIED!' : 'CLICK TO COPY'}
-            </span>
-          </div>
+          )}
+          {ipObj.bedrock && (
+            <div onClick={() => copyToClipboard(ipObj.bedrock!, 'bedrock')} className="p-4 bg-white/5 rounded-2xl border border-white/10 cursor-pointer hover:border-purple-500/50 transition-all group shadow-lg">
+              <div className="flex justify-between items-center text-left">
+                <div>
+                  <p className="opacity-40 text-[10px] uppercase font-black mb-1 text-purple-400">Bedrock Edition IP</p>
+                  <p className="font-mono text-sm text-white group-hover:text-purple-300 transition">{ipObj.bedrock}</p>
+                </div>
+                <div className="text-[10px] font-bold text-purple-500 bg-purple-500/10 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition">
+                  {copyStatus === 'bedrock' ? 'СКОПИРОВАНО' : 'КОПИРОВАТЬ'}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       );
     }
 
-    // 2. Если это объект (Сужаем тип для TypeScript)
-    const ipObj = server.ipAddress;
+    const currentIp = String(ipData);
+    let label = "Server IP";
+    let themeColor = "group-hover:text-blue-400";
+    if (server.gameType === "Hytale") label = "Hytale Address";
+    if (server.gameType === "Minecraft Bedrock") {
+        label = "Bedrock IP";
+        themeColor = "group-hover:text-purple-400";
+    }
 
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {ipObj?.java && (
-          <div 
-            onClick={() => copyToClipboard(ipObj.java!, 'java')}
-            className="p-4 bg-white/5 rounded-xl border border-white/5 cursor-pointer hover:bg-white/10 transition group"
-          >
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="opacity-40 text-[10px] uppercase font-bold mb-1">Java Edition IP</p>
-                <p className="font-mono text-white group-hover:text-blue-400 transition">{ipObj.java}</p>
-              </div>
-              <span className="text-[10px] text-blue-500 font-bold opacity-0 group-hover:opacity-100 transition">
-                {copyStatus === 'java' ? 'COPIED!' : 'COPY'}
-              </span>
-            </div>
+      <div onClick={() => copyToClipboard(currentIp, 'main')} className="p-4 bg-white/5 rounded-2xl border border-white/10 cursor-pointer hover:bg-white/10 transition-all group w-full shadow-lg">
+        <div className="flex justify-between items-center text-left">
+          <div>
+            <p className="opacity-40 text-[10px] uppercase font-black mb-1">{label}</p>
+            <p className={`font-mono text-sm text-white ${themeColor} transition`}>{currentIp}</p>
           </div>
-        )}
-        {ipObj?.bedrock && (
-          <div 
-            onClick={() => copyToClipboard(ipObj.bedrock!, 'bedrock')}
-            className="p-4 bg-white/5 rounded-xl border border-white/5 cursor-pointer hover:bg-white/10 transition group"
-          >
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="opacity-40 text-[10px] uppercase font-bold mb-1">Bedrock IP</p>
-                <p className="font-mono text-white group-hover:text-purple-400 transition">{ipObj.bedrock}</p>
-              </div>
-              <span className="text-[10px] text-purple-500 font-bold opacity-0 group-hover:opacity-100 transition">
-                {copyStatus === 'bedrock' ? 'COPIED!' : 'COPY'}
-              </span>
-            </div>
+          <div className="text-[10px] font-bold text-white/50 border border-white/10 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition uppercase">
+            {copyStatus === 'main' ? 'СКОПИРОВАНО' : 'Копировать'}
           </div>
-        )}
+        </div>
       </div>
     );
   };
@@ -225,7 +231,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end p-6">
             <div className="flex items-center justify-between w-full">
               <div>
-                <h1 className="text-3xl md:text-4xl font-black">{server.serverName}</h1>
+                <h1 className="text-3xl md:text-4xl font-black" translate="no">{server.serverName}</h1>
                 <div className="flex items-center gap-3 mt-1">
                    <span className={`h-2.5 w-2.5 rounded-full animate-pulse ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
                    <p className="text-sm font-medium opacity-80">
@@ -234,7 +240,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
                 </div>
               </div>
               {server.isOwner && (
-                <Link href={`/edit-server/${server.slug}`} className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm backdrop-blur-md transition">
+                <Link translate="no" href={`/edit-server/${server.slug}`} className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm backdrop-blur-md transition">
                   Редактировать
                 </Link>
               )}
@@ -244,10 +250,10 @@ export default function ServerPageClient({ slug, initialData }: Props) {
 
         {/* Табы */}
         <div className="flex gap-1 p-1 bg-white/5 rounded-xl border border-white/5 w-fit">
-          <button onClick={() => setActiveTab('info')} className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'info' ? 'bg-blue-600 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}>
+          <button translate="no" onClick={() => setActiveTab('info')} className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'info' ? 'bg-blue-600 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}>
             Информация
           </button>
-          <button onClick={() => setActiveTab('stats')} className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'stats' ? 'bg-blue-600 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}>
+          <button translate="no" onClick={() => setActiveTab('stats')} className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'stats' ? 'bg-blue-600 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}>
             Статистика
           </button>
         </div>
@@ -255,7 +261,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2 space-y-6">
              {activeTab === 'info' ? (
-                <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl space-y-6">
+                <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl space-y-6 text-left">
                   <h2 className="text-lg font-bold">Информация</h2>
                   
                   {/* IP БЛОК */}
@@ -271,16 +277,44 @@ export default function ServerPageClient({ slug, initialData }: Props) {
                       <p className="font-semibold text-purple-400">{server.gameType}</p>
                     </div>
                   </div>
-                  <div className="italic text-white/80 whitespace-pre-wrap bg-white/5 p-4 rounded-xl border border-white/5">
+                  <div className="italic text-white/80 whitespace-pre-wrap bg-white/5 p-4 rounded-xl border border-white/5 text-left">
                     {server.description || defaultDescription}
                   </div>
+                   {/* КАТЕГОРИИ И ТЕГИ */}
+                  {(server.categories?.length || 0) > 0 && (
+                    <div className="space-y-2">
+                      <p className="opacity-40 text-[10px] uppercase font-black tracking-widest">Категории</p>
+                      <div className="flex flex-wrap gap-2">
+                        {server.categories?.map((cat, i) => (
+                          <span key={i} className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-bold rounded-lg uppercase tracking-tight">
+                            {cat}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {(server.tags?.length || 0) > 0 && (
+                    <div className="space-y-2">
+                      <p translate="no" className="opacity-40 text-[10px] uppercase font-black tracking-widest">Теги</p>
+                      <div className="flex flex-wrap gap-2">
+                        {server.tags?.map((tag, i) => (
+                          <span translate="no" key={i} className="px-3 py-1 bg-white/5 border border-white/10 text-gray-300 text-[11px] font-medium rounded-full">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
              ) : (
                 <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl">
-                   {stats.length > 0 ? <ServerChart data={stats} /> : <p className="text-center opacity-20">Загрузка данных...</p>}
+                   {stats.length > 0 ? <ServerChart data={stats} /> : <p translate="no" className="text-center opacity-20">Загрузка данных...</p>}
                 </div>
              )}
+             
           </div>
+          
 
           <div className="space-y-4">
             <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl text-center">
@@ -295,12 +329,9 @@ export default function ServerPageClient({ slug, initialData }: Props) {
               {message && <p className={`text-xs font-bold mt-3 p-2 rounded bg-white/5 ${message.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>{message.text}</p>}
             </div>
 
-            <div 
-              onClick={() => setIsBoostOpen(true)}
-              className="bg-blue-600/10 border border-blue-500/20 p-5 rounded-2xl cursor-pointer hover:bg-blue-600/20 transition-all group shadow-xl"
-            >
+            <div onClick={() => setIsBoostOpen(true)} className="bg-blue-600/10 border border-blue-500/20 p-5 rounded-2xl cursor-pointer hover:bg-blue-600/20 transition-all group shadow-xl">
               <div className="flex justify-between items-center">
-                 <div>
+                 <div className="text-left">
                     <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Premium Votes</p>
                     <p className="text-3xl font-black">{server.premiumVotes || 0}</p>
                  </div>
@@ -308,11 +339,11 @@ export default function ServerPageClient({ slug, initialData }: Props) {
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
                  </div>
               </div>
-              <p className="text-[9px] font-bold text-white/30 uppercase mt-3 tracking-widest">Усилить сервер за HC звезды</p>
+              <p className="text-[9px] font-bold text-white/30 uppercase mt-3 tracking-widest text-left" translate="no">Усилить сервер за HC звезды</p>
             </div>
 
             <div className="bg-[#0b1224] border border-white/5 p-5 rounded-2xl shadow-xl">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center text-left">
                  <div>
                     <p className="text-[10px] font-black text-green-400 uppercase tracking-widest">Weekly Votes</p>
                     <p className="text-3xl font-black">{server.votesWeekly || 0}</p>
@@ -321,15 +352,16 @@ export default function ServerPageClient({ slug, initialData }: Props) {
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="#4ade80"><path d="M5 15l7-7 7 7"/></svg>
                  </div>
               </div>
-              <p className="text-[9px] font-bold text-white/20 uppercase mt-3 tracking-widest">Голоса обычных пользователей</p>
+              <p className="text-[9px] font-bold text-white/20 uppercase mt-3 tracking-widest text-left">Голоса обычных пользователей</p>
             </div>
 
             <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl space-y-3">
-              <h3 className="text-[10px] font-black uppercase opacity-30 tracking-widest">Ссылки</h3>
+              <h3 className="text-[10px] font-black uppercase opacity-30 tracking-widest text-left">Ссылки</h3>
               {server.website && <a href={server.website} target="_blank" className="block text-center py-2 rounded-lg bg-blue-600/10 text-blue-400 hover:bg-blue-600/20 transition text-sm font-bold">Сайт проекта</a>}
               {server.discord && <a href={server.discord} target="_blank" className="block text-center py-2 rounded-lg bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600/20 transition text-sm font-bold">Discord</a>}
             </div>
           </div>
+          
         </div>
       </div>
 

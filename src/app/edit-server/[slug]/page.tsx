@@ -47,7 +47,7 @@ const CustomSelect: React.FC<any> = ({ options, selected, multiple = false, onCh
   return (
     <div className={styles.customSelectWrapper} ref={selectRef}>
       <div className={styles.customSelectInput} onClick={() => setIsOpen(!isOpen)}>
-        {displayValue || placeholder || "Select..."}
+        {displayValue || placeholder || "Выбрать..."}
         <span className={styles.arrow}>{isOpen ? "▲" : "▼"}</span>
       </div>
       <div className={`${styles.customSelectDropdown} ${isOpen ? styles.open : ""}`}>
@@ -189,16 +189,16 @@ export default function EditServer() {
     <DashboardLayout>
       <div className="flex justify-center p-4">
         <form className={`flex flex-col gap-4 w-full max-w-5xl ${styles.workbenchForm}`} onSubmit={handleSubmit}>
-          <h2 className="text-white text-xl font-bold px-2">Edit Server</h2>
+          <h2 className="text-white text-xl font-bold px-2">Редактировать сервер</h2>
           
           <div className="flex flex-col md:flex-row gap-4">
             
             {/* Левая колонка */}
             <div className={`${styles.container} flex flex-col gap-2 flex-1`}>
-              <div className={styles.sectionTitle}>SERVER NAME</div>
+              <div className={styles.sectionTitle}>НАЗВАНИЕ СЕРВЕРА</div>
               <input className={styles.input} type="text" value={serverName} onChange={e => setServerName(e.target.value)} />
 
-              <div className={styles.sectionTitle}>GAME TYPE</div>
+              <div className={styles.sectionTitle}>ТИП ИГРЫ</div>
               <CustomSelect 
                 options={[...GAME_TYPES, "JAVA & BEDROCK"]} 
                 selected={gameType} 
@@ -209,7 +209,7 @@ export default function EditServer() {
               <div className="flex flex-col gap-2 mt-2">
                 {(gameType === "Minecraft Java" || gameType === "JAVA & BEDROCK") && (
                   <div className="flex flex-col gap-1">
-                    <div className={styles.sectionTitle} style={{fontSize: '10px', opacity: 0.8}}>JAVA IP</div>
+                    <div className={styles.sectionTitle} style={{fontSize: '10px', opacity: 0.8}} translate="no">JAVA IP</div>
                     <input className={styles.input} type="text" placeholder="mc.example.com" value={ips.java} onChange={e => setIps({...ips, java: e.target.value})} />
                   </div>
                 )}
@@ -237,13 +237,13 @@ export default function EditServer() {
                 )}
               </div>
 
-              <div className={styles.sectionTitle}>GAME VERSION</div>
+              <div className={styles.sectionTitle}>ВЕРСИЯ ИГРЫ</div>
               <CustomSelect options={availableVersions} selected={gameVersion} onChange={(v:any) => setGameVersion(v)} />
 
-              <div className={styles.sectionTitle}>DESCRIPTION</div>
+              <div className={styles.sectionTitle}>ОПИСАНИЕ</div>
               <textarea 
                 className={`${styles.input} h-40 resize-none p-2`} 
-                placeholder="Full server description..." 
+                placeholder="Полное описание сервера..." 
                 value={description} 
                 onChange={e => setDescription(e.target.value)}
               />
@@ -252,22 +252,22 @@ export default function EditServer() {
             {/* Правая колонка */}
             <div className="flex flex-col gap-4 w-full md:w-1/2">
               <div className={`${styles.container} flex flex-col gap-2`}>
-                <div className={styles.sectionTitle}>CATEGORIES</div>
+                <div className={styles.sectionTitle}>КАТЕГОРИИ</div>
                 <CustomSelect options={CATEGORIES} selected={categories} multiple onChange={(v:any) => setCategories(v)} />
 
-                <div className={styles.sectionTitle}>TAGS</div>
+                <div className={styles.sectionTitle}>ТЕГИ</div>
                 <CustomSelect options={TAGS} selected={tags} multiple onChange={(v:any) => setTags(v)} />
 
-                <div className={styles.sectionTitle}>LANGUAGES</div>
+                <div className={styles.sectionTitle}>ЯЗЫКИ</div>
                 <CustomSelect options={LANGUAGES} selected={languages} multiple onChange={(v:any) => setLanguages(v)} />
 
                 <div className="flex flex-col sm:flex-row gap-2">
                   <div className="flex flex-col gap-1 w-full sm:w-1/2">
-                    <div className={styles.sectionTitle}>DISCORD</div>
+                    <div className={styles.sectionTitle} translate="no">DISCORD</div>
                     <input className={styles.input} type="text" value={discord} onChange={e => setDiscord(e.target.value)} />
                   </div>
                   <div className="flex flex-col gap-1 w-full sm:w-1/2">
-                    <div className={styles.sectionTitle}>WEBSITE</div>
+                    <div className={styles.sectionTitle}>САЙТ</div>
                     <input className={styles.input} type="text" value={website} onChange={e => setWebsite(e.target.value)} />
                   </div>
                 </div>
@@ -278,21 +278,21 @@ export default function EditServer() {
                   {imagePreview ? (
                     <img src={imagePreview} alt="Preview" className="max-h-40 w-full object-contain border border-white/10 rounded" />
                   ) : (
-                    <span className="text-gray-400">Click to change image</span>
+                    <span className="text-gray-400">Нажмите чтобы изменить изображение</span>
                   )}
                   <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                 </label>
               </div>
 
               <div className="w-full flex justify-end items-center gap-4 mt-2">
-                <button type="button" className="text-gray-400 hover:text-white transition-colors" onClick={() => router.back()}>Cancel</button>
+                <button type="button" className="text-gray-400 hover:text-white transition-colors" onClick={() => router.back()}>Отмена</button>
                 <button 
                   className={styles.submit} 
                   type="submit" 
                   disabled={isSubmitting}
                   style={{ opacity: isSubmitting ? 0.6 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
                 >
-                  {isSubmitting ? "Saving..." : "Save Changes"}
+                  {isSubmitting ? "Сохранение..." : "Сохранить"}
                 </button>
               </div>
             </div>

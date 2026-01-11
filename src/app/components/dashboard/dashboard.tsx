@@ -49,7 +49,7 @@ export default function DashboardLayout({ children, variant }: DashboardProps) {
 
             <aside className={`${styles.sidebar} ${open ? styles.open : ""}`}>
                 <div className={styles.logoWrap}>
-                    <Link className={styles.brand} href="/">
+                    <Link className={styles.brand} href="/" translate="no">
                         HardTimes
                     </Link>
                 </div>
@@ -61,6 +61,7 @@ export default function DashboardLayout({ children, variant }: DashboardProps) {
                         <Link
                             className={`${styles.navItem} ${isJavaPage ? styles.navItemActive : ""}`}
                             href="/servers/java"
+                            translate="no"
                         >                      
                             <img className="w-6" src="/icons/java.svg" alt="Java" />
                             Java
@@ -69,6 +70,7 @@ export default function DashboardLayout({ children, variant }: DashboardProps) {
                         <Link
                             className={`${styles.navItem} ${isBedrockPage ? styles.navItemActive : ""}`}
                             href="/servers/bedrock"
+                            translate="no"
                         >
                             <img className="w-6" src="/icons/bedrock.svg" alt="Bedrock" />
                             Bedrock
@@ -77,6 +79,7 @@ export default function DashboardLayout({ children, variant }: DashboardProps) {
                         <Link
                             className={`${styles.navItem} ${isHytalePage ? styles.navItemActive : ""}`}
                             href="/servers/hytale"
+                            translate="no"
                         >
                             <img className="w-6" src="/icons/bedrock.svg" alt="Bedrock" />
                             Hytale
@@ -87,6 +90,7 @@ export default function DashboardLayout({ children, variant }: DashboardProps) {
                             className={styles.navItem}
                             href="https://discord.gg/KHU93fphJK"
                             target="_blank"
+                            translate="no"
                         >
                             Телеграм
                         </Link>

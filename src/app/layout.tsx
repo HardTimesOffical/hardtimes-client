@@ -8,6 +8,7 @@ import { GoogleAnalytics } from '@next/third-parties/google';
 import { LanguageProvider } from "@/context/LanguageContext";
 import Footer from "./components/footer/footer";
 import GlobalChat from "./components/chat/GlobalChat";
+import SuccessNotification from "./components/payment/SuccessToast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -83,6 +84,7 @@ export default function RootLayout({
             <Header />
             {children}
              <GlobalChat/>
+
             <Footer />
           </LanguageProvider>
         </AuthProvider>
