@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Мониторинг серверов Майнкрафт — Топ список Java и Bedrock",
   description: "Актуальный список серверов Minecraft. Рейтинг, онлайн, версии и описание лучших проектов для игры с друзьями.",
   openGraph: {
-    title: "ServerSwamp — Все сервера Minecraft в одном месте",
+    title: "HardTimes — Все сервера Minecraft в одном месте",
     description: "Найди свой идеальный сервер прямо сейчас!",
   }
 };

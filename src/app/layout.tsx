@@ -26,18 +26,18 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://serverswamp.ru'), // Укажи свой домен
+  metadataBase: new URL('https://hardmonitoring.ru'), // Укажи свой домен
   title: {
-    default: "ServerSwamp — Мониторинг серверов Майнкрафт",
+    default: "HardTimes — Мониторинг серверов Майнкрафт",
     template: "%s | ServerSwamp" 
   },
-  description: "ServerSwamp — лучший список серверов Minecraft. Найдите идеальный сервер для игры или продвигайте свой проект в нашем топе серверов Java и Bedrock.",
+  description: "HardTimes — лучший список серверов Minecraft. Найдите идеальный сервер для игры или продвигайте свой проект в нашем топе серверов Java и Bedrock.",
   keywords: ["сервера майнкрафт", "мониторинг серверов", "minecraft servers", "сервера 1.21", "бесплатный донат"],
   openGraph: {
     title: "ServerSwamp — Найди свой идеальный сервер Minecraft",
     description: "Рейтинг и мониторинг серверов Minecraft. Честный топ, отзывы и удобный поиск.",
-    url: 'https://serverswamp.com',
-    siteName: 'ServerSwamp',
+    url: 'https://hardmonitoring.ru',
+    siteName: 'HardTimes',
     images: [
       {
         url: '#', // Положи картинку в /public (1200x630)
@@ -77,11 +77,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} antialiased`}
       >
-        <Script 
-          src="https://js.onclckmn.com/static/onclicka.js" 
-          data-admpid="405773" 
-          strategy="afterInteractive"
-        />
         <AuthProvider>
           {/* Переносим LanguageProvider сюда, чтобы Header тоже имел к нему доступ */}
           <LanguageProvider>
@@ -92,7 +87,7 @@ export default function RootLayout({
           </LanguageProvider>
         </AuthProvider>
       </body>
-      <GoogleAnalytics gaId="G-J39EH619BR" />
+      <GoogleAnalytics gaId="G-04ESSL6306" />
     </html>
   );
 }
