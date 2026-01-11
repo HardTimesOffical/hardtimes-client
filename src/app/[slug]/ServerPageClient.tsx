@@ -4,15 +4,13 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import DashboardLayout from "@/app/components/dashboard/dashboard";
 import Link from "next/link";
-import InfoBlock from "@/app/components/blocks/InfoBlock";
 import LoadingCrystal from "../components/loading/LoadingCrystal";
 import { useLanguage } from "@/context/LanguageContext";
 import ServerChart from "../components/stats/ServerChart";
 import { BoostModal } from "../components/payment/BoostModal";
-import api from "@/lib/api"; // Твой настроенный axios
-import axios from "axios";
+import api from "@/lib/api";
 
-// Интерфейсы для чистоты кода
+// Интерфейсы
 interface IServerData {
   _id: string;
   serverName: string;
@@ -20,7 +18,7 @@ interface IServerData {
   imageUrl?: string;
   gameVersion: string;
   gameType: string;
-  ipAddress: string;
+  ipAddress: string | { java?: string; bedrock?: string };
   description?: string;
   premiumVotes: number;
   votesWeekly: number;
@@ -42,7 +40,7 @@ interface Props {
 }
 
 export default function ServerPageClient({ slug, initialData }: Props) {
-  const { accessToken, user } = useAuth(); // Берем user для баланса
+  const { accessToken, user } = useAuth();
   const { t } = useLanguage();
   
   const [activeTab, setActiveTab] = useState<'info' | 'stats'>('info');
@@ -59,7 +57,6 @@ export default function ServerPageClient({ slug, initialData }: Props) {
 
   const defaultDescription = `Добро пожаловать на наш официальный игровой проект...`;
 
-  // Загрузка статистики
   useEffect(() => {
     if (server?._id) {
       api.get(`/statistics/${server._id}/stats?days=1`)
@@ -72,7 +69,6 @@ export default function ServerPageClient({ slug, initialData }: Props) {
     }
   }, [server?._id]);
 
-  // Функция покупки буста
   const handleBoostPurchase = async (option: any) => {
     setBoostLoading(true);
     try {
@@ -86,7 +82,6 @@ export default function ServerPageClient({ slug, initialData }: Props) {
       if (res.data.success) {
         alert(`Сервер успешно забущен! Остаток: ${res.data.newBalance} HC`);
         setIsBoostOpen(false);
-        // Обновляем состояние сервера локально
         setServer((prev) => prev ? ({
           ...prev, 
           premiumVotes: (prev.premiumVotes || 0) + option.votes
@@ -100,10 +95,9 @@ export default function ServerPageClient({ slug, initialData }: Props) {
     }
   };
 
-  // Остальная логика (copyToClipboard, handleVote и т.д.)
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text).then(() => {
-      setCopyStatus(text);
+      setCopyStatus(label);
       setTimeout(() => setCopyStatus(null), 2000);
     });
   };
@@ -113,7 +107,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
       const res = await api.post(`/servers/${server?._id}/vote`);
       if (res.status === 200) {
         setMessage({ type: 'success', text: 'Голос засчитан!' });
-        setServer((prev) => prev ? ({ ...prev, votesWeekly: prev.votesWeekly + 1 }) : null);
+        setServer((prev) => prev ? ({ ...prev, votesWeekly: (prev.votesWeekly || 0) + 1 }) : null);
       }
     } catch (err: any) {
       setMessage({ type: 'error', text: err.response?.data?.message || 'Ошибка' });
@@ -126,7 +120,6 @@ export default function ServerPageClient({ slug, initialData }: Props) {
     if (!accessToken) return;
     setVoteLoading(true);
     setMessage(null);
-    // ... логика рекламы или прямой вызов confirmVote()
     confirmVote();
   };
 
@@ -153,6 +146,70 @@ export default function ServerPageClient({ slug, initialData }: Props) {
   if (error || !server) return <DashboardLayout><div className="p-10 text-center">Сервер не найден</div></DashboardLayout>;
 
   const isOnline = server.status?.online;
+
+  // ИСПРАВЛЕННЫЙ Хелпер для отрисовки IP
+  const renderIpBlock = () => {
+    // 1. Проверка на строку
+    if (typeof server.ipAddress === 'string') {
+      const currentIp = server.ipAddress;
+      return (
+        <div 
+          onClick={() => copyToClipboard(currentIp, 'main')}
+          className="p-4 bg-white/5 rounded-xl border border-white/5 cursor-pointer hover:bg-white/10 transition group"
+        >
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="opacity-40 text-[10px] uppercase font-bold mb-1">IP Address</p>
+              <p className="font-mono text-white group-hover:text-blue-400 transition">{currentIp}</p>
+            </div>
+            <span className="text-[10px] text-blue-500 font-bold opacity-0 group-hover:opacity-100 transition">
+              {copyStatus === 'main' ? 'COPIED!' : 'CLICK TO COPY'}
+            </span>
+          </div>
+        </div>
+      );
+    }
+
+    // 2. Если это объект (Сужаем тип для TypeScript)
+    const ipObj = server.ipAddress;
+
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {ipObj?.java && (
+          <div 
+            onClick={() => copyToClipboard(ipObj.java!, 'java')}
+            className="p-4 bg-white/5 rounded-xl border border-white/5 cursor-pointer hover:bg-white/10 transition group"
+          >
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="opacity-40 text-[10px] uppercase font-bold mb-1">Java Edition IP</p>
+                <p className="font-mono text-white group-hover:text-blue-400 transition">{ipObj.java}</p>
+              </div>
+              <span className="text-[10px] text-blue-500 font-bold opacity-0 group-hover:opacity-100 transition">
+                {copyStatus === 'java' ? 'COPIED!' : 'COPY'}
+              </span>
+            </div>
+          </div>
+        )}
+        {ipObj?.bedrock && (
+          <div 
+            onClick={() => copyToClipboard(ipObj.bedrock!, 'bedrock')}
+            className="p-4 bg-white/5 rounded-xl border border-white/5 cursor-pointer hover:bg-white/10 transition group"
+          >
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="opacity-40 text-[10px] uppercase font-bold mb-1">Bedrock IP</p>
+                <p className="font-mono text-white group-hover:text-purple-400 transition">{ipObj.bedrock}</p>
+              </div>
+              <span className="text-[10px] text-purple-500 font-bold opacity-0 group-hover:opacity-100 transition">
+                {copyStatus === 'bedrock' ? 'COPIED!' : 'COPY'}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <DashboardLayout>
@@ -200,6 +257,10 @@ export default function ServerPageClient({ slug, initialData }: Props) {
              {activeTab === 'info' ? (
                 <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl space-y-6">
                   <h2 className="text-lg font-bold">Информация</h2>
+                  
+                  {/* IP БЛОК */}
+                  {renderIpBlock()}
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="p-4 bg-white/5 rounded-xl border border-white/5">
                       <p className="opacity-40 text-[10px] uppercase font-bold mb-1">Версия</p>
@@ -221,7 +282,6 @@ export default function ServerPageClient({ slug, initialData }: Props) {
              )}
           </div>
 
-          {/* Сайдбар с кнопками */}
           <div className="space-y-4">
             <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl text-center">
               <h3 className="text-lg font-bold mb-4 italic">Поддержать сервер</h3>
@@ -235,7 +295,6 @@ export default function ServerPageClient({ slug, initialData }: Props) {
               {message && <p className={`text-xs font-bold mt-3 p-2 rounded bg-white/5 ${message.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>{message.text}</p>}
             </div>
 
-            {/* БЛОК БУСТА */}
             <div 
               onClick={() => setIsBoostOpen(true)}
               className="bg-blue-600/10 border border-blue-500/20 p-5 rounded-2xl cursor-pointer hover:bg-blue-600/20 transition-all group shadow-xl"
@@ -252,6 +311,19 @@ export default function ServerPageClient({ slug, initialData }: Props) {
               <p className="text-[9px] font-bold text-white/30 uppercase mt-3 tracking-widest">Усилить сервер за HC звезды</p>
             </div>
 
+            <div className="bg-[#0b1224] border border-white/5 p-5 rounded-2xl shadow-xl">
+              <div className="flex justify-between items-center">
+                 <div>
+                    <p className="text-[10px] font-black text-green-400 uppercase tracking-widest">Weekly Votes</p>
+                    <p className="text-3xl font-black">{server.votesWeekly || 0}</p>
+                 </div>
+                 <div className="w-12 h-12 bg-green-600/20 rounded-2xl flex items-center justify-center border border-green-500/20">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#4ade80"><path d="M5 15l7-7 7 7"/></svg>
+                 </div>
+              </div>
+              <p className="text-[9px] font-bold text-white/20 uppercase mt-3 tracking-widest">Голоса обычных пользователей</p>
+            </div>
+
             <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl space-y-3">
               <h3 className="text-[10px] font-black uppercase opacity-30 tracking-widest">Ссылки</h3>
               {server.website && <a href={server.website} target="_blank" className="block text-center py-2 rounded-lg bg-blue-600/10 text-blue-400 hover:bg-blue-600/20 transition text-sm font-bold">Сайт проекта</a>}
@@ -261,15 +333,14 @@ export default function ServerPageClient({ slug, initialData }: Props) {
         </div>
       </div>
 
-      {/* Модалка Буста */}
-    <BoostModal 
-      isOpen={isBoostOpen}
-      onClose={() => setIsBoostOpen(false)}
-      serverName={server.serverName}
-      userBalance={user?.balance ?? 0} // Используй ?? чтобы избежать NaN
-      onPurchase={handleBoostPurchase}
-      loading={boostLoading}
-    />
+      <BoostModal 
+        isOpen={isBoostOpen}
+        onClose={() => setIsBoostOpen(false)}
+        serverName={server.serverName}
+        userBalance={user?.balance ?? 0}
+        onPurchase={handleBoostPurchase}
+        loading={boostLoading}
+      />
       
       <div id="video-ad-container" style={{ position: 'fixed', zIndex: 9999 }}></div>
     </DashboardLayout>

@@ -19,7 +19,7 @@ export default function ServerList({ game }: Props) {
   const { user } = useAuth();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 15;
 
   useEffect(() => {
   setLoading(true);
@@ -101,13 +101,6 @@ export default function ServerList({ game }: Props) {
           />
         </div>
       </div>
-            <div className="flex flex-row gap-3 px-1 items-center block p-3 mb-1"> 
-        <WeeklyTimer />
-        <span className="text-sm text-gray-500">
-          Total servers: <strong className="text-gray-300">{servers.length}</strong>
-        </span> 
-      </div>
-
           <div className="flex flex-col gap-2 w-full mt-2 block p-3">       
          {currentServers.length > 0 ? (
           currentServers.map((server, index) => {
@@ -130,6 +123,12 @@ export default function ServerList({ game }: Props) {
           pageSize={pageSize}
           onPageChange={handlePageChange}
         />
+      </div>
+            <div className="flex flex-row gap-3 px-1 items-center block p-3 mb-1"> 
+        <WeeklyTimer />
+        <span className="text-sm text-gray-500">
+          Total servers: <strong className="text-gray-300">{servers.length}</strong>
+        </span> 
       </div>
     </div>
   );

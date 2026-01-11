@@ -13,28 +13,32 @@ export const metadata: Metadata = {
     "лучшие сервера майнкрафт"
   ],
   alternates: {
-    canonical: "https://yourdomain.com/java", // Замените на ваш домен
+    canonical: "https://hardmonitoring.ru/servers/java", // Обновлено на твой домен
   },
   openGraph: {
     title: "Мониторинг серверов Minecraft Java Edition",
     description: "Рейтинг, онлайн и лучшие игровые проекты в одном списке.",
-    url: "https://yourdomain.com/java",
+    url: "https://hardmonitoring.ru/servers/java",
     type: "website",
-    siteName: "Ваше Название"
+    siteName: "HardMonitoring"
   },
 };
 
 export default function JavaServersPage() {
   return (
     <DashboardLayout>
-      <div className="list-con">
-        {/* Семантический заголовок с акцентом на платформу */}
-        <h1 className="text-2xl font-bold mb-4 tracking-tight">
-          Minecraft Java Edition Servers
-        </h1>
+      {/* Центрируем всё содержимое по горизонтали */}
+      <div className="list-con flex flex-col items-center w-full px-4">
         
-        {/* Компонент списка с фильтрацией под Java */}
-        <div className="w-full">
+        {/* Контейнер-ограничитель для заголовка (выровнен по левому краю списка) */}
+        <div className="w-full max-w-[1000px]">
+          <h1 className="text-2xl font-bold mb-4 tracking-tight text-white uppercase">
+            Minecraft Java Edition Servers
+          </h1>
+        </div>
+        
+        {/* Контейнер для списка серверов */}
+        <div className="w-full max-w-[1000px] flex justify-center">
           <ServerList game="java" />
         </div>
       </div>

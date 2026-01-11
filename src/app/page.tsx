@@ -1,10 +1,7 @@
-// app/page.tsx
 import { Metadata } from "next";
 import DashboardLayout from "./components/dashboard/dashboard";
 import ServerList from "./servers/ServersList";
-import GlobalChat from "./components/chat/GlobalChat";
 
-// Метаданные теперь будут работать, так как компонент серверный
 export const metadata: Metadata = {
   title: "Мониторинг серверов Майнкрафт — Топ список Java и Bedrock",
   description: "Актуальный список серверов Minecraft. Рейтинг, онлайн, версии и описание лучших проектов для игры с друзьями.",
@@ -16,13 +13,22 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen bg-zinc-50 font-sans dark:bg-black">
-      <DashboardLayout>
-        <div style={{ paddingTop: 12 }}>
-          {/* ServerList должен сам внутри себя быть 'use client', если он использует стейты */}
+    <DashboardLayout>
+      {/* 1. Создаем центрирующий контейнер */}
+      <div className="w-full flex justify-center px-4">
+        
+        {/* 2. Ограничиваем ширину контента (например, 1000px или 1200px) */}
+        <div className="w-full max-w-[1000px] pt-[12px]">
+          
+          {/* Если на главной нужен заголовок, добавь его здесь */}
+          <h1 className="text-2xl font-bold mb-6 text-white uppercase hidden md:block">
+            Top Rated Servers
+          </h1>
+
           <ServerList game="all" />
         </div>
-      </DashboardLayout>
-    </div>
+        
+      </div>
+    </DashboardLayout>
   );
 }

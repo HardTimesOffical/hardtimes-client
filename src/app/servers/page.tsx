@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Multi-Game Server Monitoring | Minecraft, Hytale, VoxelCore",
     description: "Рейтинг и онлайн серверов для самых популярных воксельных проектов.",
+    url: "https://hardmonitoring.ru/servers",
     type: "website",
   },
 };
@@ -22,17 +23,22 @@ export const metadata: Metadata = {
 export default function ServersPage() {
   return (
     <DashboardLayout>
-      <section>
-        {/* Динамичный заголовок, подчеркивающий мультиплатформенность */}
-        <h1 className="text-[24px] font-bold mb-[12px] text-white tracking-tight">
-          Game Server Monitoring <span className="text-blue-500">&</span> Analytics
-        </h1>
+      {/* Центрируем всю секцию */}
+      <section className="flex flex-col items-center w-full px-4">
         
-        <p className="text-gray-400 mb-6 text-sm">
-          Explore the best servers for Minecraft, Hytale, VoxelCore, and other voxel-based universes.
-        </p>
+        {/* Ограничиваем ширину текстового блока, чтобы он совпадал с шириной списка */}
+        <div className="w-full max-w-[1000px]">
+          <h1 className="text-[24px] font-bold mb-[12px] text-white tracking-tight uppercase">
+            Game Server Monitoring <span className="text-blue-500">&</span> Analytics
+          </h1>
+          
+          <p className="text-gray-400 mb-6 text-sm">
+            Explore the best servers for Minecraft, Hytale, VoxelCore, and other voxel-based universes.
+          </p>
+        </div>
 
-        <div className="list-con grid grid-cols-1 gap-4">
+        {/* Контейнер для списка серверов */}
+        <div className="list-con w-full max-w-[1000px]">
           <ServerList game="all" />
         </div>
       </section>

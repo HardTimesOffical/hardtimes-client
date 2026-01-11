@@ -31,9 +31,11 @@ export const metadata: Metadata = {
 export default function HytaleServersPage() {
   return (
     <DashboardLayout>
-      <div className="list-con flex flex-col">
-        {/* Шапка страницы */}
-        <div className="flex flex-row justify-between max-w-[1000px] mb-3 items-center w-full px-2">
+      {/* 1. Добавляем items-center для центровки по горизонтали */}
+      <div className="list-con flex flex-col items-center w-full">
+        
+        {/* 2. Убеждаемся, что здесь есть mx-auto, если задана максимальная ширина */}
+        <div className="flex flex-row justify-between max-w-[1000px] mb-3 items-center w-full px-2 mx-auto">
           <div className="flex items-center gap-4">
             <img 
               className="w-16 h-auto object-contain" 
@@ -44,13 +46,16 @@ export default function HytaleServersPage() {
               Hytale Servers
             </h1>
           </div>
-          {/* Здесь можно добавить тег "Beta" или "Soon", так как игра еще не вышла */}
           <span className="bg-purple-600 text-white text-[10px] px-2 py-1 rounded font-bold animate-pulse">
             COMING SOON
           </span>
         </div>
         
-        <ServerList game="hytale" />
+        {/* 3. Обернем список серверов в контейнер с центровкой, если внутри ServerList нет своей центровки */}
+        <div className="w-full flex justify-center">
+             <ServerList game="hytale" />
+        </div>
+
       </div>
     </DashboardLayout>  
   );
