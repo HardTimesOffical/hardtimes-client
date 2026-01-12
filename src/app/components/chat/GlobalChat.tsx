@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { io, Socket } from "socket.io-client";
-import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface MessageData {
@@ -24,7 +23,6 @@ export default function GlobalChat() {
   const [isLoading, setIsLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   
-  const { t } = useLanguage();
   const { user } = useAuth();
   const scrollRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<Socket | null>(null);
@@ -41,6 +39,7 @@ export default function GlobalChat() {
     }
   }, [cooldown]);
 
+  // ЛОГИКА: Чтобы новые были сверху, мы должны хранить массив в порядке [НОВОЕ, ..., СТАРОЕ]
   const loadMessages = async (isInitial = false) => {
     if (isLoading) return;
     setIsLoading(true);
@@ -48,13 +47,21 @@ export default function GlobalChat() {
       const currentSkip = isInitial ? 0 : skip + 30;
       const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/chat?limit=30&skip=${currentSkip}`);
       if (res.ok) {
-        const data: MessageData[] = await res.json();
+        const data: MessageData[] = await res.json(); 
+        
+        // Если API присылает [старое -> новое], разворачиваем, чтобы стало [новое -> старое]
+        const formattedData = [...data].reverse();
+
         if (data.length < 30) setHasMore(false);
+
         if (isInitial) {
-          setMessages(data);
+          setMessages(formattedData);
           setSkip(0);
+          // Новые сообщения сверху, скроллим в начало
+          if (scrollRef.current) scrollRef.current.scrollTop = 0;
         } else {
-          setMessages((prev) => [...prev, ...data]);
+          // При подгрузке старых данных добавляем их В КОНЕЦ нашего массива [новое, ..., старое]
+          setMessages((prev) => [...prev, ...formattedData]);
           setSkip(currentSkip);
         }
       }
@@ -68,24 +75,38 @@ export default function GlobalChat() {
         upgrade: false
       });
     }
-    if (isOpen && messages.length === 0) loadMessages(true);
+
+    if (isOpen && messages.length === 0) {
+      loadMessages(true);
+    }
+
     const handleReceive = (msg: MessageData) => {
+      // Новое сообщение всегда В НАЧАЛО массива
       setMessages((prev) => [msg, ...prev]);
-      setTimeout(() => { if (scrollRef.current) scrollRef.current.scrollTop = 0; }, 100);
+      
+      // Скроллим в самый верх к новому сообщению
+      if (scrollRef.current) {
+        scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     };
+
     socketRef.current.on("receive_message", handleReceive);
-    return () => { socketRef.current?.off("receive_message", handleReceive); };
+    return () => { 
+      socketRef.current?.off("receive_message", handleReceive); 
+    };
   }, [isOpen]);
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !user || !socketRef.current || cooldown > 0) return;
+    
     socketRef.current.emit("send_message", {
       message: newMessage,
       authorName: user.username,
       userId: (user as any)._id || user.id,
       avatar: (user as any).avatar
     });
+    
     setNewMessage("");
     setCooldown(5);
   };
@@ -95,37 +116,38 @@ export default function GlobalChat() {
       {isOpen && (
         <div className="mb-3 w-[300px] h-[500px] bg-[#0b0f1a]/95 backdrop-blur-xl rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-white/10 animate-in fade-in zoom-in-95 duration-300">
           
-          {/* HEADER */}
           <div className="p-3.5 flex justify-between items-center bg-white/5 border-b border-white/5">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-indigo-500 rounded-full shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
-              <span className="font-black text-[10px] uppercase tracking-[0.15em] text-white/80">Чат</span>
+              <div className="w-2.5 h-2.5 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
+              <span className="font-black text-[10px] uppercase tracking-[0.15em] text-white/80">Глобальный чат</span>
             </div>
             <button onClick={() => setIsOpen(false)} className="text-white/20 hover:text-white transition-colors">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
 
-          {/* MESSAGES */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 custom-chat-scrollbar">
+          <div 
+            ref={scrollRef} 
+            className="flex-1 overflow-y-auto p-3 custom-chat-scrollbar"
+          >
             <style>{`
               .custom-chat-scrollbar::-webkit-scrollbar { width: 3px; }
-              .custom-chat-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
+              .custom-chat-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
             `}</style>
 
             <div className="flex flex-col gap-3">
               {messages.map((msg, i) => ( 
-                <div key={msg._id || i} className="group flex gap-2.5 animate-in slide-in-from-top-1 duration-200">
-                  <div className="w-7 h-7 shrink-0 rounded-lg bg-indigo-600/20 border border-white/5 overflow-hidden flex items-center justify-center font-black text-[10px] text-indigo-400 uppercase">
-                    {msg.avatar ? <img src={msg.avatar} className="w-full h-full object-cover" /> : msg.authorName[0]}
+                <div key={msg._id || i} className="group flex gap-2.5 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="w-8 h-8 shrink-0 rounded-lg bg-indigo-600/20 border border-white/5 overflow-hidden flex items-center justify-center font-black text-[10px] text-indigo-400 uppercase">
+                    {msg.avatar ? <img src={msg.avatar} className="w-full h-full object-cover" alt="" /> : msg.authorName?.[0]}
                   </div>
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-0.5">
-                      <span className="text-[12px] font-bold text-white/90 truncate">{msg.authorName}</span>
+                      <span className="text-[12px] font-bold text-indigo-300 truncate">{msg.authorName}</span>
                       <span className="text-[9px] text-white/20 tabular-nums">{formatTime(msg.createdAt)}</span>
                     </div>
-                    <div className="text-[13px] text-slate-300 leading-snug bg-white/[0.03] p-2 rounded-xl rounded-tl-none border border-white/[0.02] group-hover:bg-white/[0.05] transition-colors">
+                    <div className="text-[13px] text-slate-200 leading-snug bg-white/[0.03] p-2.5 rounded-2xl rounded-tl-none border border-white/[0.02] group-hover:bg-white/[0.05] transition-colors break-words">
                       {msg.message}
                     </div>
                     <button 
@@ -133,7 +155,7 @@ export default function GlobalChat() {
                         setNewMessage(`@${msg.authorName}, `);
                         document.getElementById("chat-input")?.focus();
                       }} 
-                      className="mt-1 text-[9px] font-black uppercase text-indigo-500/50 hover:text-indigo-400 transition-colors"
+                      className="mt-1 text-[9px] font-black uppercase text-white/20 hover:text-indigo-400 transition-colors"
                     >
                       Ответить
                     </button>
@@ -141,16 +163,20 @@ export default function GlobalChat() {
                 </div>
               ))}
 
+              {/* Кнопка "Загрузить старые" теперь в самом НИЗУ */}
               {hasMore && (
-                <button onClick={() => loadMessages()} className="py-2 text-[9px] font-black uppercase text-white/5 hover:text-indigo-400">
-                  Загрузить еще
+                <button 
+                  onClick={() => loadMessages()} 
+                  disabled={isLoading}
+                  className="py-4 text-[9px] font-black uppercase text-white/10 hover:text-indigo-500 transition-colors disabled:opacity-50"
+                >
+                  {isLoading ? "Загрузка..." : "Показать более старые"}
                 </button>
               )}
             </div>
           </div>
 
-          {/* INPUT */}
-          <div className="p-3 bg-[#0d1324] border-t border-white/5 shrink-0">
+          <div className="p-3 bg-[#0d1324] border-t border-white/5">
             {user ? (
               <form onSubmit={handleSend} className="relative">
                 <input 
@@ -159,19 +185,21 @@ export default function GlobalChat() {
                   autoComplete="off" 
                   value={newMessage} 
                   onChange={(e) => setNewMessage(e.target.value)} 
-                  placeholder={cooldown > 0 ? `${cooldown}s` : "Сообщение..."} 
-                  className={`w-full bg-white/5 rounded-xl border ${cooldown > 0 ? 'border-red-500/20' : 'border-white/5'} px-3 py-2.5 text-xs focus:outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/10`} 
+                  placeholder={cooldown > 0 ? `Подождите ${cooldown}с...` : "Напишите сообщение..."} 
+                  className={`w-full bg-white/5 rounded-xl border ${cooldown > 0 ? 'border-red-500/20' : 'border-white/5'} px-3 py-3 text-xs focus:outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/10`} 
                 />
                 <button 
                   type="submit" 
                   disabled={!newMessage.trim() || cooldown > 0} 
-                  className="absolute right-1.5 top-1.5 bottom-1.5 px-3 bg-indigo-600 rounded-lg text-white hover:bg-indigo-500 disabled:opacity-0 transition-all active:scale-90"
+                  className="absolute right-1.5 top-1.5 bottom-1.5 px-3 bg-indigo-600 rounded-lg text-white hover:bg-indigo-500 disabled:opacity-0 transition-all active:scale-95"
                 >
-                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/></svg>
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/></svg>
                 </button>
               </form>
             ) : (
-              <div className="text-center py-1 text-[9px] text-white/20 uppercase font-black">Нужен вход</div>
+              <div className="text-center py-2 text-[10px] text-white/20 uppercase font-black tracking-widest">
+                Авторизуйтесь для чата
+              </div>
             )}
           </div>
         </div>
@@ -180,9 +208,9 @@ export default function GlobalChat() {
       {!isOpen && (
         <button 
           onClick={() => setIsOpen(true)} 
-          className="p-3.5 rounded-2xl bg-indigo-600 shadow-lg hover:scale-110 active:scale-95 transition-all text-white border border-white/10"
+          className="p-4 rounded-2xl bg-indigo-600 shadow-[0_8px_30px_rgb(79,70,229,0.3)] hover:scale-105 active:scale-95 transition-all text-white border border-white/20"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
         </button>
       )}
     </div>

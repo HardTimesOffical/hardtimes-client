@@ -88,7 +88,7 @@ export default function DashboardLayout({ children, variant }: DashboardProps) {
                         <div className={styles.sectionTitle}>ИНФОРМАЦИЯ</div>
                         <Link
                             className={styles.navItem}
-                            href="https://discord.gg/KHU93fphJK"
+                            href="t.me/HardTimeMonitoring"
                             target="_blank"
                             translate="no"
                         >
