@@ -277,7 +277,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
                       <p className="font-semibold text-purple-400">{server.gameType}</p>
                     </div>
                   </div>
-                  <div className="italic text-white/80 whitespace-pre-wrap bg-white/5 p-4 rounded-xl border border-white/5 text-left">
+                  <div translate="no" className="italic text-white/80 whitespace-pre-wrap bg-white/5 p-4 rounded-xl border border-white/5 text-left">
                     {server.description || defaultDescription}
                   </div>
                    {/* КАТЕГОРИИ И ТЕГИ */}

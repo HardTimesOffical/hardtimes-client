@@ -9,6 +9,7 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import Footer from "./components/footer/footer";
 import GlobalChat from "./components/chat/GlobalChat";
 import SuccessNotification from "./components/payment/SuccessToast";
+import SnowEffect from "./components/snow/SnowEffect";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -78,6 +79,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} antialiased`}
       >
+        <SnowEffect/>
         <AuthProvider>
           {/* Переносим LanguageProvider сюда, чтобы Header тоже имел к нему доступ */}
           <LanguageProvider>
