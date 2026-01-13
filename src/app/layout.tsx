@@ -50,6 +50,10 @@ export const metadata: Metadata = {
     locale: 'ru_RU',
     type: 'website',
   },
+  verification: {
+    yandex: "2c25793a465d554d",
+    // Если понадобится Google в будущем, добавьте здесь: google: "код"
+  },
   twitter: {
     card: 'summary_large_image',
     title: 'ServerSwamp',
