@@ -1,9 +1,10 @@
 import { MetadataRoute } from 'next'
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://serverswamp.ru'
+export const revalidate = 0; 
 
-  // 1. Статические страницы
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = 'https://hardmonitoring.ru'
+
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
@@ -31,13 +32,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  // 2. Динамические страницы серверов
   let serverPages: MetadataRoute.Sitemap = []
 
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/servers`, {
-      // Кэшируем на стороне сервера, чтобы не дергать API при каждом запросе бота
-      next: { revalidate: 3600 } 
+      cache: 'no-store' 
     })
 
     if (res.ok) {
@@ -45,7 +44,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       
       serverPages = servers.map((server: any) => ({
         url: `${baseUrl}/${server.slug}`,
-        // Используем дату обновления из БД или текущую, если её нет
         lastModified: server.updatedAt ? new Date(server.updatedAt) : new Date(),
         changeFrequency: 'daily',
         priority: 0.7,
