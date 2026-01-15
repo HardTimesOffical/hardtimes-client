@@ -167,8 +167,8 @@ export default function ServerPageClient({ slug, initialData }: Props) {
             <div onClick={() => copyToClipboard(ipObj.java!, 'java')} className="p-4 bg-white/5 rounded-2xl border border-white/10 cursor-pointer hover:border-blue-500/50 transition-all group shadow-lg">
               <div className="flex justify-between items-center text-left">
                 <div>
-                  <p className="opacity-40 text-[10px] uppercase font-black mb-1 text-blue-400">Java Edition IP</p>
-                  <p className="font-mono text-sm text-white group-hover:text-blue-300 transition">{ipObj.java}</p>
+                  <p translate="no" className="opacity-40 text-[10px] uppercase font-black mb-1 text-blue-400">Java Edition IP</p>
+                  <p translate="no" className="font-mono text-sm text-white group-hover:text-blue-300 transition">{ipObj.java}</p>
                 </div>
                 <div className="text-[10px] font-bold text-blue-500 bg-blue-500/10 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition">
                   {copyStatus === 'java' ? 'СКОПИРОВАНО' : 'КОПИРОВАТЬ'}
@@ -180,8 +180,8 @@ export default function ServerPageClient({ slug, initialData }: Props) {
             <div onClick={() => copyToClipboard(ipObj.bedrock!, 'bedrock')} className="p-4 bg-white/5 rounded-2xl border border-white/10 cursor-pointer hover:border-purple-500/50 transition-all group shadow-lg">
               <div className="flex justify-between items-center text-left">
                 <div>
-                  <p className="opacity-40 text-[10px] uppercase font-black mb-1 text-purple-400">Bedrock Edition IP</p>
-                  <p className="font-mono text-sm text-white group-hover:text-purple-300 transition">{ipObj.bedrock}</p>
+                  <p translate="no" className="opacity-40 text-[10px] uppercase font-black mb-1 text-purple-400">Bedrock Edition IP</p>
+                  <p translate="no" className="font-mono text-sm text-white group-hover:text-purple-300 transition">{ipObj.bedrock}</p>
                 </div>
                 <div className="text-[10px] font-bold text-purple-500 bg-purple-500/10 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition">
                   {copyStatus === 'bedrock' ? 'СКОПИРОВАНО' : 'КОПИРОВАТЬ'}
