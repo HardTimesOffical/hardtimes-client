@@ -96,10 +96,15 @@ useEffect(() => {
     return () => window.removeEventListener('storage', syncLogout);
   }, []);
 
-  const login = (token: string, userObj: User) => {
-    setAccessTokenState(token);
-    setUser(userObj);
-  };
+const login = (token: string, userObj: User) => {
+  // 1. Сначала жестко пишем в хранилище
+  localStorage.setItem("accessToken", token);
+  localStorage.setItem("user", JSON.stringify(userObj));
+
+  // 2. Сразу обновляем стейт (это заставит Header перерисоваться)
+  setAccessTokenState(token);
+  setUser(userObj);
+};
 
   const logout = async () => {
     try {

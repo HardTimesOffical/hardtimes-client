@@ -1,6 +1,6 @@
 :root{
   --bg:#071028;
-  --panel:#070C1D;
+  --panel:#0f0d18;
   --muted:#D1D5DB;
   --accent:#0b84ff;
   --menu-heading: #747D89;
@@ -28,27 +28,28 @@
     --bg-gradient: linear-gradient(135deg, #020408 0%, #05080f 100%);
 }
 
-.container{
-  display:flex;
-  min-height:100vh;
-  background:linear-gradient(180deg,#051022 0%, #071735 100%);
+.container {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
   width: 100%;
-  
+  overflow-x: hidden; /* Важно, чтобы не было горизонтального скролла */
 }
 
-.sidebar{
-  width:200px;
+.sidebar {
+  width: 260px; /* Увеличим немного ширину для комфорта */
   background: var(--panel);
-  color:var(--foreground);
   border-right: 1px solid var(--border);
-  display:flex;
-  flex-direction:column;
-  position:fixed;
-  left:0;
-  top:0;
-  bottom:0;
-  height:100vh;
-  z-index:200;
+  display: none; /* Скрыто на ПК */
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  height: 100vh;
+  z-index: 200;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .logoWrap{
@@ -245,37 +246,40 @@
   animation: pulse 1.5s infinite ease-in-out;
 }
 
-.main{
-  margin-left:200px;
-  width: calc(100% - 260px);
-  box-sizing: border-box;
+.main {
+  flex: 1; /* Занимает всё доступное пространство */
+  width: 100%;
   display: flex;
-  justify-content: center;
-  padding: 0 10px;
+  flex-direction: column; /* Элементы (Hero, контент) идут друг за другом */
+  align-items: center;
 }
 
 /* account for fixed header (height 60px) */
-.main{ padding-top: 20px; }
 
 /* Hamburger button */
-.hamburger{
-  display:none;
-  position:fixed;
-  left:12px;
-  top:12px;
-  z-index:9999; /* ensure it's above header and overlays */
-  pointer-events:auto;
-  width:44px;
-  height:44px;
-  border-radius:8px;
-  background:rgba(10,18,30,0.6);
-  border:1px solid rgba(255,255,255,0.03);
-  align-items:center;
-  justify-content:center;
-  gap:4px;
-  flex-direction:column;
-  padding:8px;
+.hamburger {
+  display: none; /* По умолчанию скрыт на ПК */
+  position: fixed;
+  /* Подгоняем координаты под место логотипа */
+  left: 20px; 
+  top: 25px; /* Регулируй это значение, чтобы выровнять по центру шапки */
+  z-index: 9999;
+  
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
 }
+
+
 .hamburger span{
   display:block;
   width:18px;
@@ -294,60 +298,46 @@
 .overlay{display:none}
 .sidebar.open{transform:translateX(0)}
 
-@media (max-width:900px){
-  .hamburger{display:flex}
-  .sidebar{
-    /* on mobile we slide the fixed sidebar */
-    transform:translateX(-110%);
-    transition:transform .18s ease;
-    width:220px;
+@media (max-width: 900px) {
+  .sidebar {
+    display: flex; /* Показываем только на мобилках */
   }
 
-  .navItem {
-    padding: 14px 16px; /* Еще больше на телефонах для удобства нажатия */
-    font-size: 18px;    /* Комфортный размер текста для мобилок */
+  .sidebar.open {
+    transform: translateX(0); /* Выезжает при open=true */
   }
 
-  .sectionTitle {
-    font-size: 12px;    /* Сделали заголовки секций чуть читабельнее */
-    margin-top: 20px;
-    padding-left: 4px;
+  .hamburger {
+    display: flex; /* Показываем бургер */
+    position: fixed;
+    left: 12px;
+    top: 12px;
   }
 
-  /* place hamburger on the header, centered vertically (header height 60px, button 44px => top:8px) */
-  .hamburger{ left: 12px; right: auto; top:8px; }
-
-  .overlay{
-    display:block;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.45);
-    z-index:65;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .12s ease;
+  .closeBtn {
+    display: block; /* Кнопка X внутри меню */
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    padding: 10px;
+    cursor: pointer;
   }
-  .overlay.show{opacity:1;pointer-events:auto}
 
-  .closeBtn{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    background:transparent;
-    border:none;
-    color:var(--muted);
-    font-size:22px;
-    cursor:pointer;
-    z-index:9998;
-    pointer-events:auto;
+  .overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px); /* Красивое размытие фона */
+    z-index: 150;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
   }
-}
 
-@media (max-width:900px){
-  .main{margin-left:0; padding: 10px;}
-}
-
-.content{
-  width:100%;
-  max-width:100%;
+  .overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
 import DashboardLayout from "@/app/components/dashboard/dashboard";
 import Link from "next/link";
@@ -40,7 +40,7 @@ interface Props {
 }
 
 export default function ServerPageClient({ slug, initialData }: Props) {
-  const { accessToken, user } = useAuth();
+  const { accessToken, user, updateUser } = useAuth();
   const { t } = useLanguage();
   
   const [activeTab, setActiveTab] = useState<'info' | 'stats'>('info');
@@ -80,7 +80,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
       });
       
       if (res.data.success) {
-        alert(`Сервер успешно забущен! Остаток: ${res.data.newBalance} HC`);
+        updateUser({ balance: res.data.newBalance });
         setIsBoostOpen(false);
         setServer((prev) => prev ? ({
           ...prev, 
@@ -88,8 +88,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
         }) : null);
       }
     } catch (err: any) {
-      const errMsg = err.response?.data?.message || "Ошибка покупки";
-      alert(errMsg);
+      alert(err.response?.data?.message || "Ошибка покупки");
     } finally {
       setBoostLoading(false);
     }
@@ -102,7 +101,10 @@ export default function ServerPageClient({ slug, initialData }: Props) {
     });
   };
 
-  const confirmVote = async () => {
+  const handleVote = async () => {
+    if (!accessToken) return;
+    setVoteLoading(true);
+    setMessage(null);
     try {
       const res = await api.post(`/servers/${server?._id}/vote`);
       if (res.status === 200) {
@@ -114,13 +116,6 @@ export default function ServerPageClient({ slug, initialData }: Props) {
     } finally {
       setVoteLoading(false);
     }
-  };
-
-  const handleVote = () => {
-    if (!accessToken) return;
-    setVoteLoading(true);
-    setMessage(null);
-    confirmVote();
   };
 
   useEffect(() => {
@@ -143,238 +138,219 @@ export default function ServerPageClient({ slug, initialData }: Props) {
   }, [slug, accessToken]);
 
   if (loading && !server) return <DashboardLayout><div className="relative w-full h-[60vh] flex items-center justify-center"><LoadingCrystal /></div></DashboardLayout>;
-  if (error || !server) return <DashboardLayout><div className="p-10 text-center">Сервер не найден</div></DashboardLayout>;
+  if (error || !server) return <DashboardLayout><div className="p-10 text-center font-bold text-gray-500">Сервер не найден</div></DashboardLayout>;
 
   const isOnline = server.status?.online;
 
-  // Хелпер для отрисовки IP
   const renderIpBlock = () => {
     let ipData = server.ipAddress;
-
     if (typeof ipData === 'string' && (ipData.startsWith('{') || ipData.includes('"java"'))) {
-      try {
-        ipData = JSON.parse(ipData);
-      } catch (e) {
-        console.error("Ошибка парсинга JSON в ipAddress:", e);
-      }
+      try { ipData = JSON.parse(ipData); } catch (e) { console.error(e); }
     }
 
-    if (typeof ipData === 'object' && ipData !== null) {
-      const ipObj = ipData as { java?: string; bedrock?: string };
-      return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-          {ipObj.java && (
-            <div onClick={() => copyToClipboard(ipObj.java!, 'java')} className="p-4 bg-white/5 rounded-2xl border border-white/10 cursor-pointer hover:border-blue-500/50 transition-all group shadow-lg">
-              <div className="flex justify-between items-center text-left">
-                <div>
-                  <p translate="no" className="opacity-40 text-[10px] uppercase font-black mb-1 text-blue-400">Java Edition IP</p>
-                  <p translate="no" className="font-mono text-sm text-white group-hover:text-blue-300 transition">{ipObj.java}</p>
-                </div>
-                <div className="text-[10px] font-bold text-blue-500 bg-blue-500/10 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition">
-                  {copyStatus === 'java' ? 'СКОПИРОВАНО' : 'КОПИРОВАТЬ'}
-                </div>
-              </div>
-            </div>
-          )}
-          {ipObj.bedrock && (
-            <div onClick={() => copyToClipboard(ipObj.bedrock!, 'bedrock')} className="p-4 bg-white/5 rounded-2xl border border-white/10 cursor-pointer hover:border-purple-500/50 transition-all group shadow-lg">
-              <div className="flex justify-between items-center text-left">
-                <div>
-                  <p translate="no" className="opacity-40 text-[10px] uppercase font-black mb-1 text-purple-400">Bedrock Edition IP</p>
-                  <p translate="no" className="font-mono text-sm text-white group-hover:text-purple-300 transition">{ipObj.bedrock}</p>
-                </div>
-                <div className="text-[10px] font-bold text-purple-500 bg-purple-500/10 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition">
-                  {copyStatus === 'bedrock' ? 'СКОПИРОВАНО' : 'КОПИРОВАТЬ'}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    const currentIp = String(ipData);
-    let label = "Server IP";
-    let themeColor = "group-hover:text-blue-400";
-    if (server.gameType === "Hytale") label = "Hytale Address";
-    if (server.gameType === "Minecraft Bedrock") {
-        label = "Bedrock IP";
-        themeColor = "group-hover:text-purple-400";
-    }
-
-    return (
-      <div onClick={() => copyToClipboard(currentIp, 'main')} className="p-4 bg-white/5 rounded-2xl border border-white/10 cursor-pointer hover:bg-white/10 transition-all group w-full shadow-lg">
+    const IpCard = ({ ip, label, statusKey }: { ip: string, label: string, statusKey: string }) => (
+      <div 
+        onClick={() => copyToClipboard(ip, statusKey)} 
+        className="p-4 bg-gray-50 rounded-2xl border border-gray-100 cursor-pointer hover:bg-white hover:shadow-md transition-all group relative overflow-hidden"
+      >
         <div className="flex justify-between items-center text-left">
           <div>
-            <p className="opacity-40 text-[10px] uppercase font-black mb-1">{label}</p>
-            <p className={`font-mono text-sm text-white ${themeColor} transition`}>{currentIp}</p>
+            <p className="text-gray-400 text-[10px] uppercase font-black mb-0.5 tracking-wider">{label}</p>
+            <p className="font-mono text-sm text-gray-800 font-bold group-hover:text-[#ff7a00] transition">{ip}</p>
           </div>
-          <div className="text-[10px] font-bold text-white/50 border border-white/10 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition uppercase">
-            {copyStatus === 'main' ? 'СКОПИРОВАНО' : 'Копировать'}
+          <div className={`text-[10px] font-bold px-2 py-1 rounded-md transition ${copyStatus === statusKey ? 'bg-green-100 text-green-600 opacity-100' : 'bg-orange-100 text-[#ff7a00] opacity-0 group-hover:opacity-100'}`}>
+            {copyStatus === statusKey ? 'СКОПИРОВАНО' : 'КОПИРОВАТЬ'}
           </div>
         </div>
       </div>
     );
+
+    if (typeof ipData === 'object' && ipData !== null) {
+      const ipObj = ipData as { java?: string; bedrock?: string };
+      return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+          {ipObj.java && <IpCard ip={ipObj.java} label="Java Edition IP" statusKey="java" />}
+          {ipObj.bedrock && <IpCard ip={ipObj.bedrock} label="Bedrock Edition IP" statusKey="bedrock" />}
+        </div>
+      );
+    }
+    return <IpCard ip={String(ipData)} label="Server IP" statusKey="main" />;
   };
 
   return (
-    <DashboardLayout>
-      <div className="max-w-5xl mx-auto p-4 space-y-6 text-white">
+  <DashboardLayout>
+    {/* Фон всей страницы чуть темнее для контраста с карточками */}
+    <div className="min-h-screen bg-[#f0f2f5] p-2 md:p-4">
+      <div className="max-w-6xl mx-auto space-y-6 mt-20">
         
-        {/* Шапка Сервера */}
-        <div className="relative h-40 w-full rounded-2xl overflow-hidden border border-white/10 bg-gray-900 shadow-2xl">
+        {/* Шапка Сервера: Добавляем более глубокую тень */}
+        <div className="relative h-50 md:h-40 w-full rounded-[2rem] overflow-hidden border border-gray-200 bg-white shadow-xl">
           {server.imageUrl ? (
-            <img src={server.imageUrl} alt={server.serverName} className="w-full h-40 object-cover" />
+            <img src={server.imageUrl} alt={server.serverName} className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-white/20">Нет изображения</div>
+            <div className="w-full h-full flex items-center justify-center text-gray-300 bg-gray-100 font-black italic tracking-tighter text-3xl">
+              NO BANNER 470x60
+            </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end p-6">
-            <div className="flex items-center justify-between w-full">
-              <div>
-                <h1 className="text-3xl md:text-4xl font-black" translate="no">{server.serverName}</h1>
-                <div className="flex items-center gap-3 mt-1">
-                   <span className={`h-2.5 w-2.5 rounded-full animate-pulse ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                   <p className="text-sm font-medium opacity-80">
-                     {isOnline ? `Online: ${server.status?.players}/${server.status?.maxPlayers}` : 'Offline'}
-                   </p>
+          {/* Градиент более плотный внизу для читаемости текста */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent flex items-end p-6 md:p-10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between w-full gap-4">
+              <div className="text-white">
+                <h1 className="text-4xl md:text-4xl font-black tracking-tighter uppercase drop-shadow-lg" translate="no">
+                  {server.serverName}
+                </h1>
+                <div className="flex items-center gap-3 mt-3">
+                   <div className="flex items-center bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
+                    <span className={`h-2.5 w-2.5 rounded-full mr-2 ${isOnline ? 'bg-[#ff7a00] animate-pulse' : 'bg-gray-500'}`}></span>
+                    <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-white">
+                      {isOnline ? `${server.status?.players} / ${server.status?.maxPlayers} ONLINE` : 'OFFLINE'}
+                    </p>
+                   </div>
                 </div>
               </div>
               {server.isOwner && (
-                <Link translate="no" href={`/edit-server/${server.slug}`} className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm backdrop-blur-md transition">
-                  Редактировать
+                <Link href={`/edit-server/${server.slug}`} className="w-fit px-8 py-3 bg-[#ff7a00] text-white font-black rounded-2xl text-xs uppercase hover:scale-105 transition-all shadow-[0_10px_20px_rgba(255,122,0,0.3)]">
+                  Настройки
                 </Link>
               )}
             </div>
           </div>
         </div>
 
-        {/* Табы */}
-        <div className="flex gap-1 p-1 bg-white/5 rounded-xl border border-white/5 w-fit">
-          <button translate="no" onClick={() => setActiveTab('info')} className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'info' ? 'bg-blue-600 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}>
-            Информация
+        {/* Табы: делаем их более "кнопочными" */}
+        <div className="flex gap-2 p-1.5 bg-gray-200/50 backdrop-blur-sm rounded-2xl border border-gray-200 w-fit">
+          <button onClick={() => setActiveTab('info')} className={`px-8 py-3 rounded-xl text-xs font-black transition-all tracking-widest ${activeTab === 'info' ? 'bg-white text-[#ff7a00] shadow-md' : 'text-gray-500 hover:text-gray-700'}`}>
+            ОБЗОР
           </button>
-          <button translate="no" onClick={() => setActiveTab('stats')} className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'stats' ? 'bg-blue-600 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}>
-            Статистика
+          <button onClick={() => setActiveTab('stats')} className={`px-8 py-3 rounded-xl text-xs font-black transition-all tracking-widest ${activeTab === 'stats' ? 'bg-white text-[#ff7a00] shadow-md' : 'text-gray-500 hover:text-gray-700'}`}>
+            АНАЛИТИКА
           </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2 space-y-6">
              {activeTab === 'info' ? (
-                <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl space-y-6 text-left">
-                  <h2 className="text-lg font-bold">Информация</h2>
+                <div className="bg-white p-6 md:p-10 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/50 space-y-10">
                   
-                  {/* IP БЛОК */}
-                  {renderIpBlock()}
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="p-4 bg-white/5 rounded-xl border border-white/5">
-                      <p className="opacity-40 text-[10px] uppercase font-bold mb-1">Версия</p>
-                      <p className="font-semibold text-blue-400">{server.gameVersion}</p>
+                  {/* IP БЛОК: Выделяем его фоном */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-1 bg-[#ff7a00] rounded-full"></div>
+                      <h2 className="text-xs font-black uppercase tracking-widest text-gray-900">Адрес сервера</h2>
                     </div>
-                    <div className="p-4 bg-white/5 rounded-xl border border-white/5">
-                      <p className="opacity-40 text-[10px] uppercase font-bold mb-1">Тип</p>
-                      <p className="font-semibold text-purple-400">{server.gameType}</p>
+                    <div className="bg-gray-50 p-4 rounded-3xl border border-gray-100">
+                      {renderIpBlock()}
                     </div>
                   </div>
-                  <div translate="no" className="italic text-white/80 whitespace-pre-wrap bg-white/5 p-4 rounded-xl border border-white/5 text-left">
-                    {server.description || defaultDescription}
-                  </div>
-                   {/* КАТЕГОРИИ И ТЕГИ */}
-                  {(server.categories?.length || 0) > 0 && (
-                    <div className="space-y-2">
-                      <p className="opacity-40 text-[10px] uppercase font-black tracking-widest">Категории</p>
-                      <div className="flex flex-wrap gap-2">
-                        {server.categories?.map((cat, i) => (
-                          <span key={i} className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-bold rounded-lg uppercase tracking-tight">
-                            {cat}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
-                  {(server.tags?.length || 0) > 0 && (
-                    <div className="space-y-2">
-                      <p translate="no" className="opacity-40 text-[10px] uppercase font-black tracking-widest">Теги</p>
-                      <div className="flex flex-wrap gap-2">
-                        {server.tags?.map((tag, i) => (
-                          <span translate="no" key={i} className="px-3 py-1 bg-white/5 border border-white/10 text-gray-300 text-[11px] font-medium rounded-full">
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
+                  {/* Характеристики */}
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="group p-6 bg-white rounded-3xl border border-gray-100 shadow-sm hover:border-[#ff7a00]/30 transition-colors">
+                      <p className="text-gray-400 text-[10px] uppercase font-black mb-2 tracking-widest">Версия</p>
+                      <p className="font-black text-gray-900 text-2xl group-hover:text-[#ff7a00] transition-colors">{server.gameVersion}</p>
                     </div>
-                  )}
+                    <div className="group p-6 bg-white rounded-3xl border border-gray-100 shadow-sm hover:border-[#ff7a00]/30 transition-colors">
+                      <p className="text-gray-400 text-[10px] uppercase font-black mb-2 tracking-widest">Тип игры</p>
+                      <p className="font-black text-gray-900 text-2xl group-hover:text-[#ff7a00] transition-colors">{server.gameType}</p>
+                    </div>
+                  </div>
+
+                  {/* Описание */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-1 bg-[#ff7a00] rounded-full"></div>
+                      <h2 className="text-xs font-black uppercase tracking-widest text-gray-900">Описание</h2>
+                    </div>
+                    <div className="text-gray-700 leading-relaxed bg-orange-50/30 p-8 rounded-[2rem] border border-orange-100/50 text-base italic whitespace-pre-wrap relative">
+                      <span className="absolute top-4 left-4 text-4xl text-orange-200 font-serif">“</span>
+                      {server.description || defaultDescription}
+                    </div>
+                  </div>
+
+                  {/* Теги */}
+                  <div className="flex flex-wrap gap-2 pt-4">
+                    {server.categories?.map((cat, i) => (
+                      <span key={i} className="px-5 py-2 bg-white text-[#ff7a00] text-[10px] font-black rounded-full uppercase border-2 border-orange-100 hover:border-[#ff7a00] transition-colors tracking-tighter">
+                        # {cat}
+                      </span>
+                    ))}
+                  </div>
                 </div>
              ) : (
-                <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl">
-                   {stats.length > 0 ? <ServerChart data={stats} /> : <p translate="no" className="text-center opacity-20">Загрузка данных...</p>}
+                <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl min-h-[450px] flex flex-col items-center justify-center">
+                   <div className="w-full">
+                    {stats.length > 0 ? <ServerChart data={stats} /> : <p className="text-center text-gray-300 font-black uppercase italic tracking-widest">Collecting Data...</p>}
+                   </div>
                 </div>
              )}
-             
           </div>
-          
 
-          <div className="space-y-4">
-            <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl text-center">
-              <h3 className="text-lg font-bold mb-4 italic">Поддержать сервер</h3>
+          {/* Правая колонка */}
+          <div className="space-y-6">
+            {/* Голосование: Делаем его самым ярким */}
+            <div className="bg-white p-8 rounded-[2rem] border-2 border-[#ff7a00] shadow-[0_15px_30px_rgba(255,122,0,0.15)] text-center relative overflow-hidden">
+              <div className="absolute -top-10 -right-10 w-24 h-24 bg-orange-50 rounded-full"></div>
+              <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest mb-6 relative z-10">Поддержать проект</h3>
               <button 
                 onClick={handleVote}
                 disabled={!accessToken || voteLoading}
-                className="w-full py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 disabled:from-gray-700 disabled:to-gray-800 font-black shadow-lg transition-all active:scale-95 uppercase"
+                className="w-full py-5 bg-[#ff7a00] hover:bg-[#e66e00] text-white rounded-2xl font-black shadow-lg shadow-orange-200 transition-all active:scale-95 uppercase text-sm tracking-[0.1em] relative z-10"
               >
-                {voteLoading ? "..." : "Голосовать"}
+                {voteLoading ? "..." : "ПРОГОЛОСОВАТЬ"}
               </button>
-              {message && <p className={`text-xs font-bold mt-3 p-2 rounded bg-white/5 ${message.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>{message.text}</p>}
+              {message && <p className={`text-[10px] font-black mt-4 p-3 rounded-xl uppercase tracking-tighter ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{message.text}</p>}
             </div>
 
-            <div onClick={() => setIsBoostOpen(true)} className="bg-blue-600/10 border border-blue-500/20 p-5 rounded-2xl cursor-pointer hover:bg-blue-600/20 transition-all group shadow-xl">
-              <div className="flex justify-between items-center">
-                 <div className="text-left">
-                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Premium Votes</p>
-                    <p className="text-3xl font-black">{server.premiumVotes || 0}</p>
-                 </div>
-                 <div className="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/40 group-hover:scale-110 transition-transform">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-                 </div>
+            {/* Premium Stats */}
+            <div onClick={() => setIsBoostOpen(true)} className="bg-[#111] p-8 rounded-[2rem] cursor-pointer hover:bg-black transition-all group shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4">
+                <div className="w-12 h-12 bg-[#ff7a00] rounded-2xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                </div>
               </div>
-              <p className="text-[9px] font-bold text-white/30 uppercase mt-3 tracking-widest text-left" translate="no">Усилить сервер за HC звезды</p>
+              <p className="text-[#ff7a00] text-[10px] font-black uppercase tracking-widest mb-1">Premium Stars</p>
+              <p className="text-5xl font-black text-white italic">{server.premiumVotes || 0}</p>
+              <p className="text-white/40 text-[9px] font-black uppercase mt-6 tracking-widest group-hover:text-white transition-colors">Boost Server with HC stars →</p>
             </div>
 
-            <div className="bg-[#0b1224] border border-white/5 p-5 rounded-2xl shadow-xl">
-              <div className="flex justify-between items-center text-left">
-                 <div>
-                    <p className="text-[10px] font-black text-green-400 uppercase tracking-widest">Weekly Votes</p>
-                    <p className="text-3xl font-black">{server.votesWeekly || 0}</p>
-                 </div>
-                 <div className="w-12 h-12 bg-green-600/20 rounded-2xl flex items-center justify-center border border-green-500/20">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#4ade80"><path d="M5 15l7-7 7 7"/></svg>
-                 </div>
-              </div>
-              <p className="text-[9px] font-bold text-white/20 uppercase mt-3 tracking-widest text-left">Голоса обычных пользователей</p>
+            {/* Weekly Votes */}
+            <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-md flex justify-between items-center">
+               <div>
+                  <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Weekly</p>
+                  <p className="text-4xl font-black text-gray-900">{server.votesWeekly || 0}</p>
+               </div>
+               <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center border border-gray-100">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="#ff7a00" className="opacity-50"><path d="M5 15l7-7 7 7"/></svg>
+               </div>
             </div>
 
-            <div className="bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-xl space-y-3">
-              <h3 className="text-[10px] font-black uppercase opacity-30 tracking-widest text-left">Ссылки</h3>
-              {server.website && <a href={server.website} target="_blank" className="block text-center py-2 rounded-lg bg-blue-600/10 text-blue-400 hover:bg-blue-600/20 transition text-sm font-bold">Сайт проекта</a>}
-              {server.discord && <a href={server.discord} target="_blank" className="block text-center py-2 rounded-lg bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600/20 transition text-sm font-bold">Discord</a>}
+            {/* Соцсети: Делаем их строгими */}
+            <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-md space-y-4">
+              <h3 className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-2">Официальные ссылки</h3>
+              {server.website && (
+                <a href={server.website} target="_blank" className="flex items-center justify-between w-full p-4 rounded-2xl bg-gray-50 text-gray-900 hover:bg-gray-900 hover:text-white transition-all text-xs font-black uppercase tracking-widest group">
+                  Сайт проекта <span className="opacity-0 group-hover:opacity-100 mr-2">→</span>
+                </a>
+              )}
+              {server.discord && (
+                <a href={server.discord} target="_blank" className="flex items-center justify-between w-full p-4 rounded-2xl bg-[#5865F2]/10 text-[#5865F2] hover:bg-[#5865F2] hover:text-white transition-all text-xs font-black uppercase tracking-widest group">
+                  Discord <span className="opacity-0 group-hover:opacity-100 mr-2">→</span>
+                </a>
+              )}
             </div>
           </div>
-          
         </div>
       </div>
-
-      <BoostModal 
-        isOpen={isBoostOpen}
-        onClose={() => setIsBoostOpen(false)}
-        serverName={server.serverName}
-        userBalance={user?.balance ?? 0}
-        onPurchase={handleBoostPurchase}
-        loading={boostLoading}
-      />
-      
-      <div id="video-ad-container" style={{ position: 'fixed', zIndex: 9999 }}></div>
-    </DashboardLayout>
-  );
+    </div>
+    
+    <BoostModal 
+      isOpen={isBoostOpen}
+      onClose={() => setIsBoostOpen(false)}
+      serverName={server.serverName}
+      userBalance={user?.balance ?? 0}
+      onPurchase={handleBoostPurchase}
+      loading={boostLoading}
+    />
+  </DashboardLayout>
+);
 }

@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 
 export default function BedrockServersPage() {
   return (
-    <DashboardLayout>
+    <DashboardLayout showHero={true}>
       {/* Добавляем flex flex-col items-center для центровки контента */}
       <div className="list-con flex flex-col items-center w-full px-4">
         

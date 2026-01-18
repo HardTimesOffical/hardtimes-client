@@ -5,12 +5,14 @@ import styles from "./dashboard.module.css";
 import AuthSlot from "./AuthSlot";
 import { usePathname } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
+import HeroSection from "../header/HeroSection";
 
 interface DashboardProps extends PropsWithChildren {
     variant?: "default" | "serverPage";
+    showHero?: boolean; // Добавляем новый проп
 }
 
-export default function DashboardLayout({ children, variant }: DashboardProps) {
+export default function DashboardLayout({ children, variant, showHero }: DashboardProps) {
     const { t } = useLanguage();
     const [open, setOpen] = useState(false);
     const pathname = usePathname();
@@ -50,7 +52,7 @@ export default function DashboardLayout({ children, variant }: DashboardProps) {
             <aside className={`${styles.sidebar} ${open ? styles.open : ""}`}>
                 <div className={styles.logoWrap}>
                     <Link className={styles.brand} href="/" translate="no">
-                       <img className="h-8" src="/icons/logo.png"/>
+                        <img className="h-8" src="/icons/logo.png" alt="Logo"/>
                     </Link>
                 </div>
 
@@ -109,7 +111,12 @@ export default function DashboardLayout({ children, variant }: DashboardProps) {
             />
 
             <main className={`${styles.main} flex-1`}>
-                <div className={styles.content}>{children}</div>
+                {showHero && <HeroSection />}
+
+                {/* 3. Основной контент */}
+                <div className={styles.content}>
+                    {children}
+                </div>
             </main>
         </div>
     );

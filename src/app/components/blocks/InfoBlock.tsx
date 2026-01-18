@@ -23,7 +23,7 @@ export default function InfoBlock({ text, title }: InfoBlockProps) {
           </h4>
         )}
         {/* Выводим пропс text */}
-        <p className="text-white/60 text-sm leading-relaxed">
+        <p className="text-black/60 text-sm leading-relaxed">
           {text}
         </p>
       </div>

@@ -37,60 +37,62 @@ export default function Login() {
     }
   };
 
-  return (
-    <div className={styles.container}>
-      <header className={styles.header}>
-        <h2 className={styles.heading}>Войти</h2>
-        <p className={styles.subheading}>Введите свои данные чтобы войти в аккаунт</p>
-      </header>
+return (
+    <div className={styles.authPageWrapper}>
+      <div className={styles.container}>
+        <header className={styles.header}>
+          <h2 className={styles.heading}>Войти</h2>
+          <p className={styles.subheading}>Введите свои данные, чтобы войти в аккаунт</p>
+        </header>
 
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="email">Email</label>
-          <input
-            className={styles.input}
-            type="email"
-            id="email"
-            placeholder="mail@example.com"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="password">Пароль</label>
-          <div className={styles.inputWrap}>
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="email">Email адрес</label>
             <input
               className={styles.input}
-              type={showPassword ? "text" : "password"}
-              id="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
+              type="email"
+              id="email"
+              placeholder="mail@example.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
               required
             />
-            <button
-              type="button"
-              className={styles.eyeButton}
-              onClick={() => setShowPassword(s => !s)}
-            >
-              {showPassword ? "🔒" : "👁️"}
-            </button>
           </div>
-        </div>
 
-        {error && <div className={styles.errorBox}>{error}</div>}
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="password">Пароль</label>
+            <div className={styles.inputWrap}>
+              <input
+                className={styles.input}
+                type={showPassword ? "text" : "password"}
+                id="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className={styles.eyeButton}
+                onClick={() => setShowPassword(s => !s)}
+              >
+                {showPassword ? "🔒" : "👁️"}
+              </button>
+            </div>
+          </div>
 
-        <button className={styles.submit} type="submit">
-          Продолжить
-        </button>
+          {error && <div className={styles.errorBox}>{error}</div>}
 
-        <footer className={styles.footer}>
-          <span>Нету аккаунта?</span>
-          <Link href="/register" className={styles.link}>Создать аккаунт</Link>
-        </footer>
-      </form>
+          <button className={styles.submit} type="submit">
+            Продолжить
+          </button>
+
+          <footer className={styles.footer}>
+            <span>Нет аккаунта?</span>
+            <Link href="/register" className={styles.link}>Создать аккаунт</Link>
+          </footer>
+        </form>
+      </div>
     </div>
   );
 }

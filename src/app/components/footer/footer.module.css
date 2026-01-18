@@ -17,7 +17,7 @@
     color:var(--foreground);
     display:flex;
     align-items:center;
-    z-index:100; /* lower than sidebar (sidebar is z-index:200) so header sits under menu */
+    z-index: index 0;; /* lower than sidebar (sidebar is z-index:200) so header sits under menu */
     border-bottom:1px solid rgba(255,255,255,0.02);
   }
 

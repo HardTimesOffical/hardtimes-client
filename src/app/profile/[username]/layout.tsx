@@ -7,5 +7,5 @@ export default function ProfileLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return <DashboardLayout showHero={false}>{children}</DashboardLayout>;
 }

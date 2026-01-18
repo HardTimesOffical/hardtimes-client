@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function HytaleServersPage() {
   return (
-    <DashboardLayout>
+    <DashboardLayout showHero={true}>
       {/* 1. Добавляем items-center для центровки по горизонтали */}
       <div className="list-con flex flex-col items-center w-full">
         

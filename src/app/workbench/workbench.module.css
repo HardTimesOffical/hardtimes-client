@@ -1,252 +1,140 @@
 :root {
-  --auth-bg: #070C1D;
-  --auth-accent: var(--accent);
-  --auth-text: #D1D5DB;
-  --auth-muted: #747D89;
-  --auth-stroke: #23304B;
-  --auth-input-bg: linear-gradient(90deg, #11192B 0%, #08132C 100%);
-  --workbench-title: #d1d5dbd0;
+  --auth-bg: #ffffff;
+  --auth-page-bg: #f4f7f9;
+  --auth-accent: #ff7a00;
+  --auth-text: #111827;
+  --auth-muted: #9ca3af;
+  --auth-stroke: #e5e7eb;
+  --auth-input-bg: #f9fafb;
+  --workbench-title: #6b7280;
 }
 
+/* Контейнер формы */
+.container {
+    padding: 24px;
+    background: var(--auth-bg) !important;
+    border-radius: 20px;
+    border: 1px solid var(--auth-stroke);
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+    height: 100%;
+}
 
 .customSelectWrapper {
   position: relative;
   width: 100%;
+  margin: 0; 
+  padding: 0;
 }
 
 .customSelectInput {
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px 16px;
   background: var(--auth-input-bg);
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 2px solid #f3f4f6;
   outline: none;
-  border-radius: 8px;
+  border-radius: 12px;
   color: var(--auth-text);
-  outline: none;
-  transition: border-color 120ms ease, box-shadow 120ms ease;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  cursor: pointer;
+  font-weight: 600;
 }
 
 .customSelectInput:hover {
-  border-color: #888;
+  border-color: var(--auth-accent);
 }
 
-.arrow {
-  font-size: 0.7rem;
-  margin-left: 0.5rem;
-}
-
-/* Dropdown поверх формы */
 .customSelectDropdown {
   position: absolute;
-  top: calc(100% + 4px); /* чуть ниже кнопки */
+  top: calc(100% + 6px);
   width: 100%;
-  padding: 10px 12px;
-  background: var(--auth-input-bg);
-  border: 1px solid rgba(255,255,255,0.06);
-  outline: none;
-  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid var(--auth-stroke);
+  border-radius: 14px;
   color: var(--auth-text);
-  max-height: 200px; /* Ограничиваем высоту */
-  overflow-y: auto; /* Добавляем вертикальную прокрутку */
-  transition: border-color 120ms ease, box-shadow 120ms ease;
-  z-index: 50; /* поверх всего */
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
   opacity: 0;
   transform: translateY(-10px);
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-.customSelectDropdown::-webkit-scrollbar {
-  width: 8px; /* ширина полосы */
-}
-
-/* Фон полосы */
-.customSelectDropdown::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.05); /* цвет фона полосы */
-  border-radius: 4px;
-}
-
-/* Сам ползунок */
-.customSelectDropdown::-webkit-scrollbar-thumb {
-  background-color: var(--auth-bg); /* цвет ползунка */
-  border-radius: 4px;
-  border: 2px solid transparent; /* можно добавить отступы */
-  background-clip: content-box;
-}
-
-/* При наведении на ползунок */
-.customSelectDropdown::-webkit-scrollbar-thumb:hover {
-  background-color: var(--accent); /* более яркий цвет */
-}
-
-/* Когда открыто */
 .customSelectDropdown.open {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
 }
 
+/* Скроллбар селектора */
+.customSelectDropdown::-webkit-scrollbar {
+  width: 6px;
+}
+.customSelectDropdown::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+.customSelectDropdown::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 10px;
+}
+.customSelectDropdown::-webkit-scrollbar-thumb:hover {
+  background-color: var(--auth-accent);
+}
+
 .customSelectOption {
-  padding: 0.5rem;
+  padding: 10px 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.2s;
 }
 
 .customSelectOption:hover {
-  background-color: var(--auth-bg);
-  border-radius: 10px;
+  background-color: #fff7ed; /* Светло-оранжевый фон при наведении */
+  color: var(--auth-accent);
 }
 
+/* Стили чекбоксов внутри селектора */
 .customSelectOption input[type="checkbox"] {
-  pointer-events: none;
+  accent-color: var(--auth-accent);
 }
 
-
-
-.workbenchForm {
-    align-items: stretch; 
-}
-
-.leftContainer {
-    /* Удалено width: 450px; */
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    flex: 1; /* Чтобы занимал доступное пространство */
-}
-
-.container {
-    padding: 24px; /* Немного уменьшил паддинг для мобилок */
-    background: var(--auth-bg);
-    border-radius: 12px;
-    border: 1px solid var(--auth-stroke);
-    width: 100%; /* Гарантируем заполнение */
-}
-
-@media (max-width: 640px) {
-    .container {
-        padding: 16px;
-    }
-    
-    .submit {
-        width: 100%; /* Кнопка во всю ширину на телефоне */
-        margin-top: 10px;
-    }
-
-    .sectionTitle {
-        margin-top: 8px;
-    }
-    
-    /* Делаем так, чтобы кнопки Save/Cancel были друг под другом или занимали больше места */
-    .w-full.flex.justify-end {
-        flex-direction: column-reverse;
-        align-items: stretch;
-        gap: 10px;
-    }
-}
-
-.heading {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 18px;
-  color: var(--auth-text);
-}
-
-.description {
-  font-size: 0.95rem;
-  color: var(--auth-muted);
-  margin-bottom: 20px;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.label {
-  font-size: 0.9rem;
-  color: var(--auth-muted);
-  margin-bottom: 6px;
-}
 
 .input {
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px 16px;
   background: var(--auth-input-bg);
-  border: 1px solid rgba(255,255,255,0.06);
-  outline: none;
-  border-radius: 8px;
+  border: 2px solid #f3f4f6;
+  border-radius: 12px;
   color: var(--auth-text);
-  outline: none;
-  transition: border-color 120ms ease, box-shadow 120ms ease;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
 .input:focus {
-  border-color: rgba(255,255,255,0.12);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  background: var(--auth-input-bg);
+  border-color: var(--auth-accent);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.08);
 }
 
-.inputWrap {
-  position: relative;
-}
-
-.eyeButton {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--auth-muted);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 6px;
-}
-
-.eyeButton:hover {
-  color: var(--auth-text);
-  background: rgba(255,255,255,0.02);
-}
-
-.row {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.remember {
-  font-size: 0.9rem;
-  color: var(--auth-muted);
-}
-
-.sectionTitle{
-  font-size:11px;
-  color:var(--workbench-title);
-  margin-top:12px;
-  margin-bottom:6px;
-  font-weight: bold;
-}
-
-
-.helperLink {
-  color: var(--auth-muted);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.sectionTitle {
+  font-size: 11px;
+  color: var(--auth-accent); /* Теперь заголовки секций оранжевые */
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .submit {
@@ -254,76 +142,35 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px 30px;
-  background-color: #0068C9;
-  font-weight: 300;
+  padding: 12px 30px;
+  background-color: var(--auth-accent);
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
   cursor: pointer;
-  font-weight: 700;
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 15px rgba(255, 122, 0, 0.2);
+}
+
+.submit:hover {
+  background-color: #e66e00;
+  transform: translateY(-1px);
 }
 
 .secondary {
-  background: transparent;
-  color: var(--auth-text);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+.secondary:hover {
+  background: #e5e7eb;
 }
 
 .error {
-  color: #FF6B6B;
-  font-size: 0.9rem;
-  margin-top: 6px;
-}
-
-.footer {
-  margin-top: 14px;
-  font-size: 0.9rem;
-  color: var(--auth-muted);
-  text-align: center;
-}
-
-.oauth {
-  display: flex;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.oauthButton {
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.06);
-  background: rgba(255,255,255,0.02);
-  color: var(--auth-text);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-}
-
-.actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.signupWrap {
-  margin-left: auto;
-}
-
-@media (max-width: 480px) {
-.container {
-    /* margin: 20px 12px; <--- УДАЛИТЕ ИЛИ ЗАКОММЕНТИРУЙТЕ ЭТО */
-    width: 100%; /* Вместо маржинов растягиваем на всю ширину */
-    padding: 18px;
-    border-radius: 10px;
-  }
-  .heading {
-    font-size: 1.1rem;
-  }
+  color: #ef4444;
+  font-size: 0.85rem;
+  font-weight: 600;
 }

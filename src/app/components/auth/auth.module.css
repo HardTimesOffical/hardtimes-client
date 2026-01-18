@@ -1,50 +1,39 @@
-:root {
-  --auth-bg: #070C1D;
-  --auth-accent: var(--accent);
-  --auth-text: #D1D5DB;
-  --auth-muted: #747D89;
-  --auth-stroke: #23304B;
-  --auth-input-bg: linear-gradient(90deg, #11192B 0%, #08132C 100%);
+.authPageWrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
 }
 
 .container {
-  width: 92%;           /* Немного уменьшили ширину (было 100% или 420px) */
-  max-width: 380px;     /* Уменьшили максимальную ширину (было 420px) */
-  
-  /* Центрирование */
-  margin: 40px auto;    /* auto по бокам выравнивает элемент строго по центру */
-  display: block;       
-  
-  padding: 24px;        /* Чуть уменьшили внутренние отступы */
-  background: var(--auth-bg);
-  border-radius: 16px;
-  border: 1px solid var(--auth-stroke);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-  
-  /* Гарантируем, что форма не «уедет» */
-  box-sizing: border-box; 
+  width: 100%;
+  max-width: 380px; /* Оптимальная ширина для баланса */
+  padding: 32px 20px; /* Уменьшили боковые отступы с 40 до 20, чтобы инпуты стали шире */
+  background: #ffffff !important;
+  border-radius: 28px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
 }
 
 .header {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+  text-align: center;
 }
 
 .heading {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #111827;
   margin-bottom: 4px;
+  text-transform: uppercase;
+  font-style: italic;
 }
 
 .subheading {
-  font-size: 0.9rem;
-  color: var(--auth-muted);
-}
-
-.description {
-  font-size: 0.95rem;
-  color: var(--auth-muted);
-  margin-bottom: 20px;
+  font-size: 0.85rem;
+  color: #9ca3af;
 }
 
 .form {
@@ -56,32 +45,37 @@
 .field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  width: 100%; /* Занимает всю ширину контейнера */
 }
 
 .label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--auth-muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   padding-left: 4px;
 }
 
 .input {
-  width: 100%;
-  height: 52px; /* Увеличено для удобства нажатия пальцем */
+  width: 100%; /* Инпут теперь визуально шире */
+  height: 50px; 
   padding: 0 16px;
-  background: var(--auth-input-bg);
-  border: 1px solid var(--auth-stroke);
-  border-radius: 12px;
-  color: #fff;
-  font-size: 16px; /* Предотвращает зум в Safari на iOS */
+  background: #f9fafb;
+  border: 2px solid #f3f4f6;
+  border-radius: 14px;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 600;
+  box-sizing: border-box; /* Важно, чтобы padding не расширял инпут */
   transition: all 0.2s ease;
 }
 
 .input:focus {
-  border-color: var(--accent);
-  background: rgba(11, 132, 255, 0.05);
-  box-shadow: 0 0 0 4px rgba(11, 132, 255, 0.15);
+  border-color: #ff7a00;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.08);
   outline: none;
 }
 
@@ -90,168 +84,48 @@
   width: 100%;
 }
 
-.errorBox {
-  background: rgba(255, 107, 107, 0.1);
-  border: 1px solid rgba(255, 107, 107, 0.2);
-  color: #FF6B6B;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  text-align: center;
-}
-
 .eyeButton {
   position: absolute;
-  right: 8px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  width: 32px;
-  height: 32px;
-  padding: 0;
   border: none;
   background: transparent;
-  color: var(--auth-muted);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
-  border-radius: 6px;
-}
-
-.eyeButton:hover {
-  color: var(--auth-text);
-  background: rgba(255,255,255,0.02);
-}
-
-.row {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.remember {
-  font-size: 0.9rem;
-  color: var(--auth-muted);
-}
-
-.helperLink {
-  color: var(--auth-muted);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  opacity: 0.5;
+  font-size: 1.1rem;
 }
 
 .submit {
   width: 100%;
   height: 52px;
-  background: #0068C9;
-  color: #fff;
+  background: #ff7a00;
+  color: #ffffff;
   border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 700;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  font-weight: 900;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition: all 0.2s ease;
   margin-top: 8px;
 }
 
 .submit:hover {
-  background: #0078eb;
-}
-
-.submit:active {
-  transform: scale(0.98);
+  background: #ff8c1a;
+  transform: translateY(-1px);
 }
 
 .footer {
-  margin-top: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.9rem;
-  color: var(--auth-muted);
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #9ca3af;
 }
 
 .link {
-  color: #0068C9;
+  color: #ff7a00;
   text-decoration: none;
-  font-weight: 600;
-}
-
-.link:hover {
-  text-decoration: underline;
-}
-
-.secondary {
-  background: transparent;
-  color: var(--auth-text);
-  border: 1px solid rgba(255,255,255,0.06);
-}
-
-.error {
-  color: #FF6B6B;
-  font-size: 0.9rem;
-  margin-top: 6px;
-}
-
-.footer {
-  margin-top: 14px;
-  font-size: 0.9rem;
-  color: var(--auth-muted);
-  text-align: center;
-}
-
-.oauth {
-  display: flex;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.oauthButton {
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.06);
-  background: rgba(255,255,255,0.02);
-  color: var(--auth-text);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-}
-
-.actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.signupWrap {
-  margin-left: auto;
-}
-
-@media (max-width: 480px) {
-  .container {
-    margin: 10px;
-    padding: 24px 16px;
-    border-radius: 12px;
-    box-shadow: none; /* Убираем тяжелые тени на мобилках */
-  }
-
-  .heading {
-    font-size: 1.3rem;
-  }
-
-  .input {
-    height: 48px; /* Чуть меньше, но всё еще комфортно */
-  }
-
-  .submit {
-    height: 48px;
-  }
+  font-weight: 800;
+  margin-left: 5px;
 }

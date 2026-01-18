@@ -28,7 +28,7 @@ export default function ServersPage() {
         
         {/* Ограничиваем ширину текстового блока, чтобы он совпадал с шириной списка */}
         <div className="w-full max-w-[1000px]">
-          <h1 className="text-[24px] font-bold mb-[12px] text-white tracking-tight uppercase">
+          <h1 className="text-2xl font-bold mb-4 text-1 tracking-tight uppercase">
             Game Server Monitoring <span className="text-blue-500">&</span> Analytics
           </h1>
           

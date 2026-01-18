@@ -1,210 +1,187 @@
 :root {
-  --auth-bg: #070C1D;
-  --auth-accent: var(--accent);
-  --auth-text: #D1D5DB;
-  --auth-muted: #747D89;
-  --auth-stroke: #23304B;
-  --auth-input-bg: linear-gradient(90deg, #11192B 0%, #08132C 100%);
-  --workbench-title: #d1d5dbd0;
+  --auth-bg: #ffffff;
+  --auth-page-bg: #f4f7f9;
+  --auth-accent: #ff7a00;
+  --auth-text: #111827;
+  --auth-muted: #6b7280;
+  --auth-stroke: #e5e7eb;
+  --auth-input-bg: #f9fafb;
+  --workbench-title: #374151;
 }
 
 /* ===== SETTINGS LAYOUT ===== */
 .settingsLayout {
   display: flex;
-  gap: 10px;
-  min-height: 500px;
+  gap: 24px;
+  min-height: calc(100vh - 100px);
   width: 100%;
-  max-width: 800px; /* Ограничиваем общую ширину для ПК */
-  margin: 0 auto;    /* Центрируем всю раскладку */
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 20px;
 }
 
 .sidebar {
-  width: 250px;
+  width: 260px;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .backButton {
-  display: none; 
-  align-self: flex-start; /* Кнопка назад всегда слева */
-  margin-bottom: 20px;
-  color: #3b82f6;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: var(--auth-accent);
+  font-weight: 700;
   text-decoration: none;
   font-size: 14px;
+  transition: opacity 0.2s;
+}
+
+.backButton:hover {
+  opacity: 0.8;
 }
 
 /* Навигация */
 .nav {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  background: white;
+  padding: 12px;
+  border-radius: 20px;
+  border: 1px solid var(--auth-stroke);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .sidebarLink {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  padding: 10px 15px;
-  border-radius: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
   text-decoration: none;
-  color: var(--auth-text);
+  color: var(--auth-muted);
   font-size: 14px;
+  font-weight: 600;
   transition: all 0.2s ease;
-  background-color: transparent;
-  gap: 10px;
+  gap: 12px;
 }
 
 .sidebarLink:hover {
-  background: rgba(255,255,255,0.03);
-  color: var(--auth-text);
+  background: #fff7ed;
+  color: var(--auth-accent);
+}
+
+.active {
+  background: var(--auth-accent) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(255, 122, 0, 0.2);
 }
 
 .content {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Центрируем форму по горизонтали внутри контента */
 }
 
-@media (max-width: 768px) {
-.settingsLayout {
-    flex-direction: column;
-    gap: 0;
-    padding: 0 15px;
-    align-items: center; /* Центрируем всё на мобилках */
-  }
-
-.sidebar {
-    width: 100%;
-    max-width: 450px; /* Чтобы меню не было слишком широким на мобилках */
-  }
-
-  .backButton {
-    display: flex; /* Показываем на мобилках */
-    align-items: center;
-  }
-
-  /* Если мы в корне настроек (/settings) */
-  .settingsLayout.showMenu .content {
-    display: none; /* Скрываем контент, показываем только меню */
-  }
-  .settingsLayout.showMenu .sidebar {
-    width: 100%;
-  }
-
-  .settingsLayout.showContent .sidebar {
-    display: none; /* Скрываем меню, показываем только контент */
-  }
-  .settingsLayout.showContent .content {
-    width: 100%;
-  }
-
-.nav {
-    flex-direction: column; /* МЕНЮ ТЕПЕРЬ ВЕРТИКАЛЬНОЕ */
-    gap: 5px;
-    overflow-x: hidden;
-    background-color: var(--auth-bg);
-    padding: 10px;
-    border-radius: 10px;
-  }
-
-.sidebarLink {
-    text-align: left; /* Текст в кнопках меню по центру */
-    padding: 15px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    border-radius: 10px 10px 0 0;
-    display: flex;
-    flex-direction: row;
-    gap: 3px;
-  }
-
+/* Контейнер формы */
 .container {
-    max-width: 100%; /* На мобилках форма на всю доступную ширину */
-  }
+  width: 100%;
+  padding: 32px;
+  background: white;
+  border-radius: 24px;
+  border: 1px solid var(--auth-stroke);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
 }
 
-.active {
-  background: rgba(255,255,255,0.06);
+.heading {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 8px;
   color: var(--auth-text);
 }
 
-
-.customSelectWrapper {
-  position: relative;
-  width: 100%;
+.description {
+  font-size: 0.95rem;
+  color: var(--auth-muted);
+  margin-bottom: 24px;
 }
 
+.sectionTitle {
+  font-size: 12px;
+  color: var(--auth-accent);
+  margin: 20px 0 8px 0;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Инпуты */
+.input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--auth-input-bg);
+  border: 2px solid #f3f4f6;
+  outline: none;
+  border-radius: 12px;
+  color: var(--auth-text);
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  border-color: var(--auth-accent);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.1);
+}
+
+.label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--auth-text);
+  margin-bottom: 8px;
+}
+
+/* Кастомный Селект */
 .customSelectInput {
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px 16px;
   background: var(--auth-input-bg);
-  border: 1px solid rgba(255,255,255,0.06);
-  outline: none;
-  border-radius: 8px;
+  border: 2px solid #f3f4f6;
+  border-radius: 12px;
   color: var(--auth-text);
-  outline: none;
-  transition: border-color 120ms ease, box-shadow 120ms ease;
+  font-weight: 600;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  transition: all 0.2s;
 }
 
 .customSelectInput:hover {
-  border-color: #888;
+  border-color: #e5e7eb;
 }
 
-.arrow {
-  font-size: 0.7rem;
-  margin-left: 0.5rem;
-}
-
-/* Dropdown поверх формы */
 .customSelectDropdown {
   position: absolute;
-  top: calc(100% + 4px); /* чуть ниже кнопки */
+  top: calc(100% + 8px);
   width: 100%;
-  padding: 10px 12px;
-  background: var(--auth-input-bg);
-  border: 1px solid rgba(255,255,255,0.06);
-  outline: none;
-  border-radius: 8px;
-  color: var(--auth-text);
-  max-height: 200px; /* Ограничиваем высоту */
-  overflow-y: auto; /* Добавляем вертикальную прокрутку */
-  transition: border-color 120ms ease, box-shadow 120ms ease;
-  z-index: 50; /* поверх всего */
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-
+  background: white;
+  border: 1px solid var(--auth-stroke);
+  border-radius: 16px;
+  z-index: 100;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
   opacity: 0;
   transform: translateY(-10px);
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-.customSelectDropdown::-webkit-scrollbar {
-  width: 8px; /* ширина полосы */
-}
-
-/* Фон полосы */
-.customSelectDropdown::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.05); /* цвет фона полосы */
-  border-radius: 4px;
-}
-
-/* Сам ползунок */
-.customSelectDropdown::-webkit-scrollbar-thumb {
-  background-color: var(--auth-bg); /* цвет ползунка */
-  border-radius: 4px;
-  border: 2px solid transparent; /* можно добавить отступы */
-  background-clip: content-box;
-}
-
-/* При наведении на ползунок */
-.customSelectDropdown::-webkit-scrollbar-thumb:hover {
-  background-color: var(--accent); /* более яркий цвет */
-}
-
-/* Когда открыто */
 .customSelectDropdown.open {
   opacity: 1;
   transform: translateY(0);
@@ -212,216 +189,80 @@
 }
 
 .customSelectOption {
-  padding: 0.5rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  padding: 12px 16px;
+  color: var(--auth-text);
+  font-weight: 500;
+  transition: background 0.2s;
 }
 
 .customSelectOption:hover {
-  background-color: var(--auth-bg);
-  border-radius: 10px;
+  background: #fff7ed;
+  color: var(--auth-accent);
 }
 
-.customSelectOption input[type="checkbox"] {
-  pointer-events: none;
-}
-
-
-
-.workbenchForm {
-    align-items: stretch; 
-}
-
-.leftContainer {
-    /* Чтобы инпуты не слипались, и контейнер растягивался вертикально */
-    display: flex;
-    flex-direction: column;
-    gap: 12px; /* Расстояние между инпутами */
-    width: 450px;
-}
-
-.container {
-  width: 100%;
-  max-width: 550px; /* Ограничиваем ширину формы для красоты */
-  padding: 28px;
-  background: var(--auth-bg);
-  border-radius: 12px;
-  border: 1px solid var(--auth-stroke);
-}
-
-.heading {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 18px;
-  color: var(--auth-text);
-}
-
-.description {
-  font-size: 0.95rem;
-  color: var(--auth-muted);
-  margin-bottom: 20px;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.label {
-  font-size: 0.9rem;
-  color: var(--auth-muted);
-  margin-bottom: 6px;
-}
-
-.input {
-  width: 100%;
-  padding: 10px 12px;
-  background: var(--auth-input-bg);
-  border: 1px solid rgba(255,255,255,0.06);
-  outline: none;
-  border-radius: 8px;
-  color: var(--auth-text);
-  outline: none;
-  transition: border-color 120ms ease, box-shadow 120ms ease;
-}
-
-.input:focus {
-  border-color: rgba(255,255,255,0.12);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  background: var(--auth-input-bg);
-}
-
-.inputWrap {
-  position: relative;
-}
-
-.eyeButton {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--auth-muted);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 6px;
-}
-
-.eyeButton:hover {
-  color: var(--auth-text);
-  background: rgba(255,255,255,0.02);
-}
-
-.row {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.remember {
-  font-size: 0.9rem;
-  color: var(--auth-muted);
-}
-
-.sectionTitle{
-  font-size:11px;
-  color:var(--workbench-title);
-  margin-top:12px;
-  margin-bottom:6px;
-  font-weight: bold;
-}
-
-
-.helperLink {
-  color: var(--auth-muted);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
+/* Кнопки */
 .submit {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 30px;
-  background-color: #0068C9;
-  font-weight: 300;
-  color: #fff;
+  padding: 14px 32px;
+  background-color: var(--auth-accent);
+  color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 14px;
+  font-weight: 800;
   cursor: pointer;
-  font-weight: 700;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(255, 122, 0, 0.25);
+}
+
+.submit:hover {
+  background-color: #e66e00;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(255, 122, 0, 0.35);
 }
 
 .secondary {
-  background: transparent;
+  background: white;
   color: var(--auth-text);
-  border: 1px solid rgba(255,255,255,0.06);
-}
-
-.error {
-  color: #FF6B6B;
-  font-size: 0.9rem;
-  margin-top: 6px;
-}
-
-.footer {
-  margin-top: 14px;
-  font-size: 0.9rem;
-  color: var(--auth-muted);
-  text-align: center;
-}
-
-.oauth {
-  display: flex;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.oauthButton {
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.06);
-  background: rgba(255,255,255,0.02);
-  color: var(--auth-text);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  border: 1px solid var(--auth-stroke);
   font-weight: 700;
 }
 
-.actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 8px;
+.secondary:hover {
+  background: #f9fafb;
 }
 
-.signupWrap {
-  margin-left: auto;
-}
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+  .settingsLayout {
+    flex-direction: column;
+    margin: 20px auto;
+  }
+  
+  .sidebar {
+    width: 100%;
+  }
 
-@media (max-width: 480px) {
+  .nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 8px;
+    border-radius: 16px;
+  }
+
+  .sidebarLink {
+    white-space: nowrap;
+    padding: 10px 14px;
+  }
+
   .container {
-    margin: 20px 12px;
-    padding: 18px;
-    border-radius: 10px;
+    padding: 24px;
+    border-radius: 20px;
   }
-  .heading {
-    font-size: 1.1rem;
-  }
+}
+
+/* Специфично для формы Workbench */
+.leftContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
 }

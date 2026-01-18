@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0b0b0c; /* page background */
+  --background: #ffffff; /* page background */
   --surface: #0f1113; /* panels, sidebar */
   --card: #141516; /* cards */
   --foreground: #D1D5DB; /* main text */
   --muted: #9aa6bd; /* secondary text */
-  --accent: #0068C9; /* primary accent (red) */
+  --accent: #FF6A00; /* primary accent (red) */
   --menu-heading: #8b93a0;
   --background-alt: linear-gradient(180deg,#051022 0%, #071735 100%);
   --auth-bg: #070C1D;
@@ -16,6 +16,10 @@
   --auth-stroke: #23304B;
   --auth-input-bg: linear-gradient(90deg, #11192B 0%, #08132C 100%);
   --workbench-title: #d1d5dbd0;
+}
+
+.text1 {
+  color:#FF6A00;
 }
 
 .block {
@@ -51,6 +55,16 @@
   display: flex;
   justify-content: center;
   flex-direction: column;
+}
+
+.mainContainer {
+  position: relative;
+  /* 20px (отступ шапки) + 64px (высота) + 20px (запас) = 104px */
+  padding-top: 110px; 
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 @theme inline {

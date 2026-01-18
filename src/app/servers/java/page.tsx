@@ -1,5 +1,7 @@
+
 import ServerList from "../ServersList";
 import DashboardLayout from "@/app/components/dashboard/dashboard";
+import ServerFilters from "@/app/components/servercard/ServerFilters";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -24,22 +26,25 @@ export const metadata: Metadata = {
   },
 };
 
-export default function JavaServersPage() {
+export default async function JavaServersPage({ searchParams }: { searchParams: any }) {
+  // Важно: в Next.js 15 searchParams это Promise
+  const filters = await searchParams;
   return (
-    <DashboardLayout>
+    <DashboardLayout showHero={true}>
       {/* Центрируем всё содержимое по горизонтали */}
       <div className="list-con flex flex-col items-center w-full px-4">
         
         {/* Контейнер-ограничитель для заголовка (выровнен по левому краю списка) */}
         <div className="w-full max-w-[1000px]">
-          <h1 className="text-2xl font-bold mb-4 tracking-tight text-white uppercase">
+          <h1 className="text-2xl font-bold mb-4 text-1 tracking-tight uppercase">
             Minecraft Java Edition Servers
           </h1>
         </div>
         
         {/* Контейнер для списка серверов */}
-        <div className="w-full max-w-[1000px] flex justify-center">
-          <ServerList game="java" />
+        <div className="w-full max-w-[1000px] flex justify-center flex-col">
+          <ServerFilters/>
+          <ServerList filters={filters} game="java" />
         </div>
       </div>
     </DashboardLayout>

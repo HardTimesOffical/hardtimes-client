@@ -6,11 +6,13 @@ import { usePathname } from "next/navigation";
 import DashboardLayout from "../components/dashboard/dashboard";
 import styles from './settings.module.css';
 import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 
 
 export default function SettingsLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { t } = useLanguage();
+  const user = useAuth().user;
   
   // Проверяем, находится ли пользователь в корне настроек
   const isRootSettings = pathname === "/settings" || pathname === "/settings/";
@@ -18,6 +20,7 @@ export default function SettingsLayout({ children }: { children: ReactNode }) {
   return (
     <DashboardLayout>
       <LanguageProvider>
+      <div className="mt-25">
       <div className={`${styles.settingsLayout} ${isRootSettings ? styles.showMenu : styles.showContent}`}>
         
         {/* Боковое меню */}
@@ -41,12 +44,13 @@ export default function SettingsLayout({ children }: { children: ReactNode }) {
         <section className={styles.content}>
           {/* Кнопка "Назад" только для мобилок */}
           {!isRootSettings && (
-            <Link href="/settings" className={styles.backButton}>
+            <Link href={`/profile/${user?.username}`} className={styles.backButton}>
               ← Назад
             </Link>
           )}
           {children}
         </section>
+      </div>
       </div>
       </LanguageProvider>
     </DashboardLayout>

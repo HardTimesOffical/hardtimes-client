@@ -9,10 +9,17 @@ import LoadingCrystal from "../components/loading/LoadingCrystal";
 import Pagination from "../components/blocks/Pagination";
 
 interface Props {
-  game: "java" | "bedrock" | "hytale" |  "all";
+  game: "java" | "bedrock" | "hytale" | "all";
+  sort?: "new" | "rating"; // Вынесли сюда
+  filters?: {
+    version?: string;
+    category?: string;
+    lang?: string;
+    // Убрали отсюда
+  };
 }
 
-export default function ServerList({ game }: Props) {
+export default function ServerList({ game, filters, sort }: Props) {
   const [servers, setServers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -22,46 +29,54 @@ export default function ServerList({ game }: Props) {
   const pageSize = 15;
 
   useEffect(() => {
-  setLoading(true);
-  // Сбрасываем страницу на первую при смене категории игры
-  setCurrentPage(1);
+    setLoading(true);
+    setCurrentPage(1);
 
-  const apiUrl = process.env.NEXT_PUBLIC_SERVER_URL 
-    ? `${process.env.NEXT_PUBLIC_SERVER_URL}/servers?game=${game}`
-    : `/api/servers?game=${game}`;
+    // Формируем URL с учетом фильтров
+    const params = new URLSearchParams();
+    if (game !== "all") params.append("game", game);
+    if (sort) params.append("sort", sort); 
+    if (filters?.version) params.append("version", filters.version);
+    if (filters?.category) params.append("category", filters.category);
+    if (filters?.lang) params.append("lang", filters.lang);
 
-  fetch(apiUrl)
-    .then(res => {
-      if (!res.ok) throw new Error(`Error: ${res.status}`);
-      return res.json();
-    })
-    .then(data => {
-      // Сортировка: сначала те, у кого больше premiumVotes, затем по votesWeekly
-      const sortedServers = data.sort((a: any, b: any) => {
+    const apiUrl = process.env.NEXT_PUBLIC_SERVER_URL 
+      ? `${process.env.NEXT_PUBLIC_SERVER_URL}/servers?${params.toString()}`
+      : `/api/servers?${params.toString()}`;
+
+fetch(apiUrl)
+  .then(res => {
+    if (!res.ok) throw new Error(`Error: ${res.status}`);
+    return res.json();
+  })
+  .then(data => {
+    let finalData = data;
+
+    // ПРАВКА: Сортируем по рейтингу ТОЛЬКО если это не раздел "Новые"
+    if (sort !== "new") {
+      finalData = [...data].sort((a: any, b: any) => {
         const aPremium = a.premiumVotes || 0;
         const bPremium = b.premiumVotes || 0;
         const aWeekly = a.votesWeekly || 0;
         const bWeekly = b.votesWeekly || 0;
 
-        // 1. Сравниваем премиум-бусты
-        if (aPremium !== bPremium) {
-          return bPremium - aPremium; // Больше бустов = выше в списке
-        }
-
-        // 2. Если бустов поровну (или у обоих 0), сравниваем обычные голоса
-        return bWeekly - aWeekly; // Больше голосов = выше в списке
+        if (aPremium !== bPremium) return bPremium - aPremium;
+        return bWeekly - aWeekly;
       });
+    } else {
+      // Если sort === "new", оставляем порядок как прислал бэкенд
+      finalData = data;
+    }
 
-      setServers(sortedServers);
-      setLoading(false);
-    })
-    .catch(err => {
-      console.error("Fetch error:", err);
-      setLoading(false);
-    });
-}, [game]);
+    setServers(finalData);
+    setLoading(false);
+  })
+      .catch(err => {
+        console.error("Fetch error:", err);
+        setLoading(false);
+      });
+  }, [game, filters, sort]); // Добавляем filters в зависимости
 
-  // ЛОГИКА ПАГИНАЦИИ (Вырезаем нужный кусок массива)
   const currentServers = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
     return servers.slice(start, start + pageSize);
@@ -69,7 +84,7 @@ export default function ServerList({ game }: Props) {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 300, behavior: 'smooth' });
   };
 
   const handleAddServer = () => {
@@ -84,14 +99,13 @@ export default function ServerList({ game }: Props) {
 
   return (
     <div className="flex flex-col w-full max-w-5xl mb-5">
-
-      {/* Нижний ряд: Кнопка и Пагинация */}
-      <div className="flex flex-row w-full justify-between items-center h-fit border-b border-white/5 pb-2">
-        <button className="blueBtn" onClick={handleAddServer}>
+      
+      {/* Шапка списка */}
+      <div className="flex flex-row w-full justify-between items-center pb-4 border-b border-gray-100">
+        <button className="submit" onClick={handleAddServer}>
           + Add Server
         </button>
         
-        {/* Пагинация (теперь плотно прижата) */}
         <div className="flex items-center">
           <Pagination 
             currentPage={currentPage}
@@ -101,34 +115,44 @@ export default function ServerList({ game }: Props) {
           />
         </div>
       </div>
-          <div className="flex flex-col gap-2 w-full mt-2 block p-3">       
-         {currentServers.length > 0 ? (
+
+      {/* Список серверов */}
+      <div className="flex flex-col gap-3 w-full mt-4">       
+        {currentServers.length > 0 ? (
           currentServers.map((server, index) => {
-            // Вычисляем реальный ранг с учетом страницы
             const globalIndex = (currentPage - 1) * pageSize + index + 1;
             return (
               <ServerCard key={server._id} server={server} rank={globalIndex} />
             );
           })
         ) : (
-          <div className="py-10 text-gray-400">No servers found.</div>
+          <div className="py-20 text-center bg-white rounded-3xl border-2 border-dashed border-gray-100">
+            <p className="text-gray-400 font-medium">No servers found with these filters.</p>
+            <button 
+              onClick={() => router.push("/")}
+              className="text-orange-500 font-bold mt-2 hover:underline"
+            >
+              Clear filters
+            </button>
+          </div>
         )}
       </div>
 
-      {/* Добавляем компонент пагинации */}
-      <div className="mt-4">
+      {/* Нижняя пагинация и таймер */}
+      <div className="mt-8 flex flex-col gap-6">
         <Pagination 
           currentPage={currentPage}
           totalItems={servers.length}
           pageSize={pageSize}
           onPageChange={handlePageChange}
         />
-      </div>
-            <div className="flex flex-row gap-3 px-1 items-center block p-3 mb-1"> 
-        <WeeklyTimer />
-        <span className="text-sm text-gray-500">
-          Total servers: <strong className="text-gray-300">{servers.length}</strong>
-        </span> 
+        
+        <div className="flex flex-row justify-between items-center bg-gray-50 p-4 rounded-2xl"> 
+          <WeeklyTimer />
+          <span className="text-sm font-bold text-gray-400">
+            Total servers: <span className="text-gray-900">{servers.length}</span>
+          </span> 
+        </div>
       </div>
     </div>
   );

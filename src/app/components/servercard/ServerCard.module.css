@@ -1,232 +1,395 @@
-.wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-}
+/* ServerCard.module.css */
 
-.card {
-  display: flex;
-  flex-direction: column;
-  background: #111827;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+.cardContainer {
+  width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+  border-bottom: 3px solid #FF6A00; /* Твоя оранжевая полоса снизу */
   overflow: hidden;
-  transition: background 0.2s;
-  max-width: 1200px;
-  width: 100%;
-}
-
-.card:hover {
-  background: #161f31;
-}
-
-/* Секции карточки */
- .nameSection, .playersSection, .statusSection {
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.votesSection {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-/* Стили мобильных рядов */
-.mobileRow {
-  display: flex; 
-  justify-content: space-evenly;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-.mobileRow:last-child {
-  border-bottom: none;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.imageSection {
   position: relative;
+}
+
+.cardContainer:hover {
+  transform: translateY(-2px);
+}
+
+.cardLink {
+  display: flex;
+  flex-direction: column;
+  padding: 14px 18px;
+  text-decoration: none;
+  color: inherit;
+  gap: 12px;
+}
+
+/* ВЕРХНИЙ РЯД: Название слева, категории справа */
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 10px;
+}
+
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0; /* Важно для обрезания текста */
+}
+
+.flag {
+  width: 22px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.flag img {
   width: 100%;
-  flex: 1; /* Позволяет блоку расти */
-  min-width: 0; /* Важно для работы flex внутри контейнеров */
+  height: 100%;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.serverName {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.categories {
+  font-size: 11px;
+  color: #9ca3af;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+  flex-shrink: 1;
+}
+
+/* НИЖНИЙ РЯД: Баннер + Группа действий (IP + Статы) */
+.bottomRow {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ФИКСИРОВАННЫЙ БАННЕР 470x60 */
+.bannerBlock {
+  flex: 0 0 470px;
+  width: 470px;
+  min-width: 0;
+}
+
+.bannerWrapper {
+  width: 100%;
+  height: 60px;
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f8f9fa;
 }
 
 .banner {
   width: 100%;
   height: 100%;
+  object-fit: cover;
   display: block;
-  object-fit: cover; /* Заполняет пространство без искажения */
 }
 
-.ipBadge {
+.premiumBadge {
   position: absolute;
-  bottom: 8px;
-  left: 8px;
-  background: rgba(0, 0, 0, 0.7);
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  color: #fff;
+  top: -10px;
+  right: 15px;
+  background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 4px 10px rgba(0, 150, 255, 0.4);
   z-index: 10;
 }
 
-.nameSection {
-  width: 150px; /* Твоя фиксированная ширина */
-  flex-shrink: 0;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 0 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  /* Добавляем это, чтобы контейнер не раздувался текстом */
-  min-width: 0; 
-  overflow: hidden;
+.diamondIcon {
+  font-size: 14px;
 }
 
-/* Текстовые стили */
-.serverName {
-  font-weight: 500;
-  font-size: 0.95rem;
-  color: #d1d5db;
-  
-  /* Магия обрезки текста */
-  width: 100%;           /* Занимать всю ширину родителя */
-  text-align: center;    /* Центрировать текст */
-  white-space: nowrap;   /* Запретить перенос на новую строку */
-  overflow: hidden;      /* Скрыть то, что не поместилось */
-  text-overflow: ellipsis; /* Добавить три точки (...) в конце */
+/* Кнопка буста поверх баннера */
+.boostOverlay {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(102, 76, 250, 0.9);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
-.label {
-  font-size: 0.75rem;
-  color: #9ca3af;
-  margin-bottom: 2px;
+.boostOverlay:hover {
+  transform: scale(1.1);
+  background: #6871eb;
 }
 
-.value, .voteCount {
-  font-size: 0.9rem;
-  color: #e5e7eb;
-  font-weight: 600;
-}
-
-.statusText {
-  font-size: 0.9rem;
-  font-weight: 500;
-}
 
 .noImagePlaceholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
   display: flex;
-  justify-content: center;
   align-items: center;
-  border: 1px dashed rgba(255, 255, 255, 0.1);
-  border-radius: inherit;
+  justify-content: center;
+  background: #f9fafb;
+  border: 1px dashed #e5e7eb;
+  border-radius: 6px;
 }
 
 .noImagePlaceholder span {
-  color: #4b5563;
-  font-size: 0.8rem;
+  font-size: 10px;
+  color: #bdc3c7;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
-/* Добавим легкий эффект при наведении на всю карточку */
-.card:hover .noImagePlaceholder {
-  background: linear-gradient(135deg, #2563eb10 0%, #111827 100%);
-  border-color: rgba(37, 99, 235, 0.2);
+.bannerOverlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(255, 255, 255, 0.2);
+  font-weight: 900;
+  font-size: 24px;
+  pointer-events: none;
 }
 
-.card:hover .noImagePlaceholder span {
-  color: #6b7280;
+/* ПРАВАЯ ЧАСТЬ: Группа IP + Статистика */
+.actionGroup {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 0;
+  flex-direction: row;
 }
 
-.online { color: #10b981; }
-.offline { color: #ef4444; }
+/* ФИКСИРОВАННАЯ КНОПКА IP */
+.ipButton {
+  width: 160px;
+  height: 40px;
+  flex-shrink: 0;
+  background: #ff7a00;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+}
 
-/* Адаптация для ПК */
-@media (min-width: 780px) {
-  .card {
-    flex-direction: row;
-    height: 85px; /* Немного увеличил высоту для баланса */
-    align-items: stretch; /* Растягивает все секции по высоте */
-  }
+.ipButton:hover {
+  background: #e66e00;
+}
 
-  .mobileRow {
-    display: contents; /* Разрывает мобильную обертку, превращая детей в прямых детей .card */
-  }
+.ipButton.copied {
+  background: #27ae60;
+}
 
-  /* Левые секции */
-  .votesSection {
-    width: 70px; /* Уменьшил фиксированную ширину */
-    flex-shrink: 0;
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-  }
+.ipText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  .nameSection {
-    width: 150px; /* Уменьшил, чтобы дать больше места баннеру */
-    flex-shrink: 0;
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 0 10px;
-  }
+/* СТАТИСТИКА: В одну линию, не сжимается */
+.statsRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-grow: 1;
+  flex-direction: row;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 13px;
+  color: #4b5563;
+  min-width: 0;
+}
 
-  /* ЦЕНТРАЛЬНАЯ СЕКЦИЯ - БАННЕР */
-  .imageSection {
-    flex: 3; /* Занимает в 3 раза больше веса, чем другие гибкие блоки */
-    min-width: 300px; /* Минимальный порог баннера */
-  }
+.version {
+  color: #111;
+  min-width: 40px;
+}
 
-  /* Правые секции */
-  .playersSection {
-    width: 120px;
-    flex-shrink: 0;
-    border-left: 1px solid rgba(255, 255, 255, 0.05);
-  }
+.players {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  min-width: 80px;
+}
 
-  .statusSection {
-    width: 100px;
-    flex-shrink: 0;
-    border-left: 1px solid rgba(255, 255, 255, 0.05);
+.curP {
+  color: #ff7a00;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.maxP {
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  min-width: 45px;
+}
+
+.star {
+  width: 16px;
+  height: 16px;
+  fill: #FFB800;
+}
+
+.status {
+  min-width: 60px;
+  text-align: right;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.online { color: #ff7a00; }
+.offline { color: #bdc3c7; }
+
+/* АДАПТАЦИЯ */
+
+/* Если экран меньше 1200px — начинаем плавно сжимать баннер и кнопку */
+@media (max-width: 1200px) {
+  .bannerBlock {
+    flex: 1;
+    max-width: 470px;
   }
 }
 
-/* Адаптация для мобильных */
-@media (max-width: 780px) { 
-  .card {
-    height: auto; 
+/* Средние экраны: Статистика уходит под кнопку IP */
+@media (max-width: 992px) {
+  .actionGroup {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .ipButton {
+    width: 100%;
+  }
+  .statsRow {
+    width: 100%;
+  }
+}
+
+@media (max-width: 850px) {
+  /* На маленьких экранах переключаем в колонку */
+  .bottomRow {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .imageSection {
-    /* Уменьшаем высоту с 180px до более аккуратных 80-100px */
-    height: 100px; 
-    flex: none; /* Отключаем растягивание */
+  .bannerBlock {
+    width: 100%;
+    max-width: 100%;
+    flex: none;
   }
 
-  /* Делаем информационные блоки компактнее */
-  .votesSection, .nameSection, .playersSection, .statusSection {
-    padding: 8px;
+  .bannerWrapper {
+    aspect-ratio: 470 / 60;
+    height: auto;
   }
 
+  /* ТУТ МЕНЯЕМ НА COLUMN ДЛЯ МОБИЛ */
+  .actionGroup {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .ipButton {
+    width: 100%; /* Кнопка на всю ширину */
+  }
+
+  .statsRow {
+    width: 100%;
+    padding: 5px 0;
+  }
+
+  .topRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .categories {
+    text-align: left;
+  }
+}
+/* Мобильные устройства: Баннер на всю ширину, карточка растет вверх */
+@media (max-width: 768px) {
+  .bottomRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+  
+  .bannerBlock {
+    width: 100%;
+    flex: none;
+    max-width: 100%;
+  }
+  
+  .bannerWrapper {
+    height: auto;
+    aspect-ratio: 470 / 60; /* Поддерживаем пропорцию на мобилках */
+  }
+
+  .topRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .categories {
+    text-align: left;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .cardLink {
+    padding: 12px;
+  }
   .serverName {
-    font-size: 0.85rem; /* Чуть меньше шрифт на мобилках */
-  }
-
-  .ipBadge {
-    bottom: 4px;
-    left: 4px;
-    font-size: 0.65rem;
-    padding: 1px 6px;
-  }
-
-  /* Если название секции (Label) занимает много места, можно уменьшить */
-  .label {
-    font-size: 0.65rem;
-    margin-bottom: 0;
+    font-size: 16px;
   }
 }

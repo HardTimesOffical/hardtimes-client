@@ -1,21 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import styles from "./ServerCard.module.css";
 import Link from "next/link";
 import { BoostModal } from "../payment/BoostModal";
 import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 
-export default function ServerCard({ server, rank, contextGame = "all" }: any) {
+export default function ServerCard({ server }: any) {
   const { user, updateUser } = useAuth();
   const [isBoostOpen, setIsBoostOpen] = useState(false);
   const [boostLoading, setBoostLoading] = useState(false);
-  
-  const hasPremium = server.premiumVotes > 0;
+  const [copied, setCopied] = useState(false);
 
-  const handleOpenBoost = (e: React.MouseEvent) => {
-    e.preventDefault(); // Чтобы не переходить на страницу сервера
+  // 1. Приоритет реальной версии из статуса
+  const displayVersion = useMemo(() => {
+    return server.status?.version || server.gameVersion || "1.20";
+  }, [server.status?.version, server.gameVersion]);
+
+  const displayIp = useMemo(() => {
+    let ipData = server.ipAddress;
+    if (typeof ipData === 'string' && (ipData.startsWith('{') || ipData.includes('"java"'))) {
+      try { ipData = JSON.parse(ipData); } catch (e) { console.error(e); }
+    }
+    if (typeof ipData === 'object' && ipData !== null) {
+      return ipData.java || ipData.bedrock || "IP не указан";
+    }
+    return ipData || "IP не указан";
+  }, [server.ipAddress]);
+
+  const handleCopyIp = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard.writeText(displayIp);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  // Метод для открытия модалки без перехода по ссылке
+  const openBoost = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     setIsBoostOpen(true);
   };
 
@@ -31,7 +56,6 @@ export default function ServerCard({ server, rank, contextGame = "all" }: any) {
       if (res.data.success) {
         updateUser({ balance: res.data.newBalance });
         setIsBoostOpen(false);
-        // Здесь можно добавить Toast уведомление об успехе
       }
     } catch (err: any) {
       alert(err.response?.data?.message || "Ошибка");
@@ -42,76 +66,74 @@ export default function ServerCard({ server, rank, contextGame = "all" }: any) {
 
   return (
     <>
-      <Link href={`/${server.slug}`} className="w-full">
-        <div className={`${styles.wrapper} ${hasPremium ? styles.premiumWrapper : ""}`}>
-          <div className={styles.card}>
-            
-            <div className={styles.mobileRow}>
-              {/* СЕКЦИЯ ГОЛОСОВ (Переключаемая) */}
-            <div 
-              onClick={handleOpenBoost}
-              className={styles.votesSection} // Используем существующий класс из CSS модулей
-            >
-              {hasPremium ? (
-                /* Премиум Буст на всё пространство */
-                <div className="flex flex-col items-center justify-center w-full h-full bg-blue-500/10 border border-blue-500/30 shadow-[inset_0_0_10px_rgba(59,130,246,0.1)] group">
-                  <span translate="no" className="text-[10px] font-black text-blue-400 uppercase tracking-widest leading-none mb-1">
-                    Boost
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="text-blue-400 group-hover:scale-110 transition-transform">
-                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-                    </svg>
-                    <span className="text-lg font-black text-white leading-none">
-                      {server.premiumVotes}
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                /* Обычные голоса (также растянутые) */
-                <div className="flex flex-col items-center justify-center w-full h-full">
-                  <span className={styles.label}>Votes</span>
-                  <span className={styles.voteCount}>{server.votesWeekly ?? 0}</span>
-                </div>
-              )}
-            </div>
+      <div className={styles.cardContainer}>
 
-              <div className={styles.nameSection}>
-                <h3 className={styles.serverName}>
-                  {server.gameType === "JAVA & BEDROCK" && (
-                    <span className="mr-2 text-[10px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded font-bold border border-blue-500/10">J+B</span>
-                  )}
-                  {server.serverName}
-                </h3>
-              </div>
+        <Link href={`/${server.slug}`} className={styles.cardLink}>
+          <div className={styles.topRow}>
+            <div className={styles.titleWrapper}>
+              <h3 className={styles.serverName}>{server.serverName}</h3>
             </div>
-
-            {/* Оставшаяся часть карточки... */}
-            <div className={styles.imageSection}>
-              {server.imageUrl ? (
-                <img src={server.imageUrl} alt={server.serverName} className={styles.banner} />
-              ) : (
-                <div className={styles.noImagePlaceholder}><span>No banner</span></div>
-              )}
-              <div className={styles.ipBadge}>IP: {server.ipAddress}</div>
+            <div className={styles.categories}>
+              {server.categories?.length > 0 ? server.categories.join(" • ") : "Survival • SkyBlock"}
             </div>
-
-            <div className={styles.mobileRow}>
-              <div className={styles.playersSection}>
-                <span className={styles.label}>Players</span>
-                <span className={styles.value}>{server.status?.players}/{server.status?.maxPlayers}</span>
-              </div>
-              <div className={styles.statusSection}>
-                <span className={styles.label}>Status</span>
-                <span className={`${styles.statusText} ${server.status?.online ? styles.online : styles.offline}`}>
-                  {server.status?.online ? "Online" : "Offline"}
-                </span>
-              </div>
-            </div>
-
           </div>
-        </div>
-      </Link>
+
+          <div className={styles.bottomRow}>
+            <div className={styles.bannerBlock}>
+              <div className={styles.bannerWrapper}>
+                {server.imageUrl ? (
+                  <img src={server.imageUrl} alt="" className={styles.banner} />
+                ) : (
+                  <div className={styles.noImagePlaceholder}><span>Баннер отсутствует</span></div>
+                )}
+                {/* Кнопка БУСТА прямо на баннере */}
+                <div className={styles.boostOverlay} onClick={openBoost}>🚀 BOOST</div>
+              </div>
+            </div>
+
+            <div className={styles.actionGroup}>
+              <button 
+                className={`${styles.ipButton} ${copied ? styles.copied : ""}`} 
+                onClick={handleCopyIp}
+              >
+                <span className={styles.ipText}>{copied ? "Скопировано!" : displayIp}</span>
+              </button>
+
+            <div className={styles.statsRow}>
+              {/* Реальная версия сервера */}
+              <span className={styles.version} title="Версия сервера">{displayVersion}</span>
+              
+              <div className={styles.players}>
+                <span className={styles.curP}>{server.status?.players ?? 0}</span>
+                <span className={styles.maxP}>/{server.status?.maxPlayers ?? 0}</span>
+              </div>
+
+              {/* ГРУППА ГОЛОСОВ */}
+              <div className={styles.votesGroup}>
+                
+                {/* ПРЕМИУМ голоса (показываем только если они > 0) */}
+                {server.premiumVotes > 0 && (
+                  <div className={styles.premiumRating} onClick={openBoost} title="Премиум голоса">
+                    <span className={styles.diamondSmall}>💎</span>
+                    <span>{server.premiumVotes}</span>
+                  </div>
+                )}
+                <div className={styles.rating} onClick={openBoost} title="Еженедельные голоса">
+                  <svg className={styles.star} viewBox="0 0 24 24">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                  </svg>
+                  <span>{server.votesWeekly || 0}</span>
+                </div>
+              </div>
+
+              <div className={`${styles.status} ${server.status?.online ? styles.online : styles.offline}`}>
+                {server.status?.online ? "Online" : "Offline"}
+              </div>
+            </div>
+            </div>
+          </div>
+        </Link>
+      </div>
 
       <BoostModal 
         isOpen={isBoostOpen}

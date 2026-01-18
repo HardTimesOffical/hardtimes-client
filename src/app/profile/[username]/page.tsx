@@ -1,5 +1,6 @@
 import styles from "./profile.module.css";
 import Link from "next/link";
+import LogoutButton from "@/app/profile/[username]/LogoutButton";
 
 interface ProfilePageProps {
   params: Promise<{ username: string }>;
@@ -18,9 +19,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   }
 
   const user = await res.json();
-
   const firstLetter = user.username ? user.username.charAt(0).toUpperCase() : "?";
-
   const joinedDate = new Date(user.createdAt).toLocaleDateString('en-US', {
     month: 'short',
     year: 'numeric'
@@ -34,17 +33,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
       <div className={styles.content}>
         <div className={styles.profileSidebar}>
-         <div className={styles.avatarWrapper}>
+          <div className={styles.avatarWrapper}>
             {user.avatar ? (
-              <img 
-                src={user.avatar} 
-                alt={user.username} 
-                className={styles.avatar}
-              />
+              <img src={user.avatar} alt={user.username} className={styles.avatar} />
             ) : (
-              <div className={styles.avatarPlaceholder}>
-                {firstLetter}
-              </div>
+              <div className={styles.avatarPlaceholder}>{firstLetter}</div>
             )}
           </div>
           
@@ -52,6 +45,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
             <h1 className={styles.username}>{user.username}</h1>
             <div className={styles.badge}>User</div>
             <p className={styles.bio}>{user.bio || "No bio yet"}</p>
+            
+            {/* Кнопка выхода под био */}
+            <div className="mt-6 w-full">
+               <LogoutButton />
+            </div>
           </div>
         </div>
 
@@ -73,7 +71,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
           <div className={styles.section}>
             <h2 className={styles.sectionTitle}>User Servers</h2>
-            
             {user.servers && user.servers.length > 0 ? (
               <div className="grid grid-cols-1 gap-6">
                 {user.servers.map((server: any) => (
@@ -82,34 +79,21 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                     href={`/${server.slug}`}
                     className="group flex flex-col bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/[0.08] hover:border-blue-500/50 transition-all"
                   >
-                    {/* Широкий GIF баннер (соотношение сторон примерно 3:1 или 4:1) */}
-                    <div className="relative w-full h-20 sm:h-20 bg-gray-900 border-b border-white/5 overflow-hidden">
+                    <div className="relative w-full h-20 bg-gray-900 border-b border-white/5 overflow-hidden">
                       {server.imageUrl ? (
-                        <img 
-                          src={server.imageUrl} 
-                          alt="" 
-                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" 
-                        />
+                        <img src={server.imageUrl} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-white/10 text-xs uppercase tracking-widest">
-                          No Banner
-                        </div>
+                        <div className="w-full h-full flex items-center justify-center text-white/10 text-xs uppercase tracking-widest">No Banner</div>
                       )}
-                      {/* Затемнение снизу для лучшей читаемости (опционально) */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60" />
                     </div>
                     
-                    {/* Контент под баннером */}
                     <div className="p-4 flex items-center justify-between">
                       <div className="flex flex-col">
-                        <h3 className="font-bold text-lg text-white group-hover:text-blue-400 transition">
-                          {server.serverName}
-                        </h3>
+                        <h3 className="font-bold text-lg text-black/50 group-hover:text-blue-400 transition">{server.serverName}</h3>
                         <p className="text-xs text-white/40 font-mono tracking-tighter">{server.ipAddress}</p>
                       </div>
-
                       <div className="flex items-center gap-6">
-                        {/* Статус сервера */}
                         <div className="text-right hidden sm:flex flex-col items-end">
                           {server.status?.online ? (
                             <>
@@ -120,9 +104,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                                 </span>
                                 ONLINE
                               </div>
-                              <span className="text-[10px] text-white/40 font-medium">
-                               {server.status.players}/{server.status.maxPlayers} PLAYERS
-                              </span>
+                              <span className="text-[10px] text-white/40 font-medium">{server.status.players}/{server.status.maxPlayers} PLAYERS</span>
                             </>
                           ) : (
                             <div className="flex items-center gap-1.5 text-red-500 text-sm font-bold opacity-70">
@@ -137,9 +119,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 ))}
               </div>
             ) : (
-              <div className={styles.emptyState}>
-                No servers added yet.
-              </div>
+              <div className={styles.emptyState}>No servers added yet.</div>
             )}
           </div>
         </div>

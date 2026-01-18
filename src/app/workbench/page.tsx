@@ -7,7 +7,9 @@ const WorkbenchPage: React.FC = () => {
   return (
     <div className={styles.pageWrapper}>
     <DashboardLayout>
-      <Workbench />
+      <div className="mt-15 mb-35">
+        <Workbench />
+      </div>
     </DashboardLayout>
     </div>
   );
