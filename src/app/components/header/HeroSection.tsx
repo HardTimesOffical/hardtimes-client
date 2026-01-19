@@ -1,97 +1,112 @@
-import React from 'react';
+"use client";
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import { HiPlus, HiOutlineCpuChip, HiOutlineUsers, HiOutlineServerStack, HiOutlineBolt } from 'react-icons/hi2';
+
+const GAMES = [
+  { name: "Minecraft", color: "text-white" },
+  { name: "Hytale", color: "text-purple-200" },
+  { name: "VoxelCore", color: "text-blue-200" }
+];
 
 export default function HeroSection() {
-  return (
-    <section className="relative w-full min-h-[480px] flex flex-col items-center pt-28 pb-16 px-6 overflow-hidden">
-      {/* 1. Фоновый слой с фото */}
-      <div 
-        className="absolute inset-0 z-0 scale-105" // Легкий scale предотвращает белые края
-        style={{ 
-          backgroundImage: 'url("/icons/header.svg")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      />
-      
-      {/* 2. Наложение градиента для читаемости текста */}
-      <div className="absolute inset-0 z-[1] bg-gradient-to-r from-black/47 via-black/10 to-transparent" />
+  const [index, setIndex] = useState(0);
+  const [stats, setStats] = useState({ servers: 0, players: 0, users: 0 });
+  const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, "");
 
-      {/* 3. Контентная область */}
-      <div className="relative z-10 max-w-[1200px] w-full flex flex-col items-start gap-5">
+  useEffect(() => {
+    const timer = setInterval(() => setIndex((prev) => (prev + 1) % GAMES.length), 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch(`${SERVER_URL}/servers/stats-global`);
+        const data = await res.json();
+        setStats({
+          servers: data.totalServers || 346,
+          players: data.totalPlayers || 43200,
+          users: data.totalUsers || 12500
+        });
+      } catch (e) { console.error(e); }
+    };
+    fetchStats();
+  }, [SERVER_URL]);
+
+  return (
+    <section 
+      className="relative w-full flex flex-col items-center pt-10 pb-8 px-4 overflow-hidden rounded-b-[32px] shadow-lg shadow-orange-500/20"
+      translate="no"
+    >
+      {/* Фон */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-br from-orange-500 via-orange-600 to-red-600" />
+      <div className="absolute inset-0 z-0 opacity-10 bg-[url('/icons/grid.svg')] bg-center scale-150" />
+
+      <div className="relative mt-15 z-10 max-w-[800px] w-full flex flex-col items-center text-center">
         
-        {/* Бейдж над заголовком */}
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-white/80 text-xs font-medium tracking-wider uppercase">
-          Лучший мониторинг
+        {/* Чип-индикатор (микро) */}
+        <div className="flex items-center gap-1.5 bg-black/10 backdrop-blur-md px-2 py-0.5 rounded-md mb-4 border border-white/10">
+          <HiOutlineCpuChip className="text-white w-2.5 h-2.5" />
+          <span className="text-white/60 text-[6px] font-black uppercase tracking-[0.2em]">
+            Status: <span className="text-white">Active</span>
+          </span>
         </div>
 
-        <h1 className="text-white text-3xl md:text-5xl font-extrabold tracking-tight max-w-2xl leading-tight">
-          Мониторинг серверов <span className="text-orange-400">Майнкрафт</span>
+        {/* Заголовок (уменьшен) */}
+        <h1 translate='no' className="text-white text-sm md:text-base font-black tracking-tight uppercase flex flex-col sm:flex-row items-center gap-x-2 italic leading-tight">
+          <span>Найди свой сервер</span>
+          <div className="relative h-[20px] overflow-hidden min-w-[100px] text-center sm:text-left">
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={GAMES[index].name}
+                initial={{ y: 15, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -15, opacity: 0 }}
+                transition={{ duration: 0.4, ease: "circOut" }}
+                className={`absolute inset-0 ${GAMES[index].color}`}
+              >
+                {GAMES[index].name}
+              </motion.span>
+            </AnimatePresence>
+          </div>
         </h1>
         
-        <p className="text-white/80 text-base md:text-lg leading-relaxed max-w-2xl font-light">
-          С помощью HardTime игроки могут легко найти и выбрать сервер по различным критериям: 
-          популярности, режимам игры или версии. Мы предоставляем актуальную статистику и честные рейтинги.
-        </p>
-
         {/* Кнопки */}
-        <div className="flex flex-wrap gap-4 mt-2">
-          <Link href="/shop" className="bg-white text-orange-600 px-7 py-3 rounded-xl font-bold flex items-center gap-2 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:-translate-y-0.5 transition-all shadow-lg">
-             <img src="/icons/promote.svg" className="w-5 h-5" alt=""/>
-             Раскрутить сервер
+        <div className="flex items-center gap-2 mt-6 mb-10">
+          <Link href="/workbench" className="bg-white text-orange-600 px-4 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-wider hover:bg-gray-50 transition-all active:scale-95 flex items-center gap-1.5 shadow-xl shadow-black/10">
+            <HiPlus className="w-3 h-3" />
+            Добавить
           </Link>
-          <button className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-7 py-3 rounded-xl font-semibold hover:bg-white/20 transition-all">
-             Помощь
+          <button className="bg-black/10 text-white border border-white/10 px-4 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-wider hover:bg-black/20 transition-all">
+            Инфо
           </button>
         </div>
 
-{/* Карточки статистики */}
-<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-10 w-full">
-  {[
-    { 
-      label: 'Серверов онлайн', 
-      value: '346', 
-      iconPath: '/icons/bow.svg' // Укажи свой путь
-    },
-    { 
-      label: 'Игроков онлайн', 
-      value: '43K+', 
-      iconPath: '/icons/crown.svg' // Укажи свой путь
-    },
-    { 
-      label: 'Верных пользователей', 
-      value: '12K+', 
-      iconPath: '/icons/leader.svg' // Укажи свой путь
-    }
-  ].map((item, idx) => (
-    <div 
-      key={idx} 
-      className="bg-white/5 backdrop-blur-sm border border-white/10 p-5 rounded-2xl flex flex-col gap-3 hover:bg-white/10 transition-colors group"
-    >
-      <div className="flex items-center gap-3">
-        {/* Иконка */}
-        <img 
-          src={item.iconPath} 
-          alt={item.label} 
-          className="w-8 h-8 object-contain opacity-80 group-hover:opacity-100 transition-opacity" 
-        />
-        
-        {/* Числовое значение */}
-        <div className="text-white text-2xl font-black tabular-nums tracking-tight">
-          {item.value}
+        {/* Статистика */}
+        <div className="grid grid-cols-3 gap-1 border-t border-white/10 pt-6 w-full max-w-[360px]">
+          <StatItem label="Серверов" value={stats.servers} icon={<HiOutlineServerStack />} />
+          <StatItem label="Игроков" value={stats.players > 999 ? `${(stats.players / 1000).toFixed(1)}k` : stats.players} icon={<HiOutlineUsers />} />
+          <StatItem label="Аптайм" value="99.9%" icon={<HiOutlineBolt />} />
         </div>
       </div>
 
-      {/* Описание */}
-      <p className="text-white/40 text-[11px] uppercase font-bold tracking-widest leading-none">
-        {item.label}
-      </p>
-    </div>
-  ))}
-</div>
-
+      {/* Декор ID */}
+      <div className="absolute bottom-3 right-4 text-white/10 font-mono text-[6px] tracking-widest uppercase">
+        Ver. 2.0.4 // HardTime
       </div>
     </section>
+  );
+}
+
+function StatItem({ label, value, icon }: { label: string, value: string | number, icon: React.ReactNode }) {
+  return (
+    <div className="flex flex-col items-center gap-0.5">
+      <div className="text-white/30 w-2 h-2 mb-1">{icon}</div>
+      <span className="text-xs font-black text-white leading-none tracking-tighter italic">{value}</span>
+      <span className="text-[6px] font-bold text-white/30 uppercase tracking-[0.15em]">{label}</span>
+    </div>
   );
 }

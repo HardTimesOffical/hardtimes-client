@@ -180,7 +180,7 @@ const handleSubmit = async (e: FormEvent) => {
 };
 
   return (
-  <div className="flex justify-center p-4">
+  <div className="flex justify-center p-4 min-h-screen">
       <form className={`flex flex-col gap-4 w-full max-w-5xl ${styles.workbenchForm}`} onSubmit={handleSubmit}>
         <div className="w-full max-w-5xl">
         <InfoBlock 
@@ -188,7 +188,7 @@ const handleSubmit = async (e: FormEvent) => {
           text="Дополнительную информацию можно добавить в редакторе сервера только после публикации."
         />
       </div>
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col md:flex-row gap-4 min-h-screen">
           
           <div className={`${styles.container} flex flex-col gap-2 flex-1`}>
             <div className={styles.sectionTitle}>НАЗВАНИЕ СЕРВЕРА</div>
@@ -314,16 +314,19 @@ const handleSubmit = async (e: FormEvent) => {
               </label>
             </div>
 
-            <div className="w-full flex justify-end mt-2">
-              <button 
-                className={styles.submit} 
-                type="submit"
-                disabled={isSubmitting} // 4. Сама блокировка визуально и технически
-                style={{ opacity: isSubmitting ? 0.6 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
-              >
-                {isSubmitting ? "Добалвение..." : "+ Добавить"}
-              </button>
-            </div>
+           <div className="w-full flex justify-end mt-2">
+            <button 
+              className={`${styles.submit} text-sm font-bold`} // Добавили text-sm
+              type="submit"
+              disabled={isSubmitting}
+              style={{ 
+                opacity: isSubmitting ? 0.6 : 1, 
+                cursor: isSubmitting ? 'not-allowed' : 'pointer' 
+              }}
+            >
+              {isSubmitting ? "Добавление..." : "+ Добавить"}
+            </button>
+          </div>
           </div>
 
         </div>

@@ -186,9 +186,9 @@ export default function EditServer() {
   };
 
   return (
-      <div className="flex justify-center p-4">
+      <div className="flex justify-center p-4 bg-[#f8f9fa] pt-25 min-h-screen">
         <form className={`flex flex-col gap-4 w-full max-w-5xl ${styles.workbenchForm}`} onSubmit={handleSubmit}>
-          <h2 className="text-white text-xl font-bold px-2">Редактировать сервер</h2>
+          <h2 className="text-black text-xl font-bold px-2">Редактировать сервер</h2>
           
           <div className="flex flex-col md:flex-row gap-4">
             

@@ -63,16 +63,17 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: SidebarProps) => {
         <button 
           onClick={() => setIsMobileOpen?.(false)}
           className="absolute top-4 right-4 p-2 md:hidden text-gray-400"
+          translate='no'
         >
           <HiX className="w-6 h-6" />
         </button>
 
         <div className="h-20 flex items-center px-5 shrink-0">
-          <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center shrink-0 text-white font-black italic text-xl shadow-lg shadow-gray-200">
+          <div translate='no' className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center shrink-0 text-white font-black italic text-xl shadow-lg shadow-gray-200">
             H
           </div>
-          <span className={`ml-4 font-black text-xl tracking-tighter text-gray-900 uppercase italic transition-all duration-300 ${isExpanded || isMobileOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10 pointer-events-none'}`}>
-            Hard<span className="text-orange-500">Times</span>
+          <span translate='no' className={`ml-4 font-black text-xl tracking-tighter text-gray-900 uppercase italic transition-all duration-300 ${isExpanded || isMobileOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10 pointer-events-none'}`}>
+            Hard<span translate='no' className="text-orange-500">Times</span>
           </span>
         </div>
 
@@ -117,18 +118,18 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: SidebarProps) => {
               {/* Исправлен блок с текстом: whitespace-nowrap и overflow-hidden */}
               <div className={`flex flex-1 items-center justify-between min-w-0 transition-all duration-300 ${isExpanded || isMobileOpen ? 'opacity-100' : 'opacity-0 pointer-events-none translate-x-10'}`}>
                 <div className="min-w-0 overflow-hidden pr-2">
-                  <p className="text-xs font-black text-gray-900 truncate uppercase">{user.username}</p>
-                  <p className="text-[10px] font-bold text-orange-500 uppercase whitespace-nowrap">
+                  <p translate='no' className="text-xs font-black text-gray-900 truncate uppercase">{user.username}</p>
+                  <p translate='no' className="text-[10px] font-bold text-orange-500 uppercase whitespace-nowrap">
                     {user.balance || 0} звезд
                   </p>
                 </div>
-                <button onClick={() => logout()} className="p-2 text-gray-400 hover:text-red-500 shrink-0">
+                <button translate='no' onClick={() => logout()} className="p-2 text-gray-400 hover:text-red-500 shrink-0">
                   <HiOutlineLogout className="w-5 h-5" />
                 </button>
               </div>
             </div>
           ) : (
-            <Link href="/login" className={`flex items-center gap-4 p-3 rounded-2xl text-gray-400 hover:bg-gray-50 hover:text-gray-900 transition-all ${isExpanded || isMobileOpen ? 'px-4' : 'justify-center'}`}>
+            <Link translate='no' href="/login" className={`flex items-center gap-4 p-3 rounded-2xl text-gray-400 hover:bg-gray-50 hover:text-gray-900 transition-all ${isExpanded || isMobileOpen ? 'px-4' : 'justify-center'}`}>
               <HiOutlineUser className="w-6 h-6 shrink-0" />
               <span className={`font-black text-sm uppercase transition-opacity ${isExpanded || isMobileOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>Войти</span>
             </Link>
@@ -151,7 +152,7 @@ const SidebarLink = ({ item, isExpanded, isActive }: any) => {
       `}
     >
       <Icon className={`w-6 h-6 shrink-0 ${isActive ? 'text-white' : item.color || 'group-hover:text-gray-900'}`} />
-      <span className={`font-bold text-sm tracking-tight whitespace-nowrap transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10 absolute pointer-events-none'}`}>
+      <span translate='no' className={`font-bold text-sm tracking-tight whitespace-nowrap transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10 absolute pointer-events-none'}`}>
         {item.name}
       </span>
     </Link>

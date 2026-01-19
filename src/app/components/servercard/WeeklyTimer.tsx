@@ -1,11 +1,13 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
+import { HiOutlineClock } from 'react-icons/hi'; // Используем иконку для консистентности
 
 const WeeklyTimer = () => {
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, "");
 
   useEffect(() => {
-    // 1. Получаем данные с сервера при монтировании
     const fetchTimer = async () => {
       try {
         const response = await fetch(`${SERVER_URL}/votes/votes-info`);
@@ -18,15 +20,13 @@ const WeeklyTimer = () => {
 
     fetchTimer();
 
-    // 2. Запускаем локальный интервал для обновления каждую секунду
     const interval = setInterval(() => {
       setTimeLeft((prev) => (prev !== null && prev > 0 ? prev - 1000 : 0));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [SERVER_URL]);
 
-  // Функция форматирования миллисекунд в Дни:Часы:Мин:Сек
   const formatTime = (ms: number) => {
     const seconds = Math.floor((ms / 1000) % 60);
     const minutes = Math.floor((ms / (1000 * 60)) % 60);
@@ -41,35 +41,42 @@ const WeeklyTimer = () => {
     };
   };
 
-  if (timeLeft === null) return <div>Загрузка...</div>;
+  if (timeLeft === null) return (
+    <div className="animate-pulse flex gap-2 items-center bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+      <div className="w-4 h-4 bg-gray-200 rounded-full" />
+      <div className="w-20 h-3 bg-gray-200 rounded" />
+    </div>
+  );
 
   const t = formatTime(timeLeft);
 
   return (
-    <div className='p-1 flex flex-row gap-2'>
-      <img className='icon' src="/icons/reset.svg"/>
-      <span style={styles.label}>Resetting votes in...</span>
-      <div style={styles.timer}>
-        {t.days > 0 && <span>{t.days}d </span>}
-        <span>{t.hours}:{t.minutes}:{t.seconds}</span>
+    /* Контейнер таймера: светлый фон, тонкая рамка */
+    <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50/50 border border-gray-100 rounded-xl select-none">
+      <div className="flex items-center justify-center w-6 h-6 bg-orange-100 rounded-lg text-orange-500">
+        <HiOutlineClock className="w-4 h-4" />
+      </div>
+      
+      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+        <span className="text-[10px] font-black uppercase text-gray-400 tracking-wider leading-none">
+          Сброс голосов
+        </span>
+        
+        <div className="flex items-center gap-1 font-mono text-sm font-bold text-gray-900 leading-none">
+          {t.days > 0 && (
+            <span className="flex items-center">
+              {t.days}<span className="text-[10px] text-gray-400 ml-0.5">д</span>
+            </span>
+          )}
+          <span className="bg-white px-1 py-0.5 rounded shadow-sm border border-gray-100">{t.hours}</span>
+          <span className="text-gray-300">:</span>
+          <span className="bg-white px-1 py-0.5 rounded shadow-sm border border-gray-100">{t.minutes}</span>
+          <span className="text-gray-300">:</span>
+          <span className="bg-white px-1 py-0.5 rounded shadow-sm border border-gray-100 text-orange-600">{t.seconds}</span>
+        </div>
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    padding: '0 15px',
-    color: '#fff',
-    borderRadius: '8px',
-    fontFamily: 'Nunito, sans-serif',
-    height: '15px',
-  },
-  label: { fontSize: '14px', color: '#888' },
-  timer: { fontWeight: 'bold', fontSize: '14px', color: '#4caf50' }
 };
 
 export default WeeklyTimer;
