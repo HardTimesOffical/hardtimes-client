@@ -18,7 +18,6 @@ export default function SettingsLayout({ children }: { children: ReactNode }) {
   const isRootSettings = pathname === "/settings" || pathname === "/settings/";
 
   return (
-    <DashboardLayout>
       <LanguageProvider>
       <div className="mt-25">
       <div className={`${styles.settingsLayout} ${isRootSettings ? styles.showMenu : styles.showContent}`}>
@@ -53,7 +52,6 @@ export default function SettingsLayout({ children }: { children: ReactNode }) {
       </div>
       </div>
       </LanguageProvider>
-    </DashboardLayout>
     
     
   );

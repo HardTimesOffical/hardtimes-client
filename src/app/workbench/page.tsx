@@ -6,11 +6,9 @@ import styles from "./workbench.module.css";
 const WorkbenchPage: React.FC = () => {
   return (
     <div className={styles.pageWrapper}>
-    <DashboardLayout>
       <div className="mt-15 mb-35">
         <Workbench />
       </div>
-    </DashboardLayout>
     </div>
   );
 }   

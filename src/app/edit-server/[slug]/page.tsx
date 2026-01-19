@@ -186,7 +186,6 @@ export default function EditServer() {
   };
 
   return (
-    <DashboardLayout>
       <div className="flex justify-center p-4">
         <form className={`flex flex-col gap-4 w-full max-w-5xl ${styles.workbenchForm}`} onSubmit={handleSubmit}>
           <h2 className="text-white text-xl font-bold px-2">Редактировать сервер</h2>
@@ -300,6 +299,5 @@ export default function EditServer() {
           </div>  
         </form>
       </div>
-    </DashboardLayout>
   );
 }

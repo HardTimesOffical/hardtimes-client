@@ -31,9 +31,11 @@
 .container {
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
+  /* Замени фиксированный белый фон на переменную или удали, 
+     если хочешь, чтобы страницы сами решали, какой у них фон */
+  background: var(--bg-gradient, #ffffff); 
   width: 100%;
-  overflow-x: hidden; /* Важно, чтобы не было горизонтального скролла */
+  overflow-x: hidden;
 }
 
 .sidebar {
@@ -247,11 +249,13 @@
 }
 
 .main {
-  flex: 1; /* Занимает всё доступное пространство */
+  flex: 1;
   width: 100%;
   display: flex;
-  flex-direction: column; /* Элементы (Hero, контент) идут друг за другом */
+  flex-direction: column;
   align-items: center;
+  /* Добавь это, чтобы дочерние элементы могли занимать 100% ширины */
+  min-width: 0; 
 }
 
 /* account for fixed header (height 60px) */

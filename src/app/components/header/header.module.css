@@ -4,7 +4,7 @@
   left: 50%;
   transform: translateX(-50%); /* Центрирование */
   width: 95%;
-  max-width: 1200px; /* Ограничение ширины */
+  max-width: 1150px; /* Ограничение ширины */
   height: 64px;
   background: rgba(20, 20, 25, 0.6); /* Полупрозрачный серый */
   backdrop-filter: blur(12px); /* Размытие заднего фона */

@@ -1,7 +1,7 @@
-
+import Sidebar from "@/app/components/dashboard/dashboard"; // Твой новый Sidebar
 import ServerList from "../ServersList";
-import DashboardLayout from "@/app/components/dashboard/dashboard";
 import ServerFilters from "@/app/components/servercard/ServerFilters";
+import HeroSection from "@/app/components/header/HeroSection";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     "лучшие сервера майнкрафт"
   ],
   alternates: {
-    canonical: "https://hardmonitoring.ru/servers/java", // Обновлено на твой домен
+    canonical: "https://hardmonitoring.ru/servers/java",
   },
   openGraph: {
     title: "Мониторинг серверов Minecraft Java Edition",
@@ -27,26 +27,48 @@ export const metadata: Metadata = {
 };
 
 export default async function JavaServersPage({ searchParams }: { searchParams: any }) {
-  // Важно: в Next.js 15 searchParams это Promise
+  // В Next.js 15 searchParams — это Promise
   const filters = await searchParams;
+
   return (
-    <DashboardLayout showHero={true}>
-      {/* Центрируем всё содержимое по горизонтали */}
-      <div className="list-con flex flex-col items-center w-full px-4">
+    <div className="flex min-h-screen bg-[#f8f9fa]">
+      {/* 1. Боковое меню */}
+      <Sidebar />
+
+      {/* 2. Основной контент */}
+      <main className="flex-1 flex flex-col items-center min-w-0">
         
-        {/* Контейнер-ограничитель для заголовка (выровнен по левому краю списка) */}
-        <div className="w-full max-w-[1000px]">
-          <h1 className="text-2xl font-bold mb-4 text-1 tracking-tight uppercase">
-            Minecraft Java Edition Servers
-          </h1>
+        {/* Заменяем проп showHero={true} прямой вставкой компонента */}
+        <HeroSection />
+
+        <div className="w-full max-w-[1000px] px-4 md:px-6 py-10">
+          
+          <header className="mb-8">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-green-600/10 rounded-lg">
+                 <img className="w-6 h-6" src="/icons/java.svg" alt="Java Icon" />
+              </div>
+              <h1 className="text-2xl md:text-4xl font-black text-gray-900 tracking-tighter uppercase italic">
+                Minecraft <span className="text-green-600">Java</span> Edition
+              </h1>
+            </div>
+            <p className="text-gray-500 font-medium max-w-2xl">
+              Лучшие классические сервера для ПК. Выбирай версию, проверяй онлайн и заходи играть.
+            </p>
+          </header>
+
+          <div className="flex flex-col gap-6">
+            {/* Панель фильтров */}
+            <ServerFilters />
+
+            {/* Список серверов с фильтром по Java */}
+            <div className="list-con w-full">
+              <ServerList filters={filters} game="java" />
+            </div>
+          </div>
+          
         </div>
-        
-        {/* Контейнер для списка серверов */}
-        <div className="w-full max-w-[1000px] flex justify-center flex-col">
-          <ServerFilters/>
-          <ServerList filters={filters} game="java" />
-        </div>
-      </div>
-    </DashboardLayout>
+      </main>
+    </div>
   );
 }

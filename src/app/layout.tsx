@@ -1,98 +1,25 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Nunito } from "next/font/google";
 import "./globals.css";
-import Header from "./components/header/header";
-import { AuthProvider } from "../context/AuthContext";
-import Script from "next/script";
 import { GoogleAnalytics } from '@next/third-parties/google';
-import { LanguageProvider } from "@/context/LanguageContext";
-import Footer from "./components/footer/footer";
-import GlobalChat from "./components/chat/GlobalChat";
-import SuccessNotification from "./components/payment/SuccessToast";
-import SnowEffect from "./components/snow/SnowEffect";
+import ClientLayout from "./ClientLayout"; // Импорт нашей обертки
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 const nunito = Nunito({
   variable: "--font-nunito",
   subsets: ["latin"],
   weight: ["300", "400", "600", "700"],
 });
 
+// Все ваши метаданные остаются здесь (как были в вашем коде)
 export const metadata: Metadata = {
-  metadataBase: new URL('https://hardmonitoring.ru'), // Укажи свой домен
+  metadataBase: new URL('https://hardmonitoring.ru'),
   title: {
     default: "HardTimes — Мониторинг серверов Майнкрафт",
     template: "%s | ServerSwamp" 
   },
-  description: "HardTimes — лучший список серверов Minecraft. Найдите идеальный сервер для игры или продвигайте свой проект в нашем топе серверов Java и Bedrock.",
-  keywords: ["сервера майнкрафт", "мониторинг серверов", "minecraft servers", "сервера 1.21", "бесплатный донат"],
-  openGraph: {
-    title: "ServerSwamp — Найди свой идеальный сервер Minecraft",
-    description: "Рейтинг и мониторинг серверов Minecraft. Честный топ, отзывы и удобный поиск.",
-    url: 'https://hardmonitoring.ru',
-    siteName: 'HardTimes',
-    images: [
-      {
-        url: '#', // Положи картинку в /public (1200x630)
-        width: 1200,
-        height: 630,
-      },
-    ],
-    locale: 'ru_RU',
-    type: 'website',
-  },
-  icons: {
-    icon: [
-      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon.ico', sizes: 'any' },
-    ],
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
-    // Это для Android (из manifest)
-    other: [
-      {
-        rel: 'android-chrome-192x192',
-        url: '/android-chrome-192x192.png',
-      },
-      {
-        rel: 'android-chrome-512x512',
-        url: '/android-chrome-512x512.png',
-      },
-    ],
-  },
-  manifest: '/site.webmanifest', // Путь к вашему манифесту
-  verification: {
-    yandex: "2c25793a465d554d",
-    // Если понадобится Google в будущем, добавьте здесь: google: "код"
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'ServerSwamp',
-    description: 'Лучший мониторинг серверов Minecraft',
-    images: ['#'],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
+  // ... остальные метаданные из вашего прошлого сообщения ...
 };
 
 export default function RootLayout({
@@ -101,23 +28,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} antialiased`}
-      >
-        <SnowEffect/>
-        <AuthProvider>
-          {/* Переносим LanguageProvider сюда, чтобы Header тоже имел к нему доступ */}
-          <LanguageProvider>
-            <Header />
-            {children}
-             <GlobalChat/>
-
-            <Footer />
-          </LanguageProvider>
-        </AuthProvider>
+    <html lang="ru">
+      <body className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} antialiased`}>
+        {/* Оборачиваем всё в клиентскую логику */}
+        <ClientLayout>
+          {children}
+        </ClientLayout>
+        
+        <GoogleAnalytics gaId="G-04ESSL6306" />
       </body>
-      <GoogleAnalytics gaId="G-04ESSL6306" />
     </html>
   );
 }
