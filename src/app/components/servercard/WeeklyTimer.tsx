@@ -63,17 +63,17 @@ const WeeklyTimer = () => {
         </span>
         
         <div className="flex items-center gap-1 font-mono text-sm font-bold text-gray-900 leading-none">
-          {t.days > 0 && (
-            <span className="flex items-center">
-              {t.days}<span className="text-[10px] text-gray-400 ml-0.5">д</span>
-            </span>
-          )}
-          <span className="bg-white px-1 py-0.5 rounded shadow-sm border border-gray-100">{t.hours}</span>
-          <span className="text-gray-300">:</span>
-          <span className="bg-white px-1 py-0.5 rounded shadow-sm border border-gray-100">{t.minutes}</span>
-          <span className="text-gray-300">:</span>
-          <span className="bg-white px-1 py-0.5 rounded shadow-sm border border-gray-100 text-orange-600">{t.seconds}</span>
-        </div>
+        {t.days > 0 && (
+          <span className="flex items-center mr-1">
+            {t.days}<span className="text-[10px] text-gray-400 ml-0.5 uppercase">d</span>
+          </span>
+        )}
+        <span className="w-7 text-center bg-white py-0.5 rounded shadow-sm border border-gray-100">{t.hours}</span>
+        <span className="text-gray-300 animate-pulse">:</span>
+        <span className="w-7 text-center bg-white py-0.5 rounded shadow-sm border border-gray-100">{t.minutes}</span>
+        <span className="text-gray-300 animate-pulse">:</span>
+        <span className="w-7 text-center bg-white py-0.5 rounded shadow-sm border border-gray-100 text-orange-600">{t.seconds}</span>
+      </div>
       </div>
     </div>
   );

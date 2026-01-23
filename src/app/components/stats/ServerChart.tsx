@@ -24,86 +24,100 @@ interface ServerChartProps {
 export default function ServerChart({ data }: ServerChartProps) {
   const { t } = useLanguage();
 
-  // Безопасная сортировка копии массива (исправляет ошибку Read-only)
   const chartData = useMemo(() => {
     return [...data].sort((a, b) => a.time.localeCompare(b.time));
   }, [data]);
 
   return (
-    <div className="w-full h-[320px] bg-[#0b1224] p-6 rounded-2xl border border-white/5 shadow-2xl relative overflow-hidden">
-      {/* Фиолетовая полоска-акцент сверху */}
-      <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50" />
+    <div 
+      className="w-full h-[280px] bg-white p-5 rounded-[24px] border border-gray-100 shadow-sm relative overflow-hidden"
+      translate="no"
+    >
+      {/* Тонкий технический заголовок в твоем стиле */}
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-gray-400 text-[8px] uppercase font-black tracking-[0.2em] italic">
+          {t.serverPage.statsTitle || "Activity Log"}
+        </h3>
+        <div className="flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" />
+          <span className="text-gray-300 text-[7px] font-black uppercase tracking-widest">Live Sync</span>
+        </div>
+      </div>
       
-      <h3 className="text-white/40 text-[10px] uppercase font-black tracking-[0.2em] mb-6 italic">
-        {t.serverPage.statsTitle || "Активность игроков"}
-      </h3>
-      
-      <ResponsiveContainer width="100%" height="80%">
-        <AreaChart data={chartData}>
+      <ResponsiveContainer width="100%" height="85%">
+        <AreaChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
           <defs>
-            {/* Градиент для заливки под линией */}
+            {/* Градиент заливки под оранжевый стиль */}
             <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#f97316" stopOpacity={0.15}/>
+              <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
             </linearGradient>
-            {/* Градиент для самой линии */}
+            {/* Линия графика */}
             <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#3b82f6" />
-              <stop offset="100%" stopColor="#8b5cf6" />
+              <stop offset="0%" stopColor="#f97316" />
+              <stop offset="100%" stopColor="#ea580c" />
             </linearGradient>
           </defs>
           
           <CartesianGrid 
-            strokeDasharray="10 10" 
-            stroke="#ffffff" 
+            strokeDasharray="4 4" 
+            stroke="#000000" 
             vertical={false} 
-            opacity={0.03} 
+            opacity={0.05} 
           />
           
           <XAxis 
             dataKey="time" 
-            stroke="#ffffff" 
-            fontSize={10}
+            stroke="#000000" 
+            fontSize={8}
             tickLine={false}
             axisLine={false}
-            tick={{ opacity: 0.3, fontWeight: 700 }}
+            tick={{ opacity: 0.3, fontWeight: 900 }}
             dy={10}
           />
           
           <YAxis 
-            stroke="#ffffff" 
-            fontSize={10}
+            stroke="#000000" 
+            fontSize={8}
             tickLine={false}
             axisLine={false}
-            tick={{ opacity: 0.3, fontWeight: 700 }}
+            tick={{ opacity: 0.3, fontWeight: 900 }}
             tickFormatter={(value) => value.toLocaleString()}
           />
           
           <Tooltip 
-            cursor={{ stroke: '#8b5cf6', strokeWidth: 1, strokeDasharray: '5 5' }}
+            cursor={{ stroke: '#f97316', strokeWidth: 1, strokeDasharray: '4 4' }}
             contentStyle={{ 
-              backgroundColor: '#0f172a', 
-              border: '1px solid rgba(255,255,255,0.1)', 
+              backgroundColor: '#ffffff', 
+              border: '1px solid rgba(0,0,0,0.05)', 
               borderRadius: '12px',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
+              fontSize: '10px',
+              fontWeight: '900',
+              boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
+              padding: '8px 12px'
             }}
-            itemStyle={{ color: '#a78bfa' }}
-            labelStyle={{ color: '#64748b', marginBottom: '4px' }}
+            itemStyle={{ color: '#f97316', textTransform: 'uppercase' }}
+            labelStyle={{ color: '#94a3b8', marginBottom: '2px', fontSize: '8px' }}
           />
           
           <Area 
             type="monotone" 
             dataKey="players" 
             stroke="url(#lineGradient)" 
-            strokeWidth={4}
+            strokeWidth={3}
             fillOpacity={1} 
             fill="url(#colorValue)" 
-            animationDuration={2000}
+            animationDuration={1500}
+            // Сглаживание точек
+            activeDot={{ r: 4, strokeWidth: 0, fill: '#f97316' }}
           />
         </AreaChart>
       </ResponsiveContainer>
+
+      {/* Декоративный элемент в углу */}
+      <div className="absolute bottom-3 right-5 text-[7px] font-black text-gray-200 tracking-tighter uppercase italic">
+        Database: Nodes_Primary
+      </div>
     </div>
   );
 }
