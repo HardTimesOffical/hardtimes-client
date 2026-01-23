@@ -101,7 +101,7 @@ fetch(apiUrl)
     <div className={`flex flex-col w-full max-w-5xl mb-5 ${isDark ? 'text-white' : 'text-gray-900'}`}>
       
       {/* Шапка списка */}
-      <div className={`flex flex-row w-full justify-between items-center pb-4 border-b ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
+      <div className={`flex flex-col w-full justify-between items-center pb-4 border-b ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
       <button 
         onClick={handleAddServer}
         className={`
