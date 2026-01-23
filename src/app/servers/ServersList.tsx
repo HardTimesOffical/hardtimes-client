@@ -10,16 +10,16 @@ import Pagination from "../components/blocks/Pagination";
 
 interface Props {
   game: "java" | "bedrock" | "hytale" | "all";
-  sort?: "new" | "rating"; // Вынесли сюда
+  sort?: "new" | "rating";
   filters?: {
     version?: string;
     category?: string;
     lang?: string;
-    // Убрали отсюда
   };
+  isDark?: boolean; // Добавили новый пропс
 }
 
-export default function ServerList({ game, filters, sort }: Props) {
+export default function ServerList({ game, filters, sort, isDark }: Props) {
   const [servers, setServers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -98,13 +98,32 @@ fetch(apiUrl)
   );
 
   return (
-    <div className="flex flex-col w-full max-w-5xl mb-5">
+    <div className={`flex flex-col w-full max-w-5xl mb-5 ${isDark ? 'text-white' : 'text-gray-900'}`}>
       
       {/* Шапка списка */}
-      <div className="flex flex-row w-full justify-between items-center pb-4 border-b border-gray-100">
-        <button className="submit" onClick={handleAddServer}>
-          + Add Server
-        </button>
+      <div className={`flex flex-row w-full justify-between items-center pb-4 border-b ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
+      <button 
+        onClick={handleAddServer}
+        className={`
+          relative overflow-hidden transition-all duration-300 group
+          px-6 py-2.5 rounded-xl font-[900] text-xs uppercase tracking-[0.15em]
+          active:scale-95 active:duration-75
+          ${isDark 
+            ? "bg-purple-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] hover:bg-purple-500 border border-white/20" 
+            : "bg-[#FF6A00] text-white shadow-[0_4px_15px_rgba(255,106,0,0.3)] hover:bg-[#e66e00] hover:-translate-y-0.5"
+          }
+        `}
+      >
+        {/* Эффект блика при наведении (только для темной темы) */}
+        {isDark && (
+          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
+        )}
+        
+        <span className="relative z-10 flex items-center gap-2">
+          <span className="text-lg leading-none">+</span>
+          Добавить
+        </span>
+      </button>
         
         <div className="flex items-center">
           <Pagination 
@@ -112,6 +131,7 @@ fetch(apiUrl)
             totalItems={servers.length}
             pageSize={pageSize}
             onPageChange={handlePageChange}
+            // Если компонент Pagination поддерживает темную тему, прокиньте и туда
           />
         </div>
       </div>
@@ -122,37 +142,38 @@ fetch(apiUrl)
           currentServers.map((server, index) => {
             const globalIndex = (currentPage - 1) * pageSize + index + 1;
             return (
-              <ServerCard key={server._id} server={server} rank={globalIndex} />
+              <ServerCard 
+                key={server._id} 
+                server={server} 
+                rank={globalIndex} 
+                isDark={isDark} // ПРОКИДЫВАЕМ ТЕМУ В КАРТОЧКУ
+              />
             );
           })
         ) : (
-          <div className="py-20 text-center bg-white rounded-3xl border-2 border-dashed border-gray-100">
-            <p className="text-gray-400 font-medium">No servers found with these filters.</p>
-            <button 
-              onClick={() => router.push("/")}
-              className="text-orange-500 font-bold mt-2 hover:underline"
-            >
-              Clear filters
-            </button>
+          <div className={`py-20 text-center rounded-3xl border-2 border-dashed ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-100'}`}>
+            <p className="text-gray-400 font-medium">No servers found.</p>
           </div>
         )}
       </div>
-
-      {/* Нижняя пагинация и таймер */}
-      <div className="mt-8 flex flex-col gap-6">
-        <Pagination 
-          currentPage={currentPage}
-          totalItems={servers.length}
-          pageSize={pageSize}
-          onPageChange={handlePageChange}
-        />
-        
-        <div className="flex flex-row justify-between items-center bg-gray-50 p-4 rounded-2xl"> 
-          <WeeklyTimer />
-          <span className="text-sm font-bold text-gray-400">
-            Total servers: <span className="text-gray-900">{servers.length}</span>
-          </span> 
+      <div className="flex items-center">
+          <Pagination 
+            currentPage={currentPage}
+            totalItems={servers.length}
+            pageSize={pageSize}
+            onPageChange={handlePageChange}
+            // Если компонент Pagination поддерживает темную тему, прокиньте и туда
+          />
         </div>
+      
+      {/* Нижний таймер - адаптируем под темный фон */}
+      <div className="mt-8">
+         <div className={`flex flex-row justify-between items-center p-4 rounded-2xl ${isDark ? 'bg-white/5 border border-white/10' : 'bg-gray-50'}`}> 
+            <WeeklyTimer /> 
+            <span className="text-sm font-bold text-gray-400">
+              Total: <span className={isDark ? "text-white" : "text-gray-900"}>{servers.length}</span>
+            </span> 
+         </div>
       </div>
     </div>
   );

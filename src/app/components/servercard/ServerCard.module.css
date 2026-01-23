@@ -1,152 +1,109 @@
 /* ServerCard.module.css */
 
 .cardContainer {
+  --bg-color: #ffffff;
+  --text-primary: #111111;
+  --text-secondary: #9ca3af;
+  --border-color: #f3f4f6;
+  --accent-color: #FF6A00;
+  --accent-hover: #e66e00;
+  --card-shadow: rgba(0, 0, 0, 0.06);
+  --row-border: #f3f4f6;
+  --placeholder-bg: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+
   width: 100%;
-  background: #fff;
-  border-radius: 12px;
+  background: var(--bg-color);
+  border-radius: 16px;
   margin-bottom: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  transition: transform 0.2s ease;
-  border-bottom: 3px solid #FF6A00; /* Твоя оранжевая полоса снизу */
+  box-shadow: 0 4px 20px var(--card-shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--border-color);
+  border-bottom: 4px solid var(--accent-color);
   overflow: hidden;
   position: relative;
 }
 
+.cardContainer[data-theme="dark"] {
+  --bg-color: rgba(20, 16, 35, 0.7);
+  --text-primary: #ffffff;
+  --text-secondary: #a8a8a8;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --accent-color: #A855F7;
+  --accent-hover: #9333EA;
+  --card-shadow: rgba(0, 0, 0, 0.5);
+  --row-border: rgba(255, 255, 255, 0.05);
+  --placeholder-bg: linear-gradient(135deg, #1e1b2e 0%, #2d264d 100%);
+  backdrop-filter: blur(12px);
+}
+
 .cardContainer:hover {
   transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--card-shadow);
 }
 
 .cardLink {
   display: flex;
   flex-direction: column;
-  padding: 14px 18px;
+  padding: 16px 20px;
   text-decoration: none;
   color: inherit;
-  gap: 12px;
 }
 
-/* ВЕРХНИЙ РЯД: Название слева, категории справа */
+/* ВЕРХНИЙ РЯД */
 .topRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 15px;
-  border-bottom: 1px solid #f3f4f6;
+  margin-bottom: 12px;
   padding-bottom: 10px;
-}
-
-.titleWrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0; /* Важно для обрезания текста */
-}
-
-.flag {
-  width: 22px;
-  height: 15px;
-  flex-shrink: 0;
-}
-
-.flag img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 2px;
+  border-bottom: 1px solid var(--row-border);
 }
 
 .serverName {
-  font-size: 18px;
-  font-weight: 800;
-  margin: 0;
-  color: #111;
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .categories {
   font-size: 11px;
-  color: #9ca3af;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: right;
-  flex-shrink: 1;
+  color: var(--text-secondary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* НИЖНИЙ РЯД: Баннер + Группа действий (IP + Статы) */
+/* НИЖНИЙ РЯД */
 .bottomRow {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px; /* Уменьшили gap для компактности */
 }
 
-/* ФИКСИРОВАННЫЙ БАННЕР 470x60 */
 .bannerBlock {
-  flex: 0 0 470px;
-  width: 470px;
-  min-width: 0;
+  flex: 0 0 468px;
+  width: 468px;
 }
 
 .bannerWrapper {
   width: 100%;
   height: 60px;
   position: relative;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
-  background: #f8f9fa;
+  background: var(--row-border);
 }
 
 .banner {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
-
-.premiumBadge {
-  position: absolute;
-  top: -10px;
-  right: 15px;
-  background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
-  color: white;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-weight: bold;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  box-shadow: 0 4px 10px rgba(0, 150, 255, 0.4);
-  z-index: 10;
-}
-
-.diamondIcon {
-  font-size: 14px;
-}
-
-/* Кнопка буста поверх баннера */
-.boostOverlay {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  background: rgba(102, 76, 250, 0.9);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.boostOverlay:hover {
-  transform: scale(1.1);
-  background: #6871eb;
-}
-
 
 .noImagePlaceholder {
   width: 100%;
@@ -154,242 +111,133 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f9fafb;
-  border: 1px dashed #e5e7eb;
-  border-radius: 6px;
-}
-
-.noImagePlaceholder span {
+  background: var(--placeholder-bg);
   font-size: 10px;
-  color: #bdc3c7;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.bannerOverlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: rgba(255, 255, 255, 0.2);
   font-weight: 900;
-  font-size: 24px;
-  pointer-events: none;
+  color: var(--text-secondary);
+  letter-spacing: 2px;
+  opacity: 0.5;
 }
 
-/* ПРАВАЯ ЧАСТЬ: Группа IP + Статистика */
+/* ПРАВАЯ ЧАСТЬ - ТУТ ОСНОВНЫЕ ПРАВКИ */
 .actionGroup {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 15px;
-  min-width: 0;
-  flex-direction: row;
+  gap: 12px;
+  min-width: 0; /* Важно для сжатия внутри flex */
 }
 
-/* ФИКСИРОВАННАЯ КНОПКА IP */
 .ipButton {
-  width: 160px;
+  flex: 0 1 160px; /* Кнопка может сжиматься до определенного предела */
   height: 40px;
-  flex-shrink: 0;
-  background: #ff7a00;
-  color: #fff;
+  background: var(--accent-color);
+  color: white;
   border: none;
   border-radius: 8px;
-  font-weight: 700;
-  font-size: 13px;
+  font-weight: 800;
+  font-size: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 12px;
-}
-
-.ipButton:hover {
-  background: #e66e00;
-}
-
-.ipButton.copied {
-  background: #27ae60;
-}
-
-.ipText {
+  transition: 0.2s;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding: 0 10px;
 }
 
-/* СТАТИСТИКА: В одну линию, не сжимается */
 .statsRow {
+  flex: 2;
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-grow: 1;
-  flex-direction: row;
   justify-content: space-between;
-  font-weight: 700;
-  font-size: 13px;
-  color: #4b5563;
+  gap: 8px;
   min-width: 0;
 }
 
 .version {
-  color: #111;
-  min-width: 40px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-primary);
+  background: var(--row-border);
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 .players {
   display: flex;
   align-items: baseline;
-  gap: 3px;
-  min-width: 80px;
+  gap: 1px;
+  min-width: fit-content;
 }
 
 .curP {
-  color: #ff7a00;
-  font-size: 17px;
-  font-weight: 800;
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--accent-color);
 }
 
 .maxP {
-  color: #9ca3af;
   font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
-.rating {
+.votesGroup {
   display: flex;
   align-items: center;
-  gap: 4px;
-  cursor: pointer;
-  min-width: 45px;
+  gap: 8px;
 }
 
-.star {
-  width: 16px;
-  height: 16px;
-  fill: #FFB800;
+.rating, .premiumRating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--text-primary);
 }
+
+.star { width: 14px; height: 14px; fill: #FFB800; }
+.diamondSmall { font-size: 14px; }
 
 .status {
-  min-width: 60px;
-  text-align: right;
-  text-transform: uppercase;
   font-size: 10px;
-  letter-spacing: 0.5px;
-  font-weight: 800;
-  flex-shrink: 0;
+  font-weight: 900;
+  text-transform: uppercase;
+  min-width: 55px;
+  text-align: right;
 }
 
-.online { color: #ff7a00; }
-.offline { color: #bdc3c7; }
+.online { color: #27ae60; }
+.offline { color: #eb5757; }
 
-/* АДАПТАЦИЯ */
+/* АДАПТИВНОСТЬ */
 
-/* Если экран меньше 1200px — начинаем плавно сжимать баннер и кнопку */
-@media (max-width: 1200px) {
+/* Если экран меньше 1250px, убираем фиксированную ширину баннера */
+@media (max-width: 1250px) {
   .bannerBlock {
-    flex: 1;
-    max-width: 470px;
+    flex: 0 1 400px;
   }
 }
 
-/* Средние экраны: Статистика уходит под кнопку IP */
-@media (max-width: 992px) {
-  .actionGroup {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-  .ipButton {
-    width: 100%;
-  }
-  .statsRow {
-    width: 100%;
-  }
-}
-
-@media (max-width: 850px) {
-  /* На маленьких экранах переключаем в колонку */
+@media (max-width: 1100px) {
   .bottomRow {
-    flex-direction: column;
-    align-items: stretch;
+    flex-wrap: wrap;
   }
-
   .bannerBlock {
-    width: 100%;
-    max-width: 100%;
-    flex: none;
-  }
-
-  .bannerWrapper {
-    aspect-ratio: 470 / 60;
-    height: auto;
-  }
-
-  /* ТУТ МЕНЯЕМ НА COLUMN ДЛЯ МОБИЛ */
-  .actionGroup {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-
-  .ipButton {
-    width: 100%; /* Кнопка на всю ширину */
-  }
-
-  .statsRow {
-    width: 100%;
-    padding: 5px 0;
-  }
-
-  .topRow {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
-
-  .categories {
-    text-align: left;
-  }
-}
-/* Мобильные устройства: Баннер на всю ширину, карточка растет вверх */
-@media (max-width: 768px) {
-  .bottomRow {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 15px;
-  }
-  
-  .bannerBlock {
-    width: 100%;
-    flex: none;
+    flex: 1 1 100%;
     max-width: 100%;
   }
-  
-  .bannerWrapper {
-    height: auto;
-    aspect-ratio: 470 / 60; /* Поддерживаем пропорцию на мобилках */
-  }
-
-  .topRow {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-  }
-
-  .categories {
-    text-align: left;
-    margin-left: 0;
+  .actionGroup {
+    width: 100%;
+    margin-top: 10px;
   }
 }
 
-@media (max-width: 480px) {
-  .cardLink {
-    padding: 12px;
-  }
-  .serverName {
-    font-size: 16px;
-  }
+@media (max-width: 640px) {
+  .cardLink { padding: 12px; }
+  .topRow { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .actionGroup { flex-direction: column; align-items: stretch; }
+  .statsRow { justify-content: space-around; flex-wrap: wrap; gap: 10px; }
+  .ipButton { width: 100%; flex: none; }
 }

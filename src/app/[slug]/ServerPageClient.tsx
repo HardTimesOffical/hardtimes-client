@@ -9,7 +9,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import ServerChart from "../components/stats/ServerChart";
 import { BoostModal } from "../components/payment/BoostModal";
 import api from "@/lib/api";
-import { HiOutlineArrowTopRightOnSquare, HiOutlineGlobeAlt, HiOutlineChatBubbleLeftRight } from 'react-icons/hi2';
+import { HiOutlineArrowTopRightOnSquare, HiOutlineGlobeAlt, HiOutlineChatBubbleLeftRight, HiOutlineCog6Tooth } from 'react-icons/hi2';
 
 interface IServerData {
   _id: string;
@@ -23,6 +23,7 @@ interface IServerData {
   premiumVotes: number;
   votesWeekly: number;
   isOwner?: boolean;
+  owner?: string; // ID владельца сервера
   status?: { online: boolean; players: number; maxPlayers: number; };
   categories?: string[];
   tags?: string[];
@@ -50,6 +51,9 @@ export default function ServerPageClient({ slug, initialData }: Props) {
   const [voteLoading, setVoteLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
+
+  // Проверка прав на редактирование
+  const canEdit = server?.isOwner || (user && server?.owner === user._id);
 
   const defaultDescription = `Добро пожаловать на наш официальный игровой проект...`;
 
@@ -155,7 +159,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
       <main className="flex-1 w-full pb-10">
         <div className="max-w-5xl mx-auto px-4 md:px-6 space-y-4 mt-6 md:mt-10">
           
-          {/* Компактный Баннер (160px) */}
+          {/* Баннер */}
           <div className="relative h-40 md:h-44 w-full rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm">
             {server.imageUrl ? (
               <img src={server.imageUrl} alt={server.serverName} className="w-full h-full object-cover" />
@@ -177,8 +181,14 @@ export default function ServerPageClient({ slug, initialData }: Props) {
                     </div>
                   </div>
                 </div>
-                {server.isOwner && (
-                  <Link href={`/edit-server/${server.slug}`} className="px-5 py-2 bg-orange-500 text-white font-black rounded-xl text-[9px] uppercase hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20 w-fit">
+
+                {/* КНОПКА РЕДАКТИРОВАНИЯ */}
+                {canEdit && (
+                  <Link 
+                    href={`/edit-server/${server.slug}`} 
+                    className="flex items-center gap-2 px-5 py-2.5 bg-white/10 backdrop-blur-md text-white border border-white/20 font-black rounded-xl text-[9px] uppercase hover:bg-white hover:text-black transition-all shadow-xl group"
+                  >
+                    <HiOutlineCog6Tooth className="w-3.5 h-3.5 group-hover:rotate-90 transition-transform duration-500" />
                     Настройки
                   </Link>
                 )}
@@ -186,7 +196,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
             </div>
           </div>
 
-          {/* Табы */}
+          {/* Табы и контент (остальная часть без изменений) */}
           <div className="flex gap-1 p-1 bg-gray-200/40 rounded-xl border border-gray-200 w-fit">
             {(['info', 'stats'] as const).map((tab) => (
               <button key={tab} onClick={() => setActiveTab(tab)} className={`px-5 py-1.5 rounded-lg text-[9px] font-black transition-all tracking-widest uppercase ${activeTab === tab ? 'bg-white text-orange-500 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
@@ -195,7 +205,6 @@ export default function ServerPageClient({ slug, initialData }: Props) {
             ))}
           </div>
 
-          {/* Сетка */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2 space-y-4">
                {activeTab === 'info' ? (
@@ -282,25 +291,24 @@ export default function ServerPageClient({ slug, initialData }: Props) {
 
               {/* Weekly Stats */}
               <div className="bg-white p-5 rounded-2xl border border-gray-100 flex justify-between items-center">
-                 <div>
+                  <div>
                     <p className="text-gray-400 text-[8px] font-black uppercase tracking-widest">Weekly</p>
                     <p className="text-2xl font-black text-gray-900 tracking-tighter leading-none">{server.votesWeekly || 0}</p>
-                 </div>
-                 <div className="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center text-gray-300 border border-gray-100">
+                  </div>
+                  <div className="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center text-gray-300 border border-gray-100">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><path d="M5 15l7-7 7 7"/></svg>
-                 </div>
+                  </div>
               </div>
 
-              {/* Links */}
               <div className="bg-white p-5 rounded-2xl border border-gray-100 space-y-2">
                 <h3 className="text-[8px] font-black uppercase text-gray-300 tracking-widest mb-2">Network</h3>
                 {server.website && (
-                  <a href={server.website} target="_blank" className="flex items-center gap-2 p-2.5 rounded-lg bg-gray-50 text-gray-700 hover:bg-orange-500 hover:text-white transition-all text-[9px] font-black uppercase group">
+                  <a href={server.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2.5 rounded-lg bg-gray-50 text-gray-700 hover:bg-orange-500 hover:text-white transition-all text-[9px] font-black uppercase group">
                     <HiOutlineGlobeAlt className="w-3.5 h-3.5" /> Web
                   </a>
                 )}
                 {server.discord && (
-                  <a href={server.discord} target="_blank" className="flex items-center gap-2 p-2.5 rounded-lg bg-gray-50 text-gray-700 hover:bg-[#5865F2] hover:text-white transition-all text-[9px] font-black uppercase group">
+                  <a href={server.discord} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2.5 rounded-lg bg-gray-50 text-gray-700 hover:bg-[#5865F2] hover:text-white transition-all text-[9px] font-black uppercase group">
                     <HiOutlineChatBubbleLeftRight className="w-3.5 h-3.5" /> Discord
                   </a>
                 )}
