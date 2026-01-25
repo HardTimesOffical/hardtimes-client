@@ -13,19 +13,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
-      url: `${baseUrl}/servers/java`,
+      url: `${baseUrl}/monitoring/servers/java`,
       lastModified: new Date(),
       changeFrequency: 'hourly',
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/servers/bedrock`,
+      url: `${baseUrl}/monitoring/servers/bedrock`,
       lastModified: new Date(),
       changeFrequency: 'hourly',
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/servers/hytale`,
+      url: `${baseUrl}/monitoring/servers/hytale`,
       lastModified: new Date(),
       changeFrequency: 'hourly',
       priority: 0.8,

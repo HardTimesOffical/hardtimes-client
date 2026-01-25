@@ -16,7 +16,7 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   metadataBase: new URL('https://hardmonitoring.ru'),
   title: {
-    default: "HardTimes — Мониторинг серверов Майнкрафт",
+    default: "HardTimes — Мониторинг серверов Майнкрафт и Хайтейл",
     template: "%s | ServerSwamp" 
   },
   // ... остальные метаданные из вашего прошлого сообщения ...
