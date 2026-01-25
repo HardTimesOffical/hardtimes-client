@@ -7,7 +7,6 @@ import GlobalChat from "./components/chat/GlobalChat";
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import SnowEffect from "./components/snow/SnowEffect";
-import Footer from "./components/footer/footer";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

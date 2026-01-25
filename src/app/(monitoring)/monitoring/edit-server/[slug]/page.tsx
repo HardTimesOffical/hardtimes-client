@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, ChangeEvent, FormEvent } from "react";
-import styles from "../../workbench/workbench.module.css";
+import styles from "@/app/(monitoring)/monitoring/workbench/workbench.module.css"
 import { GAME_TYPES } from "@/constants/gameTypes";
 import { GAME_VERSIONS } from "@/constants/gameVersions";
 import { CATEGORIES } from "@/constants/categories";
@@ -9,8 +9,6 @@ import { TAGS } from "@/constants/tags";
 import { LANGUAGES } from "@/constants/languages";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import DashboardLayout from "@/app/components/dashboard/dashboard";
-
 // Вспомогательный компонент CustomSelect
 const CustomSelect: React.FC<any> = ({ options, selected, multiple = false, onChange, placeholder }) => {
   const [isOpen, setIsOpen] = useState(false);

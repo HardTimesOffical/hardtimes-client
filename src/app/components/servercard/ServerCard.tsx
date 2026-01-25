@@ -67,7 +67,7 @@ export default function ServerCard({ server, isDark }: any) {
     <>
       {/* Устанавливаем data-theme на основе пропса isDark */}
       <div className={styles.cardContainer} data-theme={isDark ? "dark" : "light"}>
-        <Link href={`/${server.slug}`} className={styles.cardLink}>
+        <Link href={`/monitoring/${server.slug}`} className={styles.cardLink}>
           <div className={styles.topRow}>
             <div className={styles.titleWrapper}>
               <h3 className={styles.serverName}>{server.serverName}</h3>

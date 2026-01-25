@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import ServerCard from "../components/servercard/ServerCard";
+import ServerCard from "@/app/components/servercard/ServerCard";
 import { useAuth } from "@/context/AuthContext";
-import WeeklyTimer from "../components/servercard/WeeklyTimer";
-import LoadingCrystal from "../components/loading/LoadingCrystal";
-import Pagination from "../components/blocks/Pagination";
+import WeeklyTimer from "@/app/components/servercard/WeeklyTimer";
+import LoadingCrystal from "@/app/components/loading/LoadingCrystal";
+import Pagination from "@/app/components/blocks/Pagination";
 
 interface Props {
   game: "java" | "bedrock" | "hytale" | "all";

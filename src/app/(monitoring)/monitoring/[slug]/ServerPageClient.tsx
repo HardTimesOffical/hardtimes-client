@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Sidebar from "@/app/components/dashboard/dashboard";
 import Link from "next/link";
-import LoadingCrystal from "../components/loading/LoadingCrystal";
+import LoadingCrystal from "../../../components/loading/LoadingCrystal";
 import { useLanguage } from "@/context/LanguageContext";
-import ServerChart from "../components/stats/ServerChart";
-import { BoostModal } from "../components/payment/BoostModal";
+import ServerChart from "../../../components/stats/ServerChart";
+import { BoostModal } from "../../../components/payment/BoostModal";
 import api from "@/lib/api";
 import { HiOutlineArrowTopRightOnSquare, HiOutlineGlobeAlt, HiOutlineChatBubbleLeftRight, HiOutlineCog6Tooth } from 'react-icons/hi2';
 
@@ -185,7 +185,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
                 {/* КНОПКА РЕДАКТИРОВАНИЯ */}
                 {canEdit && (
                   <Link 
-                    href={`/edit-server/${server.slug}`} 
+                    href={`/monitoring/edit-server/${server.slug}`} 
                     className="flex items-center gap-2 px-5 py-2.5 bg-white/10 backdrop-blur-md text-white border border-white/20 font-black rounded-xl text-[9px] uppercase hover:bg-white hover:text-black transition-all shadow-xl group"
                   >
                     <HiOutlineCog6Tooth className="w-3.5 h-3.5 group-hover:rotate-90 transition-transform duration-500" />

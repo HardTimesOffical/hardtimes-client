@@ -9,7 +9,7 @@ import { TAGS } from "@/constants/tags";
 import { LANGUAGES } from "@/constants/languages";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import InfoBlock from "../components/blocks/InfoBlock";
+import InfoBlock from "../../../components/blocks/InfoBlock";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface CustomSelectProps {

@@ -1,4 +1,4 @@
-import Sidebar from "../components/dashboard/dashboard";// Используем новый независимый Sidebar
+import Sidebar from "../../../components/dashboard/dashboard";// Используем новый независимый Sidebar
 import ServerList from "./ServersList";
 import { Metadata } from "next";
 

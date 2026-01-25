@@ -14,12 +14,12 @@ export const metadata: Metadata = {
     "рейтинг серверов бедрок"
   ],
   alternates: {
-    canonical: "https://hardmonitoring.ru/servers/bedrock", // Обновил домен
+    canonical: "https://hardmonitoring.ru/hardmonitoring/servers/bedrock", // Обновил домен
   },
   openGraph: {
     title: "ТОП Серверов Minecraft Bedrock Edition",
     description: "Реальный онлайн, лучшие режимы и честный рейтинг Bedrock серверов.",
-    url: "https://hardmonitoring.ru/servers/bedrock",
+    url: "https://hardmonitoring.ru/hardmonitoring/servers/bedrock",
     type: "website",
   },
 };

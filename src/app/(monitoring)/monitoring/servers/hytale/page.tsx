@@ -3,8 +3,9 @@ import ServerList from "../ServersList";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Сервера Hytale | Мониторинг и Топ 2026",
-  description: "Список лучших игровых миров Hytale в одном месте. Актуальный онлайн и рейтинги.",
+  title: "Сервера Hytale 2026 | Топ мониторинг и рейтинг серверов Хайтейл",
+  description: "Найди лучшие сервера Hytale в нашем мониторинге. Актуальный список игровых миров: выживание, креатив, мини-игры и RPG в мире Орбис. Рейтинг и онлайн 24/7.",
+  keywords: ["сервера hytale","хайтейл сервера","мониторинг хайтейл", "мониторинг hytale", "хайтайл сервера", "hytale servers list", "топ серверов hytale"],
 };
 
 export default function HytaleServersPage() {
@@ -77,7 +78,42 @@ export default function HytaleServersPage() {
           </div>
 
         </div>
+        <section className="w-full max-w-[900px] mt-24 mb-20 px-6 opacity-60 hover:opacity-100 transition-opacity duration-700">
+        <div className="border-l-2 border-purple-500/30 pl-8 space-y-6 text-gray-400">
+          <h2 className="text-xl font-black uppercase tracking-widest text-white italic">
+            Мониторинг серверов <span className="text-purple-500">Hytale</span> — Твой путь в Орбис
+          </h2>
+          <div className="text-sm leading-relaxed space-y-4 font-medium">
+            <p>
+              Добро пожаловать в самый актуальный <strong>мониторинг серверов Hytale</strong>. В 2026 году вселенная Орбис расширилась сотнями уникальных миров, и наша задача — помочь вам найти идеальное место для приключений. Будь то классическое выживание, хардкорные RPG-фракции или инновационные мини-игры, наш <strong>топ серверов Хайтайл</strong> предоставляет полную информацию в реальном времени.
+            </p>
+            
+            <div className="grid md:grid-cols-2 gap-8 mt-6">
+              <div>
+                <h3 className="text-white font-bold mb-2 uppercase text-xs tracking-wider">Почему выбирают нас?</h3>
+                <ul className="list-none space-y-2 text-[13px]">
+                  <li className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-purple-500 rounded-full"></div> 
+                    Ежеминутная проверка статуса серверов.
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-purple-500 rounded-full"></div> 
+                    Честный рейтинг, основанный на голосах сообщества.
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-white font-bold mb-2 uppercase text-xs tracking-wider">Типы игровых миров</h3>
+                <p className="text-[13px]">
+                  От масштабных социальных хабов до закрытых творческих мастерских. В нашем списке вы найдете сервера с поддержкой модификаций, уникальными скриптами и кастомными ассетами.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
       </main>
+      
     </div>
   );
 }
