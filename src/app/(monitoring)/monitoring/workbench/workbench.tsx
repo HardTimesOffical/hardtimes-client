@@ -171,7 +171,7 @@ const handleSubmit = async (e: FormEvent) => {
         const result = await res.json();
         if (!res.ok) throw new Error(result.message || "Ошибка при добавлении");
 
-        alert("Сервер Hytale успешно добавлен!");
+        alert("Сервер успешно добавлен!");
     } catch (error: any) {
         console.error(error);
         alert(error.message);
