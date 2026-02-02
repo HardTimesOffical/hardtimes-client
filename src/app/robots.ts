@@ -15,6 +15,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: 'https://serverswamp.ru/sitemap.xml',
+    sitemap: 'https://hardmonitoring.ru/sitemap.xml',
   }
 }

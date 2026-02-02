@@ -55,7 +55,13 @@ export default function ServerPageClient({ slug, initialData }: Props) {
   // Проверка прав на редактирование
   const canEdit = server?.isOwner || (user && server?.owner === user._id);
 
-  const defaultDescription = `Добро пожаловать на наш официальный игровой проект...`;
+  const defaultDescription = `Добро пожаловать в мир нашего игрового проекта! 🚀
+
+    Мы создали уникальное пространство для выживания и творчества. 
+    На текущий момент описание сервера находится в стадии обновления, 
+    но наши двери уже открыты для новых игроков. 
+
+    Присоединяйся и начни свою историю прямо сейчас!`;
 
   useEffect(() => {
     if (server?._id) {
