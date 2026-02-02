@@ -1,13 +1,12 @@
 "use client";
-
 import { useState, useMemo } from "react";
 import styles from "./ServerCard.module.css";
 import Link from "next/link";
 import { BoostModal } from "../payment/BoostModal";
 import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { HiOutlineUserGroup, HiOutlineLightningBolt, HiOutlineStar, HiOutlineEye } from "react-icons/hi";
 
-// Добавляем isDark в деструктуризацию пропсов
 export default function ServerCard({ server, isDark }: any) {
   const { user, updateUser } = useAuth();
   const [isBoostOpen, setIsBoostOpen] = useState(false);
@@ -20,7 +19,7 @@ export default function ServerCard({ server, isDark }: any) {
 
   const displayIp = useMemo(() => {
     let ipData = server.ipAddress;
-    if (typeof ipData === 'string' && (ipData.startsWith('{') || ipData.includes('"java"'))) {
+    if (typeof ipData === 'string' && ipData.startsWith('{')) {
       try { ipData = JSON.parse(ipData); } catch (e) { console.error(e); }
     }
     if (typeof ipData === 'object' && ipData !== null) {
@@ -65,15 +64,15 @@ export default function ServerCard({ server, isDark }: any) {
 
   return (
     <>
-      {/* Устанавливаем data-theme на основе пропса isDark */}
       <div className={styles.cardContainer} data-theme={isDark ? "dark" : "light"}>
         <Link href={`/monitoring/${server.slug}`} className={styles.cardLink}>
+          
           <div className={styles.topRow}>
             <div className={styles.titleWrapper}>
               <h3 className={styles.serverName}>{server.serverName}</h3>
             </div>
             <div className={styles.categories}>
-              {server.categories?.length > 0 ? server.categories.join(" • ") : "Survival • SkyBlock"}
+              {server.categories?.length > 0 ? server.categories.join(" • ") : "Survival • Projects"}
             </div>
           </div>
 
@@ -85,7 +84,9 @@ export default function ServerCard({ server, isDark }: any) {
                 ) : (
                   <div className={styles.noImagePlaceholder}></div>
                 )}
-                <div className={styles.boostOverlay} onClick={openBoost}>🚀 BOOST</div>
+                <div className={styles.boostOverlay} onClick={openBoost}>
+                   <HiOutlineLightningBolt size={14} /> BOOST
+                </div>
               </div>
             </div>
 
@@ -98,11 +99,23 @@ export default function ServerCard({ server, isDark }: any) {
               </button>
 
               <div className={styles.statsRow}>
-                <span className={styles.version} title="Версия сервера">{displayVersion}</span>
-                
-                <div className={styles.players}>
-                  <span className={styles.curP}>{server.status?.players ?? 0}</span>
-                  <span className={styles.maxP}>/{server.status?.maxPlayers ?? 0}</span>
+                <div className={styles.mainStats}>
+                   <div className={styles.statItem} title="Версия">
+                      <span className={styles.version}>{displayVersion}</span>
+                   </div>
+                   
+                   <div className={styles.players}>
+                      <HiOutlineUserGroup size={16} className={styles.statIcon} />
+                      <div className={styles.playerCount}>
+                        <span className={styles.curP}>{server.status?.players ?? 0}</span>
+                        <span className={styles.maxP}>/{server.status?.maxPlayers ?? 0}</span>
+                      </div>
+                   </div>
+
+                   <div className={styles.views}>
+                      <HiOutlineEye size={16} className={styles.statIcon} />
+                      <span className={styles.viewCount}>{server.analytics?.views || 0}</span>
+                   </div>
                 </div>
 
                 <div className={styles.votesGroup}>
@@ -112,16 +125,15 @@ export default function ServerCard({ server, isDark }: any) {
                       <span>{server.premiumVotes}</span>
                     </div>
                   )}
-                  <div className={styles.rating} onClick={openBoost} title="Еженедельные голоса">
-                    <svg className={styles.star} viewBox="0 0 24 24">
-                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-                    </svg>
+                  <div className={styles.rating} onClick={openBoost} title="Голоса">
+                    <HiOutlineStar size={14} className={styles.starIcon} />
                     <span>{server.votesWeekly || 0}</span>
                   </div>
                 </div>
 
                 <div className={`${styles.status} ${server.status?.online ? styles.online : styles.offline}`}>
-                  {server.status?.online ? "Online" : "Offline"}
+                  <span className={styles.statusDot}></span>
+                  <span className={styles.statusText}>{server.status?.online ? "Online" : "Offline"}</span>
                 </div>
               </div>
             </div>

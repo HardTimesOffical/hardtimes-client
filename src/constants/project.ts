@@ -6,13 +6,13 @@ export const GAME_PLATFORMS = [
 
 // Типы проектов (которые мы будем выбирать уже в настройках, но константы храним тут)
 export const PROJECT_TYPES = [
-  { id: 'mod', label: 'Мод' },
-  { id: 'plugin', label: 'Плагин' },
-  { id: 'shader', label: 'Шейдер' },
-  { id: 'resourcepack', label: 'Текстурпак' },
-  { id: 'map', label: 'Карта' },
-  { id: 'modpack', label: 'Сборка' },
-  { id: 'datapack', label: 'Датапак' },
+  { id: 'mod', label: 'Моды' },
+  { id: 'plugin', label: 'Плагины' },
+  { id: 'shader', label: 'Шейдеры' },
+  { id: 'resourcepack', label: 'Текстурпаки' },
+  { id: 'map', label: 'Карты' },
+  { id: 'modpack', label: 'Сборки' },
+  { id: 'datapack', label: 'Датапаки' },
 ];
 
 // Вспомогательная функция для получения названия игры по ID

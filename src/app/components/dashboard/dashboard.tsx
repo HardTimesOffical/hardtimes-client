@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -9,12 +9,11 @@ import {
   HiOutlineHome, HiOutlineFire, HiOutlineCube, 
   HiOutlineDeviceMobile, HiOutlineLightningBolt,
   HiOutlineShoppingBag, HiOutlinePlusCircle,
-  HiOutlineUser, HiOutlineLogout, HiX,
-  HiOutlineCollection, HiOutlinePhotograph, HiOutlineCode,
+  HiOutlineUser, HiOutlineLogout, 
+  HiOutlineCollection, HiOutlineCode,
   HiChevronLeft
 } from 'react-icons/hi';
 
-// Твои константы (лучше импортировать из отдельного файла constants.ts)
 const GAME_PLATFORMS = [
   { id: 'minecraft', label: 'Minecraft', icon: '⛏️' },
   { id: 'hytale', label: 'Hytale', icon: '💎' },
@@ -51,7 +50,6 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
   const [activeTab, setActiveTab] = useState<'monitoring' | 'content'>('monitoring');
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
 
-  // Определяем игру из URL (например, из /content/minecraft/...)
   const currentGameId = params?.game as string;
   const isInsideGame = pathname.startsWith('/content/') && currentGameId;
 
@@ -65,7 +63,6 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
 
   const isSidebarOpen = isExpanded || isMobileOpen;
 
-  // Данные для МОНИТОРИНГА
   const monitoringItems = {
     main: [
       { name: 'Все сервера', href: '/monitoring', icon: HiOutlineHome },
@@ -79,10 +76,8 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
     action: { name: 'Добавить сервер', href: '/monitoring/workbench', icon: HiOutlinePlusCircle }
   };
 
-  // Логика получения элементов КОНТЕНТА
   const getContentItems = () => {
     if (!isInsideGame) {
-      // Если игра не выбрана — список игр
       return {
         title: "Выбор игры",
         items: GAME_PLATFORMS.map(game => ({
@@ -94,12 +89,11 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
       };
     }
 
-    // Если игра выбрана — типы проектов для этой игры
     const types = PROJECT_TYPES_BY_GAME[currentGameId] || PROJECT_TYPES_BY_GAME['default'];
     return {
       title: currentGameId.toUpperCase(),
       items: [
-        { name: 'Весь контент', href: `/content/${currentGameId}`, icon: HiOutlineCollection, color: 'text-gray-900' },
+        { name: 'Весь контент', href: `/content/${currentGameId}`, icon: HiOutlineCollection, color: 'text-foreground-bright' },
         ...types.map(t => ({
           name: t.label,
           href: `/content/${currentGameId}/${t.value}`,
@@ -128,28 +122,32 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
         onMouseEnter={() => setIsExpanded(true)}
         onMouseLeave={() => setIsExpanded(false)}
         className={`
-          fixed top-0 left-0 bottom-0 flex flex-col bg-white border-r border-gray-100 
+          fixed top-0 left-0 bottom-0 flex flex-col bg-card border-r border-border 
           transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] z-[120]
-          ${isMobileOpen ? 'translate-x-0 w-64' : '-translate-x-full md:translate-x-0'}
-          ${isExpanded ? 'md:w-64 shadow-2xl shadow-gray-200' : 'md:w-20'}
+          ${isMobileOpen ? 'translate-x-0 w-64 shadow-2xl' : '-translate-x-full md:translate-x-0'}
+          ${isExpanded ? 'md:w-64' : 'md:w-20'}
         `}
       >
         {/* ЛОГОТИП */}
         <Link href="/" className="h-20 flex items-center px-5 shrink-0">
-          <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center shrink-0 text-white font-black italic text-xl">H</div>
-          <span className={`ml-4 font-black text-xl tracking-tighter text-gray-900 uppercase italic transition-all duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>
-            Hard<span className="text-orange-500">Times</span>
+          {/* bg-foreground-bright сделает квадрат черным днем и белым ночью */}
+          {/* text-background (или text-contrast-text) сделает букву H контрастной */}
+          <div className="w-10 h-10 bg-foreground-bright rounded-xl flex items-center justify-center shrink-0 text-contrast-text font-black text-xl">
+            H
+          </div>
+          <span className={`ml-4 font-black text-xl tracking-tighter text-foreground-bright uppercase transition-all duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>
+            Hard<span className="text-accent">Times</span>
           </span>
         </Link>
 
-        {/* ТАБЫ (Сервера / Контент) */}
+        {/* ТАБЫ */}
         <div className="px-3 mb-4">
-          <div className={`bg-gray-100 p-1 rounded-2xl flex gap-1 ${!isSidebarOpen ? 'flex-col' : ''}`}>
-            <button onClick={() => setActiveTab('monitoring')} className={`flex-1 flex items-center justify-center py-2 rounded-xl transition-all ${activeTab === 'monitoring' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}>
+          <div className={`bg-surface p-1 rounded-2xl flex gap-1 ${!isSidebarOpen ? 'flex-col' : ''}`}>
+            <button onClick={() => setActiveTab('monitoring')} className={`flex-1 flex items-center justify-center py-2 rounded-xl transition-all ${activeTab === 'monitoring' ? 'bg-card shadow-sm text-foreground-bright' : 'text-muted hover:text-foreground'}`}>
               <HiOutlineFire className="w-5 h-5" />
               {isSidebarOpen && <span className="ml-2 text-[10px] font-black uppercase">Сервера</span>}
             </button>
-            <button onClick={() => setActiveTab('content')} className={`flex-1 flex items-center justify-center py-2 rounded-xl transition-all ${activeTab === 'content' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}>
+            <button onClick={() => setActiveTab('content')} className={`flex-1 flex items-center justify-center py-2 rounded-xl transition-all ${activeTab === 'content' ? 'bg-card shadow-sm text-foreground-bright' : 'text-muted hover:text-foreground'}`}>
               <HiOutlineCube className="w-5 h-5" />
               {isSidebarOpen && <span className="ml-2 text-[10px] font-black uppercase">Контент</span>}
             </button>
@@ -167,7 +165,7 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
                 <SidebarLink item={monitoringItems.action} isExpanded={isSidebarOpen} isActive={pathname === monitoringItems.action.href} />
               </div>
               <div className="space-y-1">
-                <p className={`text-[10px] font-black text-gray-300 uppercase tracking-widest ml-3 mb-2 ${isSidebarOpen ? 'block' : 'hidden'}`}>Игры</p>
+                <p className={`text-[10px] font-black text-muted uppercase tracking-widest ml-3 mb-2 ${isSidebarOpen ? 'block' : 'hidden'}`}>Игры</p>
                 {monitoringItems.games.map((item) => (
                   <SidebarLink key={item.href} item={item} isExpanded={isSidebarOpen} isActive={pathname === item.href} />
                 ))}
@@ -176,11 +174,11 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
           ) : (
             <div className="space-y-1">
               <div className="flex items-center justify-between px-3 mb-2">
-                <p className={`text-[10px] font-black text-gray-300 uppercase tracking-widest ${isSidebarOpen ? 'block' : 'hidden'}`}>
+                <p className={`text-[10px] font-black text-muted uppercase tracking-widest ${isSidebarOpen ? 'block' : 'hidden'}`}>
                   {contentSection.title}
                 </p>
                 {isInsideGame && isSidebarOpen && (
-                  <Link href="/content" className="text-[9px] font-black text-orange-500 hover:underline flex items-center gap-1">
+                  <Link href="/content" className="text-[9px] font-black text-accent hover:underline flex items-center gap-1">
                     <HiChevronLeft /> НАЗАД
                   </Link>
                 )}
@@ -196,32 +194,32 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
             </div>
           )}
 
-          <div className="mt-auto pt-4 border-t border-gray-50 space-y-1">
+          <div className="mt-auto pt-4 border-t border-border space-y-1">
             <SidebarLink item={{ name: 'Магазин', href: '/shop', icon: HiOutlineShoppingBag }} isExpanded={isSidebarOpen} isActive={pathname === '/shop'} />
           </div>
         </nav>
 
         {/* ПРОФИЛЬ */}
-        <div className="p-3 border-t border-gray-50 bg-white shrink-0">
+        <div className="p-3 border-t border-border bg-card shrink-0">
           {user ? (
-            <div className={`flex items-center gap-3 p-2 rounded-2xl transition-all ${isSidebarOpen ? 'bg-gray-50' : ''}`}>
+            <div className={`flex items-center gap-3 p-2 rounded-2xl transition-all ${isSidebarOpen ? 'bg-surface' : ''}`}>
               <Link href={`/profile/${user.username}`} className="shrink-0">
-                <div className="w-10 h-10 rounded-xl overflow-hidden bg-orange-500 flex items-center justify-center text-white font-bold uppercase">
-                  {user.avatar ? <img src={user.avatar} className="w-full h-full object-cover" /> : user.username?.charAt(0)}
+                <div className="w-10 h-10 rounded-xl overflow-hidden bg-accent flex items-center justify-center text-white font-bold uppercase">
+                  {user.avatar ? <img src={user.avatar} className="w-full h-full object-cover" alt="" /> : user.username?.charAt(0)}
                 </div>
               </Link>
               {isSidebarOpen && (
                 <div className="flex flex-1 items-center justify-between min-w-0">
                   <div className="truncate pr-2">
-                    <p className="text-xs font-black text-gray-900 truncate uppercase">{user.username}</p>
-                    <p className="text-[10px] font-bold text-orange-500 uppercase">{user.balance || 0} звезд</p>
+                    <p className="text-xs font-black text-foreground-bright truncate uppercase">{user.username}</p>
+                    <p className="text-[10px] font-bold text-accent uppercase">{user.balance || 0} звезд</p>
                   </div>
-                  <button onClick={() => logout()} className="text-gray-400 hover:text-red-500"><HiOutlineLogout className="w-5 h-5"/></button>
+                  <button onClick={() => logout()} className="text-muted hover:text-red-500"><HiOutlineLogout className="w-5 h-5"/></button>
                 </div>
               )}
             </div>
           ) : (
-            <Link href="/login" className={`flex items-center gap-4 p-3 rounded-2xl text-gray-400 hover:bg-gray-50 transition-all ${isSidebarOpen ? 'px-4' : 'justify-center'}`}>
+            <Link href="/login" className={`flex items-center gap-4 p-3 rounded-2xl text-muted hover:bg-surface transition-all ${isSidebarOpen ? 'px-4' : 'justify-center'}`}>
               <HiOutlineUser className="w-6 h-6 shrink-0" />
               {isSidebarOpen && <span className="font-black text-sm uppercase">Войти</span>}
             </Link>
@@ -241,16 +239,25 @@ const SidebarLink = ({ item, isExpanded, isActive }: any) => {
       href={item.href} 
       className={`
         flex items-center p-3 rounded-2xl transition-all duration-200 group relative
-        ${isActive ? 'bg-gray-900 text-white shadow-lg shadow-gray-200' : 'text-gray-400 hover:bg-gray-50 hover:text-gray-900'}
+        ${isActive 
+          ? 'bg-foreground-bright shadow-md' 
+          : 'text-muted hover:bg-surface hover:text-foreground-bright'}
         ${isExpanded ? 'gap-4 px-4' : 'justify-center'}
       `}
     >
-      <Icon className={`w-6 h-6 shrink-0 ${isActive ? 'text-white' : item.color || 'group-hover:text-gray-900'}`} />
-      <span translate='no' className={`font-bold text-sm tracking-tight whitespace-nowrap transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10 absolute pointer-events-none'}`}>
+      {/* Иконка: если активна — цвет контрастный, если нет — свой родной цвет илиmuted */}
+      <Icon className={`w-6 h-6 shrink-0 transition-colors
+        ${isActive ? 'text-contrast-text' : (item.color || 'group-hover:text-foreground-bright')}
+      `} />
+      
+      <span translate='no' className={`font-bold text-sm tracking-tight whitespace-nowrap transition-all duration-300
+        ${isActive ? 'text-contrast-text' : ''}
+        ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10 absolute pointer-events-none'}
+      `}>
         {item.name}
       </span>
     </Link>
   );
 };
 
-export default Sidebar;
+export default Sidebar; 

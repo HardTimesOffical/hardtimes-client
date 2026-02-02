@@ -1,5 +1,3 @@
-/* ServerCard.module.css */
-
 .cardContainer {
   --bg-color: #ffffff;
   --text-primary: #1a1c1e;
@@ -39,7 +37,18 @@
   color: inherit;
 }
 
-/* ШАПКА КАРТОЧКИ */
+.titleWrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.authorName {
+  font-size: 11px;
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
 .topRow {
   display: flex;
   justify-content: space-between;
@@ -63,22 +72,20 @@
   opacity: 0.6;
 }
 
-/* КОНТЕНТНАЯ ЧАСТЬ */
 .bottomRow {
   display: flex;
-  align-items: stretch; /* Растягиваем по высоте для выравнивания */
+  align-items: stretch;
   gap: 20px;
 }
 
-/* БАННЕР: ТЕПЕРЬ ШИРЕ */
 .bannerBlock {
-  flex: 0 0 360px; /* Фиксированная ширина баннера */
+  flex: 0 0 360px;
   min-width: 360px;
 }
 
 .bannerWrapper {
   width: 100%;
-  height: 68px; /* Увеличили высоту для пропорций */
+  height: 68px;
   position: relative;
   border-radius: 10px;
   overflow: hidden;
@@ -100,23 +107,24 @@
 .boostOverlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   font-size: 10px;
   font-weight: 900;
   color: white;
   opacity: 0;
   transition: opacity 0.3s ease;
+  cursor: pointer;
 }
 
 .bannerWrapper:hover .boostOverlay {
   opacity: 1;
 }
 
-/* ИНФО-ПАНЕЛЬ: ПРАВАЯ ЧАСТЬ */
 .actionGroup {
   flex: 1;
   display: flex;
@@ -125,9 +133,8 @@
   min-width: 0;
 }
 
-/* Кнопка IP */
 .ipButton {
-  flex: 1; /* Занимает всё свободное место */
+  flex: 1;
   min-width: 120px;
   height: 42px;
   background: var(--divider-color);
@@ -155,7 +162,6 @@
   border-color: #10b981 !important;
 }
 
-/* СЕКЦИЯ СТАТОВ */
 .statsRow {
   display: flex;
   align-items: center;
@@ -163,37 +169,53 @@
   padding-left: 10px;
 }
 
+.mainStats {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+}
+
 .version {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
   color: var(--text-secondary);
-  padding: 4px 8px;
+  padding: 3px 7px;
   background: var(--divider-color);
-  border-radius: 6px;
+  border-radius: 5px;
+  text-transform: uppercase;
 }
 
-.players {
+.statIcon {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+.players, .views {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  min-width: 50px;
+  gap: 6px;
 }
 
-.curP {
-  font-size: 16px;
-  font-weight: 900;
+.playerCount, .viewCount {
+  display: flex;
+  align-items: baseline;
+  font-weight: 800;
   color: var(--text-primary);
-  line-height: 1;
+  font-size: 14px;
 }
 
 .maxP {
   font-size: 10px;
   color: var(--text-secondary);
   font-weight: 600;
-  margin-top: 2px;
+  margin-left: 1px;
 }
 
-/* ГОЛОСА */
 .votesGroup {
   display: flex;
   align-items: center;
@@ -207,117 +229,63 @@
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
+  cursor: pointer;
 }
 
 .premiumRating { color: var(--accent-color); }
-
-.star { width: 12px; height: 12px; fill: #eab308; }
+.starIcon { fill: #eab308; color: #eab308; }
 
 .status {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 10px;
+}
+
+.statusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.statusText {
+  font-size: 9px;
   font-weight: 900;
   text-transform: uppercase;
 }
 
-.statusDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
 .online .statusDot { background: #10b981; box-shadow: 0 0 8px #10b981; }
+.online .statusText { color: #10b981; }
 .offline .statusDot { background: #ef4444; }
+.offline .statusText { color: #ef4444; }
 
-/* АДАПТИВНОСТЬ */
-/* ... (весь предыдущий код выше остается без изменений) ... */
-
-/* --- МОБИЛЬНАЯ ОПТИМИЗАЦИЯ --- */
-
+/* АДАПТИВНОСТЬ ИЗ ТВОЕГО КОДА */
 @media (max-width: 768px) {
-  .cardLink {
-    padding: 12px; /* Меньше внутренние отступы */
-  }
-
-  .topRow {
-    margin-bottom: 8px;
-  }
-
-  .serverName {
-    font-size: 15px; /* Чуть меньше шрифт названия */
-  }
-
-  .bottomRow {
-    flex-direction: column;
-    gap: 10px; /* Плотно прижимаем контент к баннеру */
-  }
-
-  .bannerBlock {
-    width: 100%;
-    min-width: 100%;
-    flex: none;
-  }
-
-  .bannerWrapper {
-    height: 50px; /* Существенно уменьшаем высоту баннера на мобилках */
-  }
-
+  .cardLink { padding: 12px; }
+  .topRow { margin-bottom: 8px; }
+  .serverName { font-size: 15px; }
+  .bottomRow { flex-direction: column; gap: 10px; }
+  .bannerBlock { width: 100%; min-width: 100%; flex: none; }
+  .bannerWrapper { height: 55px; }
   .actionGroup {
     display: grid;
-    /* Создаем сетку: кнопка IP сверху, остальное в ряд под ней */
-    grid-template-areas: 
-      "ip ip"
-      "stats votes";
+    grid-template-areas: "ip ip" "stats votes";
     gap: 10px;
     width: 100%;
   }
-
-  .ipButton {
-    grid-area: ip;
-    width: 100%;
-    height: 36px;
-    margin: 0;
-    font-size: 11px;
-  }
-
-  .statsRow {
-    grid-area: stats;
-    justify-content: flex-start; /* Прижимаем к левому краю */
-    padding: 0;
+  .ipButton { grid-area: ip; width: 100%; height: 38px; }
+  .statsRow { 
+    grid-area: stats; 
+    padding: 0; 
     gap: 12px;
+    justify-content: flex-start;
   }
-
-  .votesGroup {
-    grid-area: votes;
-    justify-content: flex-end; /* Голоса — к правому краю */
-    border: none; /* Убираем разделители, на мобилках они создают мусор */
+  .votesGroup { 
+    grid-area: votes; 
+    border: none; 
     padding: 0;
+    justify-content: flex-end;
   }
-
-  /* Скрываем версию или статус на совсем маленьких экранах, если не влезает */
-  .version {
-    display: none; 
-  }
-
-  .status {
-    font-size: 8px;
-    margin-left: auto;
-  }
-}
-
-/* Совсем узкие экраны (iPhone SE и т.д.) */
-@media (max-width: 400px) {
-  .statsRow {
-    gap: 8px;
-  }
-  .curP {
-    font-size: 14px;
-  }
-  .categories {
-    display: none; /* Прячем категории, оставляем только имя для экономии высоты */
-  }
+  .version, .authorName { display: none; }
 }

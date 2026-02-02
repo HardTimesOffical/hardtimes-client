@@ -1,110 +1,103 @@
-'use client';
-
 import React from 'react';
-import Link from 'next/link';
 import { 
-  HiOutlineDownload, 
-  HiOutlineEye, 
-  HiOutlineCube,
-  HiOutlineTerminal 
+  HiOutlineDownload, HiOutlineClock, HiOutlineUser, 
+  HiOutlineCollection, HiOutlineEye 
 } from 'react-icons/hi';
 
-interface ProjectCardProps {
-  project: {
-    _id: string;
-    title: string;
-    summary: string;
-    slug: string;
-    iconUrl?: string;
-    gameType: string;
-    projectType: string;
-    tags: string[];
-    versions: string[];
-    analytics: {
-      views: number;
-      downloads: number;
-    };
-  };
-}
+export default function ProjectCard({ project }: { project: any }) {
+  // Форматирование даты из updatedAt
+  const updatedDate = project.updatedAt 
+    ? new Date(project.updatedAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
+    : 'Недавно';
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   return (
-    <Link href={`/content/project/${project.slug}`}>
-      <div className="group bg-white border border-slate-100 p-5 rounded-[1.5rem] flex flex-col sm:flex-row gap-6 hover:border-orange-500/30 hover:shadow-xl hover:shadow-orange-500/5 transition-all cursor-pointer">
+    <div className="group bg-white border border-slate-200 rounded-xl p-4 transition-colors hover:bg-slate-50/50 cursor-pointer">
+      <div className="flex gap-4">
         
-        {/* ИКОНКА ПРОЕКТА */}
-        <div className="w-20 h-20 bg-slate-50 rounded-2xl shrink-0 flex items-center justify-center border border-slate-100 group-hover:bg-white transition-colors overflow-hidden">
+        {/* Иконка проекта */}
+        <div className="relative w-20 h-20 shrink-0 bg-slate-50 border border-slate-100 rounded-lg overflow-hidden">
           {project.iconUrl ? (
             <img 
               src={project.iconUrl} 
               alt={project.title} 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
             />
           ) : (
-            <HiOutlineCube size={32} className="text-slate-200 group-hover:text-orange-500 transition-colors" />
+            <div className="w-full h-full flex items-center justify-center text-slate-200">
+              <HiOutlineCollection size={32} />
+            </div>
           )}
         </div>
 
-        {/* КОНТЕНТ */}
-        <div className="flex-1 min-w-0 flex flex-col justify-between">
-          <div>
-            <div className="flex justify-between items-start mb-1">
-              <h3 className="text-lg font-black uppercase italic text-slate-900 group-hover:text-orange-600 transition-colors tracking-tighter truncate pr-4">
+        {/* Контентная часть */}
+        <div className="flex-1 min-w-0 flex flex-col">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              {/* Мета: Тип и Автор */}
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest">
+                  {project.projectType || 'Project'}
+                </span>
+                <span className="text-slate-300">•</span>
+                <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-slate-600 transition-colors">
+                  <HiOutlineUser size={12} className="shrink-0" />
+                  <span className="truncate">{project.owner?.username || 'Автор'}</span>
+                </div>
+              </div>
+              
+              <h3 className="text-base font-bold text-slate-800 truncate mb-1">
                 {project.title}
               </h3>
-              
-              {/* ПОСЛЕДНЯЯ ВЕРСИЯ */}
-              {project.versions?.length > 0 && (
-                <div className="flex items-center gap-1 text-[9px] font-black bg-slate-100 text-slate-500 px-2 py-1 rounded uppercase shrink-0">
-                  <HiOutlineTerminal size={10} />
-                  {project.versions[0]}
-                </div>
-              )}
             </div>
 
-            <p className="text-xs text-slate-500 font-medium line-clamp-2 leading-relaxed mb-3">
-              {project.summary}
-            </p>
+            {/* Блок статистики (Просмотры и Загрузки) */}
+            <div className="hidden sm:flex items-center gap-3 px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg shrink-0">
+              {/* Просмотры */}
+              <div className="flex items-center gap-1">
+                <HiOutlineEye size={14} className="text-slate-400" />
+                <span className="text-xs font-black text-slate-600">
+                  {project.analytics?.views || 0}
+                </span>
+              </div>
+              <div className="w-[1px] h-3 bg-slate-200" />
+              {/* Загрузки */}
+              <div className="flex items-center gap-1">
+                <HiOutlineDownload size={14} className="text-slate-400" />
+                <span className="text-xs font-black text-slate-600">
+                  {project.analytics?.downloads || 0}
+                </span>
+              </div>
+            </div>
           </div>
 
-          {/* НИЖНЯЯ ПАНЕЛЬ С ТЕГАМИ И СТАТИСТИКОЙ */}
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            
-            {/* ТЕГИ (первые 3) */}
-            <div className="flex flex-wrap gap-1.5">
-              {project.tags?.slice(0, 3).map((tag) => (
-                <span 
-                  key={tag} 
-                  className="text-[8px] font-black uppercase tracking-widest text-orange-500/70 border border-orange-500/10 px-2 py-0.5 rounded-md bg-orange-50/30"
-                >
-                  {tag}
-                </span>
-              ))}
+          {/* Описание (summary) */}
+          <p className="text-sm text-slate-500 line-clamp-1 mb-3">
+            {project.summary}
+          </p>
+
+          {/* Футер карточки */}
+          <div className="flex items-center justify-between pt-3 border-t border-slate-50">
+            <div className="flex items-center gap-2">
+               {/* Теги из массива tags (если есть) */}
+               {project.tags?.slice(0, 2).map((tag: string) => (
+                 <span key={tag} className="px-1.5 py-0.5 bg-slate-100 text-[9px] font-bold text-slate-500 uppercase rounded">
+                   {tag}
+                 </span>
+               ))}
+               {project.gameType === 'minecraft' && (
+                 <span className="px-1.5 py-0.5 bg-green-50 text-green-600 border border-green-100 text-[9px] font-bold uppercase rounded">
+                   Minecraft
+                 </span>
+               )}
             </div>
 
-            {/* СТАТИСТИКА */}
-            <div className="flex items-center gap-5 shrink-0 border-l border-slate-50 pl-4">
-              <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                <HiOutlineDownload className="text-orange-500" /> 
-                {formatNumber(project.analytics?.downloads || 0)}
-              </div>
-              <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                <HiOutlineEye className="text-orange-500" /> 
-                {formatNumber(project.analytics?.views || 0)}
-              </div>
+            <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase tracking-tight">
+              <HiOutlineClock size={12} />
+              <span>Обновлено: {updatedDate}</span>
             </div>
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
-};
-
-// Хелпер для красивых чисел (1.2K, 1.5M)
-function formatNumber(num: number) {
-  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-  if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-  return num.toString();
 }
-
-export default ProjectCard;

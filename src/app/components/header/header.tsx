@@ -4,7 +4,8 @@ import styles from "./header.module.css";
 import { HeaderBalance } from "./HeaderBalance";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
-import { HiMenuAlt2 } from 'react-icons/hi';
+import { useTheme } from "@/context/ThemeContext"; // Импортируем хук темы
+import { HiMenuAlt2, HiMoon, HiSun } from 'react-icons/hi'; // Добавляем иконки солнца и луны
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -12,24 +13,38 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick }: HeaderProps) {
   const { user } = useAuth();
+  const { isDark, toggleTheme } = useTheme(); // Достаем состояние и функцию переключения
 
   return (
-    // Весь хедер "прозрачен" для кликов
     <header className="fixed top-0 right-0 left-0 md:left-20 h-16 md:h-20 z-[90] pointer-events-none transition-all duration-300">
       <div className="h-full max-w-[1400px] mx-auto px-4 md:px-8 flex items-center justify-between">
         
-        {/* Левая часть: ВКЛЮЧАЕМ клики (pointer-events-auto) */}
+        {/* Левая часть */}
         <div className="flex items-center gap-4 pointer-events-auto">
           <button 
             onClick={onMenuClick}
-            className="p-2 bg-gray-50 rounded-xl text-gray-900 active:scale-95 transition-all hover:bg-gray-100 md:hidden"
+            className="p-2 bg-gray-50 rounded-xl text-gray-900 active:scale-95 transition-all hover:bg-gray-100 md:hidden border border-gray-200"
           >
             <HiMenuAlt2 className="w-6 h-6" />
           </button>
         </div>
 
-        {/* Правая часть: ВКЛЮЧАЕМ клики (pointer-events-auto) */}
-        <div className="flex items-center gap-3 md:gap-6 pointer-events-auto">
+        {/* Правая часть */}
+        <div className="flex items-center gap-2 md:gap-4 pointer-events-auto">
+          
+          {/* КНОПКА ПЕРЕКЛЮЧЕНИЯ ТЕМЫ */}
+          <button 
+            onClick={toggleTheme}
+            className={`p-2.5 rounded-xl border transition-all active:scale-90
+              ${isDark 
+                ? 'bg-gray-800 border-gray-700 text-yellow-400 hover:bg-gray-700' 
+                : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+              }`}
+            title={isDark ? "Светлая тема" : "Темная тема"}
+          >
+            {isDark ? <HiSun size={20} /> : <HiMoon size={20} />}
+          </button>
+
           {user ? (
             <>
               <div className="hidden sm:block">

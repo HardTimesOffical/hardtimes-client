@@ -1,105 +1,86 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff; /* page background */
-  --surface: #0f1113; /* panels, sidebar */
-  --card: #141516; /* cards */
-  --foreground: #D1D5DB; /* main text */
-  --muted: #9aa6bd; /* secondary text */
-  --accent: #FF6A00; /* primary accent (red) */
-  --menu-heading: #8b93a0;
-  --background-alt: linear-gradient(180deg,#051022 0%, #071735 100%);
-  --auth-bg: #070C1D;
-  --auth-accent: var(--accent);
-  --auth-text: #D1D5DB;
-  --auth-muted: #747D89;
-  --auth-stroke: #23304B;
-  --auth-input-bg: linear-gradient(90deg, #11192B 0%, #08132C 100%);
-  --workbench-title: #d1d5dbd0;
+  --background: #ffffff;
+  --foreground: #1a1c1e;
+  --foreground-bright: #1a1c1e; /* Темный текст для светлой темы */
+  --card: #ffffff;
+  --surface: #f6f8fa;
+  --border: #d0d7de;
+  --muted: #657b91;
+  --accent: #FF6A00;
+  --contrast-text: #ffffff; /* Белый текст на темных кнопках */
 }
 
-.text1 {
-  color:#FF6A00;
+.dark {
+  --background: #0d1117;
+  --foreground: #e6edf3;
+  --foreground-bright: #ffffff; /* Белый текст для темной темы */
+  --card: #161b22; 
+  --surface: #010409; 
+  --border: #30363d;
+  --muted: #8b949e;
+  --accent: #f97316;
+  --contrast-text: #0d1117; /* Темный текст на белых кнопках */
 }
 
-.block {
-  background-color: var(--auth-bg);
-  border: 1px solid var(--auth-stroke);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 10px;
-  max-width: 1200px;
-}
-
-.icon {
-  display: flex;
-  width: 17px;
-  height: 17px;
-}
-
-.blueBtn {
-  background-color: #0068C9;
-  color: white;
-  padding: 6px 15px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  font-weight: 600;
-  width: fit-content;
-  max-height: 40px;
-}
-
-.list-con {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-}
-
-.mainContainer {
-  position: relative;
-  /* 20px (отступ шапки) + 64px (высота) + 20px (запас) = 104px */
-  padding-top: 110px; 
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-nunito, var(--font-geist-sans));
-  --font-mono: var(--font-geist-mono);
+  --color-foreground-bright: var(--foreground-bright);
+  --color-card: var(--card);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-contrast-text: var(--contrast-text);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0b0b0c;
-    --foreground: #D1D5DB;
-  }
+/* Хелперы для чистого CSS (если где-то не используешь Tailwind) */
+.bg-card { background-color: var(--card); }
+.text-main { color: var(--foreground); }
+.border-main { border: 1px solid var(--border); }
+
+/* Для Chrome, Safari и Edge */
+::-webkit-scrollbar {
+  width: 8px;  /* Ширина вертикального скролла */
+  height: 8px; /* Высота горизонтального скролла */
 }
 
-.page {
-  min-height: 100vh;
-  background: var(--background-alt);
-  color: var(--foreground);
-}
-
-body {
+/* Фон дорожки скролла */
+::-webkit-scrollbar-track {
   background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
-  min-height: 100vh;
-  height: auto;
 }
 
-html {
-  height: auto;
+/* Сам ползунок */
+::-webkit-scrollbar-thumb {
+  background: var(--border); /* Используем цвет границ для ползунка */
+  border-radius: 10px;
+  border: 2px solid var(--background); /* Отступ, чтобы ползунок казался тоньше */
 }
 
-/* Utility classes for accent usage */
-.text-accent{ color: var(--accent) }
-.bg-surface{ background: var(--surface) }
-.card{ background: var(--card); border-radius:10px }
+/* Ползунок при наведении */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* Для Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) var(--background);
+}
+
+/* Специфические стили для темной темы (делаем ползунок чуть заметнее) */
+.dark ::-webkit-scrollbar-thumb {
+  background: #30363d; /* GitHub Dark thumb */
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}

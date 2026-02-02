@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Nunito } from "next/font/google";
 import "./globals.css";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import ClientLayout from "./ClientLayout"; // Импорт нашей обертки
+import { ThemeProvider } from "@/context/ThemeContext"
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -31,9 +32,11 @@ export default function RootLayout({
     <html lang="ru">
       <body className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} antialiased`}>
         {/* Оборачиваем всё в клиентскую логику */}
+        <ThemeProvider>
         <ClientLayout>
           {children}
         </ClientLayout>
+        </ThemeProvider>
         
         <GoogleAnalytics gaId="G-04ESSL6306" />
       </body>
