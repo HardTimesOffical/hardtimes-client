@@ -43,7 +43,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const servers = await res.json()
       
       serverPages = servers.map((server: any) => ({
-        url: `${baseUrl}/${server.slug}`,
+        // ИЗМЕНЕНО: Добавлен путь /monitoring/ перед slug
+        url: `${baseUrl}/monitoring/${server.slug}`, 
         lastModified: server.updatedAt ? new Date(server.updatedAt) : new Date(),
         changeFrequency: 'daily',
         priority: 0.7,
