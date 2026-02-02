@@ -187,9 +187,13 @@ export default function GameContentPage({ initialProjects, initialTotal, params 
     </div>
 
     {/* Декоративная сетка */}
-    <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
-         style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', size: '20px 20px', backgroundSize: '15px 15px' }} 
-    />
+    <div 
+        className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+        style={{ 
+            backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', 
+            backgroundSize: '15px 15px' // Оставьте только это
+        }} 
+        />
   </div>
 
   {/* Контейнер фильтров */}
