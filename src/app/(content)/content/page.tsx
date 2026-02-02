@@ -39,17 +39,18 @@ export default function ContentPage() {
               >
                 {/* Место под ЛОГОТИП */}
                 <div className="aspect-square w-full mb-4 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-center overflow-hidden transition-all group-hover:bg-white">
-                  {game.logoUrl ? (
+                {/* Проверяем game.icon, так как в типе именно он */}
+                {game.icon && game.icon.startsWith('http') ? (
                     <img 
-                      src={game.logoUrl} 
-                      alt={game.label} 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                    src={game.icon} 
+                    alt={game.label} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
                     />
-                  ) : (
+                ) : (
                     <span className="text-4xl grayscale group-hover:grayscale-0 transition-all">
-                      {game.icon}
+                    {game.icon}
                     </span>
-                  )}
+                )}
                 </div>
 
                 {/* Инфо */}
