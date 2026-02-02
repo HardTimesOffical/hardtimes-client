@@ -44,7 +44,7 @@ export const NewProject: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
 
       if (response.status === 201) {
         onClose();
-        router.push(`/content/project/${response.data.slug}`);
+        router.push(`/content/project/${response.data.slug}/settings`);
       }
     } catch (err: any) {
       // Выводим более подробную ошибку валидации, если она пришла
