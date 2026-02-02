@@ -14,27 +14,22 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const { user } = useAuth();
 
   return (
-    /* md:left-20 гарантирует, что шапка начинается там, где кончается свернутый Sidebar */
-    <header className="fixed top-0 right-0 left-0 md:left-20 h-16 md:h-20 bg-black/30 backdrop-blur-md z-[90] transition-all duration-300">
+    // Весь хедер "прозрачен" для кликов
+    <header className="fixed top-0 right-0 left-0 md:left-20 h-16 md:h-20 z-[90] pointer-events-none transition-all duration-300">
       <div className="h-full max-w-[1400px] mx-auto px-4 md:px-8 flex items-center justify-between">
         
-        {/* Левая часть: Бургер и Лого */}
-        <div className="flex items-center gap-4">
+        {/* Левая часть: ВКЛЮЧАЕМ клики (pointer-events-auto) */}
+        <div className="flex items-center gap-4 pointer-events-auto">
           <button 
             onClick={onMenuClick}
             className="p-2 bg-gray-50 rounded-xl text-gray-900 active:scale-95 transition-all hover:bg-gray-100 md:hidden"
-            aria-label="Открыть меню"
           >
             <HiMenuAlt2 className="w-6 h-6" />
           </button>
-          
-          <Link href="/" className="shrink-0 transition-transform hover:scale-105 active:scale-95">
-            <img src="/icons/logo.png" alt="logo" className="h-7 md:h-9 w-auto object-contain"/>
-          </Link>
         </div>
 
-        {/* Правая часть: Баланс и Профиль */}
-        <div className="flex items-center gap-3 md:gap-6">
+        {/* Правая часть: ВКЛЮЧАЕМ клики (pointer-events-auto) */}
+        <div className="flex items-center gap-3 md:gap-6 pointer-events-auto">
           {user ? (
             <>
               <div className="hidden sm:block">
@@ -51,11 +46,10 @@ export default function Header({ onMenuClick }: HeaderProps) {
                     </div>
                   )}
                 </div>
-                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
               </Link>
             </>
           ) : (
-            <Link href="/login" className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-xl text-sm font-bold hover:bg-orange-500 transition-all shadow-lg shadow-gray-200">
+            <Link href="/login" className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-xl text-sm font-bold hover:bg-orange-500 transition-all shadow-lg">
               <span>Войти</span>
             </Link>
           )}

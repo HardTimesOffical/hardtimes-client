@@ -2,23 +2,58 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { NewProject } from '../project/NewProject';
 import { 
   HiOutlineHome, HiOutlineFire, HiOutlineCube, 
   HiOutlineDeviceMobile, HiOutlineLightningBolt,
   HiOutlineShoppingBag, HiOutlinePlusCircle,
   HiOutlineUser, HiOutlineLogout, HiX,
-  HiOutlineCollection, HiOutlinePhotograph, HiOutlineCode
+  HiOutlineCollection, HiOutlinePhotograph, HiOutlineCode,
+  HiChevronLeft
 } from 'react-icons/hi';
+
+// Твои константы (лучше импортировать из отдельного файла constants.ts)
+const GAME_PLATFORMS = [
+  { id: 'minecraft', label: 'Minecraft', icon: '⛏️' },
+  { id: 'hytale', label: 'Hytale', icon: '💎' },
+  { id: 'other', label: 'Другое', icon: '🎮' },
+];
+
+const PROJECT_TYPES_BY_GAME: Record<string, { label: string; value: string }[]> = {
+  'minecraft': [
+    { label: 'Моды', value: 'mod' },
+    { label: 'Плагины', value: 'plugin' },
+    { label: 'Шейдеры', value: 'shader' },
+    { label: 'Ресурспаки', value: 'resourcepack' },
+    { label: 'Карты', value: 'map' },
+  ],
+  'hytale': [
+    { label: 'Моды', value: 'mod' },
+    { label: 'Скрипты', value: 'script' },
+    { label: 'Модели', value: 'model' },
+    { label: 'Миры', value: 'world' },
+  ],
+  'default': [
+    { label: 'Проекты', value: 'project' },
+    { label: 'Дополнения', value: 'addon' },
+  ]
+};
 
 const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
   const pathname = usePathname();
+  const router = useRouter();
+  const params = useParams();
   const { user, logout } = useAuth();
-  const [isExpanded, setIsExpanded] = useState(false);
   
-  // Автоматически определяем вкладку на основе URL
+  const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<'monitoring' | 'content'>('monitoring');
+  const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
+
+  // Определяем игру из URL (например, из /content/minecraft/...)
+  const currentGameId = params?.game as string;
+  const isInsideGame = pathname.startsWith('/content/') && currentGameId;
 
   useEffect(() => {
     if (pathname.startsWith('/content')) {
@@ -27,6 +62,8 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
       setActiveTab('monitoring');
     }
   }, [pathname]);
+
+  const isSidebarOpen = isExpanded || isMobileOpen;
 
   // Данные для МОНИТОРИНГА
   const monitoringItems = {
@@ -42,31 +79,49 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
     action: { name: 'Добавить сервер', href: '/monitoring/workbench', icon: HiOutlinePlusCircle }
   };
 
-  // Данные для КОНТЕНТА
-  const contentItems = {
-    main: [
-      { name: 'Моды', href: '/content/mods', icon: HiOutlineCollection, color: 'text-purple-500' },
-      { name: 'Текстурпаки', href: '/content/resourcepacks', icon: HiOutlinePhotograph, color: 'text-blue-500' },
-      { name: 'Датапаки', href: '/content/datapacks', icon: HiOutlineCode, color: 'text-orange-500' },
-      { name: 'Миры', href: '/content/worlds', icon: HiOutlineCode, color: 'text-orange-500' },
-      { name: 'Плагины', href: '/content/plugins', icon: HiOutlineCode, color: 'text-orange-500' },
-    ],
-    action: { name: 'Новый проект', href: '/content/workbench', icon: HiOutlinePlusCircle }
+  // Логика получения элементов КОНТЕНТА
+  const getContentItems = () => {
+    if (!isInsideGame) {
+      // Если игра не выбрана — список игр
+      return {
+        title: "Выбор игры",
+        items: GAME_PLATFORMS.map(game => ({
+          name: game.label,
+          href: `/content/${game.id}`,
+          icon: HiOutlineCube,
+          color: 'text-orange-500'
+        }))
+      };
+    }
+
+    // Если игра выбрана — типы проектов для этой игры
+    const types = PROJECT_TYPES_BY_GAME[currentGameId] || PROJECT_TYPES_BY_GAME['default'];
+    return {
+      title: currentGameId.toUpperCase(),
+      items: [
+        { name: 'Весь контент', href: `/content/${currentGameId}`, icon: HiOutlineCollection, color: 'text-gray-900' },
+        ...types.map(t => ({
+          name: t.label,
+          href: `/content/${currentGameId}/${t.value}`,
+          icon: HiOutlineCode,
+          color: 'text-blue-500'
+        }))
+      ]
+    };
   };
 
-  const otherItems = [
-    { name: 'Магазин', href: '/shop', icon: HiOutlineShoppingBag },
-  ];
+  const contentSection = getContentItems();
 
-  const isSidebarOpen = isExpanded || isMobileOpen;
+  const handleActionClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!user) return router.push('/login');
+    setIsNewProjectModalOpen(true);
+  };
 
   return (
     <>
       {isMobileOpen && (
-        <div 
-          className="fixed inset-0 bg-black/60 z-[110] md:hidden backdrop-blur-sm"
-          onClick={() => setIsMobileOpen?.(false)}
-        />
+        <div className="fixed inset-0 bg-black/60 z-[110] md:hidden backdrop-blur-sm" onClick={() => setIsMobileOpen?.(false)} />
       )}
 
       <aside 
@@ -79,10 +134,6 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
           ${isExpanded ? 'md:w-64 shadow-2xl shadow-gray-200' : 'md:w-20'}
         `}
       >
-        <button onClick={() => setIsMobileOpen?.(false)} className="absolute top-4 right-4 p-2 md:hidden text-gray-400">
-          <HiX className="w-6 h-6" />
-        </button>
-
         {/* ЛОГОТИП */}
         <Link href="/" className="h-20 flex items-center px-5 shrink-0">
           <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center shrink-0 text-white font-black italic text-xl">H</div>
@@ -91,22 +142,14 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
           </span>
         </Link>
 
-        {/* ПЕРЕКЛЮЧАТЕЛЬ РАЗДЕЛОВ (ТАБЫ) */}
-        <div className={`px-3 mb-4 transition-all duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-100'}`}>
+        {/* ТАБЫ (Сервера / Контент) */}
+        <div className="px-3 mb-4">
           <div className={`bg-gray-100 p-1 rounded-2xl flex gap-1 ${!isSidebarOpen ? 'flex-col' : ''}`}>
-            <button 
-              onClick={() => setActiveTab('monitoring')}
-              className={`flex-1 flex items-center justify-center py-2 rounded-xl transition-all ${activeTab === 'monitoring' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
-              title="Мониторинг"
-            >
+            <button onClick={() => setActiveTab('monitoring')} className={`flex-1 flex items-center justify-center py-2 rounded-xl transition-all ${activeTab === 'monitoring' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}>
               <HiOutlineFire className="w-5 h-5" />
               {isSidebarOpen && <span className="ml-2 text-[10px] font-black uppercase">Сервера</span>}
             </button>
-            <button 
-              onClick={() => setActiveTab('content')}
-              className={`flex-1 flex items-center justify-center py-2 rounded-xl transition-all ${activeTab === 'content' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
-              title="Контент"
-            >
+            <button onClick={() => setActiveTab('content')} className={`flex-1 flex items-center justify-center py-2 rounded-xl transition-all ${activeTab === 'content' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}>
               <HiOutlineCube className="w-5 h-5" />
               {isSidebarOpen && <span className="ml-2 text-[10px] font-black uppercase">Контент</span>}
             </button>
@@ -115,17 +158,14 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
 
         {/* НАВИГАЦИЯ */}
         <nav className="flex-1 flex flex-col gap-4 px-3 py-2 overflow-y-auto overflow-x-hidden scrollbar-hide">
-          
           {activeTab === 'monitoring' ? (
             <>
               <div className="space-y-1">
                 {monitoringItems.main.map((item) => (
                   <SidebarLink key={item.href} item={item} isExpanded={isSidebarOpen} isActive={pathname === item.href} />
                 ))}
-                {/* ВЫВОД КНОПКИ ДОБАВЛЕНИЯ СЕРВЕРА */}
                 <SidebarLink item={monitoringItems.action} isExpanded={isSidebarOpen} isActive={pathname === monitoringItems.action.href} />
               </div>
-
               <div className="space-y-1">
                 <p className={`text-[10px] font-black text-gray-300 uppercase tracking-widest ml-3 mb-2 ${isSidebarOpen ? 'block' : 'hidden'}`}>Игры</p>
                 {monitoringItems.games.map((item) => (
@@ -135,55 +175,64 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
             </>
           ) : (
             <div className="space-y-1">
-               <p className={`text-[10px] font-black text-gray-300 uppercase tracking-widest ml-3 mb-2 ${isSidebarOpen ? 'block' : 'hidden'}`}>Библиотека</p>
-               {contentItems.main.map((item) => (
-                  <SidebarLink key={item.href} item={item} isExpanded={isSidebarOpen} isActive={pathname === item.href} />
-                ))}
-                {/* ВЫВОД КНОПКИ НОВОГО ПРОЕКТА */}
-                <SidebarLink item={contentItems.action} isExpanded={isSidebarOpen} isActive={pathname === contentItems.action.href} />
+              <div className="flex items-center justify-between px-3 mb-2">
+                <p className={`text-[10px] font-black text-gray-300 uppercase tracking-widest ${isSidebarOpen ? 'block' : 'hidden'}`}>
+                  {contentSection.title}
+                </p>
+                {isInsideGame && isSidebarOpen && (
+                  <Link href="/content" className="text-[9px] font-black text-orange-500 hover:underline flex items-center gap-1">
+                    <HiChevronLeft /> НАЗАД
+                  </Link>
+                )}
+              </div>
+              
+              {contentSection.items.map((item) => (
+                <SidebarLink key={item.href} item={item} isExpanded={isSidebarOpen} isActive={pathname === item.href} />
+              ))}
+
+              <div onClick={handleActionClick} className="pt-4">
+                <SidebarLink item={{ name: 'Новый проект', href: '#', icon: HiOutlinePlusCircle }} isExpanded={isSidebarOpen} isActive={false} />
+              </div>
             </div>
           )}
 
           <div className="mt-auto pt-4 border-t border-gray-50 space-y-1">
-            {otherItems.map((item) => (
-              <SidebarLink key={item.href} item={item} isExpanded={isSidebarOpen} isActive={pathname === item.href} />
-            ))}
+            <SidebarLink item={{ name: 'Магазин', href: '/shop', icon: HiOutlineShoppingBag }} isExpanded={isSidebarOpen} isActive={pathname === '/shop'} />
           </div>
         </nav>
 
-        {/* ПРОФИЛЬ (без изменений) */}
+        {/* ПРОФИЛЬ */}
         <div className="p-3 border-t border-gray-50 bg-white shrink-0">
-            {/* Твой существующий блок профиля */}
-            {user ? (
-               <div className={`flex items-center gap-3 p-2 rounded-2xl transition-all ${isSidebarOpen ? 'bg-gray-50' : ''}`}>
-                  <Link href={`/profile/${user.username}`} className="shrink-0">
-                    <div className="w-10 h-10 rounded-xl overflow-hidden bg-orange-500 flex items-center justify-center text-white font-bold uppercase">
-                      {user.avatar ? <img src={user.avatar} className="w-full h-full object-cover" /> : user.username?.charAt(0)}
-                    </div>
-                  </Link>
-                  {isSidebarOpen && (
-                    <div className="flex flex-1 items-center justify-between min-w-0">
-                      <div className="truncate pr-2">
-                        <p className="text-xs font-black text-gray-900 truncate uppercase">{user.username}</p>
-                        <p className="text-[10px] font-bold text-orange-500 uppercase">{user.balance || 0} звезд</p>
-                      </div>
-                      <button onClick={() => logout()} className="text-gray-400 hover:text-red-500"><HiOutlineLogout className="w-5 h-5"/></button>
-                    </div>
-                  )}
-               </div>
-            ) : (
-              <Link href="/login" className={`flex items-center gap-4 p-3 rounded-2xl text-gray-400 hover:bg-gray-50 transition-all ${isSidebarOpen ? 'px-4' : 'justify-center'}`}>
-                <HiOutlineUser className="w-6 h-6 shrink-0" />
-                {isSidebarOpen && <span className="font-black text-sm uppercase">Войти</span>}
+          {user ? (
+            <div className={`flex items-center gap-3 p-2 rounded-2xl transition-all ${isSidebarOpen ? 'bg-gray-50' : ''}`}>
+              <Link href={`/profile/${user.username}`} className="shrink-0">
+                <div className="w-10 h-10 rounded-xl overflow-hidden bg-orange-500 flex items-center justify-center text-white font-bold uppercase">
+                  {user.avatar ? <img src={user.avatar} className="w-full h-full object-cover" /> : user.username?.charAt(0)}
+                </div>
               </Link>
-            )}
+              {isSidebarOpen && (
+                <div className="flex flex-1 items-center justify-between min-w-0">
+                  <div className="truncate pr-2">
+                    <p className="text-xs font-black text-gray-900 truncate uppercase">{user.username}</p>
+                    <p className="text-[10px] font-bold text-orange-500 uppercase">{user.balance || 0} звезд</p>
+                  </div>
+                  <button onClick={() => logout()} className="text-gray-400 hover:text-red-500"><HiOutlineLogout className="w-5 h-5"/></button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link href="/login" className={`flex items-center gap-4 p-3 rounded-2xl text-gray-400 hover:bg-gray-50 transition-all ${isSidebarOpen ? 'px-4' : 'justify-center'}`}>
+              <HiOutlineUser className="w-6 h-6 shrink-0" />
+              {isSidebarOpen && <span className="font-black text-sm uppercase">Войти</span>}
+            </Link>
+          )}
         </div>
       </aside>
+
+      <NewProject isOpen={isNewProjectModalOpen} onClose={() => setIsNewProjectModalOpen(false)} />
     </>
   );
 };
-
-// SidebarLink остается таким же...
 
 const SidebarLink = ({ item, isExpanded, isActive }: any) => {
   const Icon = item.icon;

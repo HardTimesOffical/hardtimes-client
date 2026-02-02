@@ -8,7 +8,8 @@ export interface User {
   avatar?: string;
   bio?: string;
   balance: number;
-  // Добавьте сюда все остальные поля пользователя
+  // Добавляем роль. Используем union type для строгости
+  role: 'admin' | 'moderator' | 'user'; 
 }
 
 export interface AuthContextType {

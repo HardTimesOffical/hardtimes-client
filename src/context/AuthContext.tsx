@@ -1,9 +1,10 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // Для App Router
+import { useRouter } from "next/navigation";
 import api from "../lib/api";
 import { User } from "@/types/auth";
+import Cookies from "js-cookie";
 
 interface AuthContextValue {
   accessToken: string | null;
@@ -11,24 +12,14 @@ interface AuthContextValue {
   setAccessToken: (token: string | null) => void;
   login: (token: string, user: User) => void;
   logout: () => void;
-  updateUser: (newData: Partial<User>) => void; // Добавляем эту строку
+  updateUser: (newData: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const router = useRouter();
-  
-  const updateUser = (newData: Partial<User>) => {
-    setUser((prevUser) => {
-      if (!prevUser) return null;
-      const updated = { ...prevUser, ...newData };
-      // Сохраняем в localStorage, чтобы после перезагрузки данные остались
-      localStorage.setItem("user", JSON.stringify(updated));
-      return updated;
-    });
-  };
-  
+
   const [accessToken, setAccessTokenState] = useState<string | null>(() => {
     if (typeof window !== "undefined") return localStorage.getItem("accessToken");
     return null;
@@ -42,49 +33,57 @@ export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
     return null;
   });
 
-  // Внутренняя функция для ПОЛНОЙ очистки (и стейта и хранилища)
+  // Вспомогательная функция для обновления и стейта, и хранилищ
+  const updateUser = (newData: Partial<User>) => {
+    setUser((prevUser) => {
+      if (!prevUser) return null;
+      const updated = { ...prevUser, ...newData };
+      localStorage.setItem("user", JSON.stringify(updated));
+      // Если обновилась роль, синхронизируем куки
+      if (newData.role) Cookies.set('userRole', newData.role, { expires: 7 });
+      return updated;
+    });
+  };
+
   const clearAuthData = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
+    Cookies.remove('userRole');
+    Cookies.remove('accessToken');
     setAccessTokenState(null);
     setUser(null);
   };
 
+  // Эффект синхронизации токена
   useEffect(() => {
-    if (accessToken) localStorage.setItem("accessToken", accessToken);
-    else localStorage.removeItem("accessToken");
+    if (accessToken) {
+      localStorage.setItem("accessToken", accessToken);
+      Cookies.set('accessToken', accessToken, { expires: 7 });
+    } else {
+      clearAuthData();
+    }
   }, [accessToken]);
 
+  // Проверка сессии при загрузке
   useEffect(() => {
-    if (user) localStorage.setItem("user", JSON.stringify(user));
-    else localStorage.removeItem("user");
-  }, [user]);
-
-useEffect(() => {
-  const checkSession = async () => {
-    if (!accessToken) return;
-
-    try {
-      // 1. Получаем свежие данные пользователя (с актуальным балансом)
-      const { data } = await api.get('/users/me'); 
-      
-      // 2. ОБЯЗАТЕЛЬНО обновляем стейт, чтобы во всем приложении баланс стал актуальным
-      setUser(data); 
-      localStorage.setItem("user", JSON.stringify(data));
-      
-    } catch (err: any) {
-      if (err.response?.status === 401) {
-        console.log("Token is invalid, clearing state...");
-        clearAuthData();
-        router.push('/');
+    const checkSession = async () => {
+      if (!accessToken) return;
+      try {
+        const { data } = await api.get('/users/me'); 
+        setUser(data); 
+        localStorage.setItem("user", JSON.stringify(data));
+        if (data.role) Cookies.set('userRole', data.role, { expires: 7 });
+      } catch (err: any) {
+        if (err.response?.status === 401) {
+          clearAuthData();
+          router.push('/');
+        }
       }
-    }
-  };
+    };
+    checkSession();
+  }, [accessToken, router]);
 
-  checkSession();
-}, [accessToken]);
-
-  // Синхронизация между вкладками
+  // Синхронизация логаута между вкладками
   useEffect(() => {
     const syncLogout = (event: StorageEvent) => {
       if (event.key === 'accessToken' && !event.newValue) {
@@ -94,17 +93,16 @@ useEffect(() => {
     };
     window.addEventListener('storage', syncLogout);
     return () => window.removeEventListener('storage', syncLogout);
-  }, []);
+  }, [router]);
 
-const login = (token: string, userObj: User) => {
-  // 1. Сначала жестко пишем в хранилище
-  localStorage.setItem("accessToken", token);
-  localStorage.setItem("user", JSON.stringify(userObj));
-
-  // 2. Сразу обновляем стейт (это заставит Header перерисоваться)
-  setAccessTokenState(token);
-  setUser(userObj);
-};
+  const login = (token: string, userObj: User) => {
+    localStorage.setItem("accessToken", token);
+    localStorage.setItem("user", JSON.stringify(userObj));
+    Cookies.set('userRole', userObj.role, { expires: 7 });
+    Cookies.set('accessToken', token, { expires: 7 });
+    setAccessTokenState(token);
+    setUser(userObj);
+  };
 
   const logout = async () => {
     try {

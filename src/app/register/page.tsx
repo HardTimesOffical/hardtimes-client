@@ -14,7 +14,7 @@ export default function LoginPage() {
             <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-10">
                 
                 {/* Обертка для формы регистрации */}
-                <div className="w-full max-w-[500px] bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-2 md:p-4 mt-[-5vh]">
+                <div className="flex flex-col pt-15 items-center justify-center ">
                     {/* mt-[-5vh] визуально центрирует форму чуть выше математического центра, 
                         что выглядит эстетичнее 
                     */}
