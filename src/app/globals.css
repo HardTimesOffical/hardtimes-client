@@ -3,25 +3,25 @@
 :root {
   --background: #ffffff;
   --foreground: #1a1c1e;
-  --foreground-bright: #1a1c1e; /* Темный текст для светлой темы */
+  --foreground-bright: #1a1c1e;
   --card: #ffffff;
   --surface: #f6f8fa;
   --border: #d0d7de;
   --muted: #657b91;
   --accent: #FF6A00;
-  --contrast-text: #ffffff; /* Белый текст на темных кнопках */
+  --contrast-text: #ffffff;
 }
 
 .dark {
   --background: #0d1117;
   --foreground: #e6edf3;
-  --foreground-bright: #ffffff; /* Белый текст для темной темы */
+  --foreground-bright: #ffffff;
   --card: #161b22; 
   --surface: #010409; 
   --border: #30363d;
   --muted: #8b949e;
   --accent: #f97316;
-  --contrast-text: #0d1117; /* Темный текст на белых кнопках */
+  --contrast-text: #0d1117;
 }
 
 body {

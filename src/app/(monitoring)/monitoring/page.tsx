@@ -37,7 +37,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
               <div className="flex items-center gap-3">
                 {/* Декоративная полоска слева от заголовка в стиле GitHub */}
                 <div className="w-1 h-8 bg-accent rounded-full" />
-                <h1 className="text-3xl font-[1000] text-foreground-bright tracking-tighter uppercase leading-none" translate="no">
+                <h1 className="text-xl font-[1000] text-foreground-bright tracking-tighter uppercase leading-none" translate="no">
                   Топ <span translate="no" className="text-accent">Серверов</span>
                 </h1>
               </div>

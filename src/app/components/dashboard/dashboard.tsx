@@ -17,26 +17,30 @@ import {
 const GAME_PLATFORMS = [
   { id: 'minecraft', label: 'Minecraft', icon: '⛏️' },
   { id: 'hytale', label: 'Hytale', icon: '💎' },
-  { id: 'other', label: 'Другое', icon: '🎮' },
 ];
 
-const PROJECT_TYPES_BY_GAME: Record<string, { label: string; value: string }[]> = {
+export const PROJECT_TYPES_BY_GAME: Record<string, { label: string; value: string }[]> = {
   'minecraft': [
     { label: 'Моды', value: 'mod' },
     { label: 'Плагины', value: 'plugin' },
+    { label: 'Сборки серверов', value: 'server-pack' },
+    { label: 'Сборки модов', value: 'modpack' },
+    { label: 'Переводы', value: 'translation' },
+    { label: 'Конфигурации', value: 'config' },
     { label: 'Шейдеры', value: 'shader' },
     { label: 'Ресурспаки', value: 'resourcepack' },
     { label: 'Карты', value: 'map' },
+    { label: 'Датапаки', value: 'datapack' },
   ],
   'hytale': [
     { label: 'Моды', value: 'mod' },
-    { label: 'Скрипты', value: 'script' },
-    { label: 'Модели', value: 'model' },
-    { label: 'Миры', value: 'world' },
-  ],
-  'default': [
-    { label: 'Проекты', value: 'project' },
-    { label: 'Дополнения', value: 'addon' },
+    { label: 'Скрипты (C#)', value: 'script' },
+    { label: 'Сборки серверов', value: 'server-pack' },
+    { label: 'Конфигурации', value: 'config' },
+    { label: 'Переводы', value: 'translation' },
+    { label: 'Модели и Ассеты', value: 'model' },
+    { label: 'Миры и Карты', value: 'world' },
+    { label: 'Инструменты', value: 'tool' },
   ]
 };
 
@@ -49,10 +53,13 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<'monitoring' | 'content'>('monitoring');
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
+  const [counts, setCounts] = useState<Record<string, number>>({});
 
   const currentGameId = params?.game as string;
   const isInsideGame = pathname.startsWith('/content/') && currentGameId;
+  const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
+  // Эффект для определения активного таба
   useEffect(() => {
     if (pathname.startsWith('/content')) {
       setActiveTab('content');
@@ -60,6 +67,31 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
       setActiveTab('monitoring');
     }
   }, [pathname]);
+
+  // Эффект для загрузки количества проектов
+  useEffect(() => {
+    const fetchCounts = async () => {
+      if (!isInsideGame || !currentGameId) return;
+      try {
+        const res = await fetch(`${SERVER_URL}/projects?gameType=${currentGameId}&limit=1000`);
+        const data = await res.json();
+        const projects = data.projects || [];
+
+        const projectCounts: Record<string, number> = {};
+        projects.forEach((p: any) => {
+          const type = p.projectType;
+          projectCounts[type] = (projectCounts[type] || 0) + 1;
+        });
+        
+        projectCounts['all'] = projects.length;
+        setCounts(projectCounts);
+      } catch (e) {
+        console.error("Sidebar stats error:", e);
+      }
+    };
+
+    fetchCounts();
+  }, [currentGameId, isInsideGame, SERVER_URL]);
 
   const isSidebarOpen = isExpanded || isMobileOpen;
 
@@ -89,16 +121,23 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
       };
     }
 
-    const types = PROJECT_TYPES_BY_GAME[currentGameId] || PROJECT_TYPES_BY_GAME['default'];
+    const types = PROJECT_TYPES_BY_GAME[currentGameId] || [];
     return {
       title: currentGameId.toUpperCase(),
       items: [
-        { name: 'Весь контент', href: `/content/${currentGameId}`, icon: HiOutlineCollection, color: 'text-foreground-bright' },
+        { 
+          name: 'Весь контент', 
+          href: `/content/${currentGameId}`, 
+          icon: HiOutlineCollection, 
+          color: 'text-foreground-bright',
+          count: counts['all'] 
+        },
         ...types.map(t => ({
           name: t.label,
           href: `/content/${currentGameId}/${t.value}`,
           icon: HiOutlineCode,
-          color: 'text-blue-500'
+          color: 'text-blue-500',
+          count: counts[t.value]
         }))
       ]
     };
@@ -128,10 +167,7 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
           ${isExpanded ? 'md:w-64' : 'md:w-20'}
         `}
       >
-        {/* ЛОГОТИП */}
         <Link href="/" className="h-20 flex items-center px-5 shrink-0">
-          {/* bg-foreground-bright сделает квадрат черным днем и белым ночью */}
-          {/* text-background (или text-contrast-text) сделает букву H контрастной */}
           <div className="w-10 h-10 bg-foreground-bright rounded-xl flex items-center justify-center shrink-0 text-contrast-text font-black text-xl">
             H
           </div>
@@ -140,7 +176,6 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
           </span>
         </Link>
 
-        {/* ТАБЫ */}
         <div className="px-3 mb-4">
           <div className={`bg-surface p-1 rounded-2xl flex gap-1 ${!isSidebarOpen ? 'flex-col' : ''}`}>
             <button onClick={() => setActiveTab('monitoring')} className={`flex-1 flex items-center justify-center py-2 rounded-xl transition-all ${activeTab === 'monitoring' ? 'bg-card shadow-sm text-foreground-bright' : 'text-muted hover:text-foreground'}`}>
@@ -154,7 +189,6 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
           </div>
         </div>
 
-        {/* НАВИГАЦИЯ */}
         <nav className="flex-1 flex flex-col gap-4 px-3 py-2 overflow-y-auto overflow-x-hidden scrollbar-hide">
           {activeTab === 'monitoring' ? (
             <>
@@ -199,7 +233,6 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
           </div>
         </nav>
 
-        {/* ПРОФИЛЬ */}
         <div className="p-3 border-t border-border bg-card shrink-0">
           {user ? (
             <div className={`flex items-center gap-3 p-2 rounded-2xl transition-all ${isSidebarOpen ? 'bg-surface' : ''}`}>
@@ -245,19 +278,33 @@ const SidebarLink = ({ item, isExpanded, isActive }: any) => {
         ${isExpanded ? 'gap-4 px-4' : 'justify-center'}
       `}
     >
-      {/* Иконка: если активна — цвет контрастный, если нет — свой родной цвет илиmuted */}
       <Icon className={`w-6 h-6 shrink-0 transition-colors
         ${isActive ? 'text-contrast-text' : (item.color || 'group-hover:text-foreground-bright')}
       `} />
       
-      <span translate='no' className={`font-bold text-sm tracking-tight whitespace-nowrap transition-all duration-300
-        ${isActive ? 'text-contrast-text' : ''}
+      <div className={`flex flex-1 items-center justify-between transition-all duration-300
         ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10 absolute pointer-events-none'}
       `}>
-        {item.name}
-      </span>
+        <span translate='no' className={`font-bold text-sm tracking-tight whitespace-nowrap
+          ${isActive ? 'text-contrast-text' : ''}
+        `}>
+          {item.name}
+        </span>
+
+        {/* СЧЕТЧИК */}
+        {item.count !== undefined && item.count > 0 && (
+          <span className={`
+            text-[9px] font-black px-1.5 py-0.5 rounded-lg min-w-[20px] text-center transition-colors
+            ${isActive 
+              ? 'bg-contrast-text/20 text-contrast-text' 
+              : 'bg-surface text-muted group-hover:bg-background'}
+          `}>
+            {item.count}
+          </span>
+        )}
+      </div>
     </Link>
   );
 };
 
-export default Sidebar; 
+export default Sidebar;

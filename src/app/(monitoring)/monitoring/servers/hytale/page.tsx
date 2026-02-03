@@ -40,7 +40,7 @@ export default function HytaleServersPage() {
                 />
               </div>
               <div>
-                <h1 className="text-4xl md:text-5xl font-[1000] uppercase tracking-tighter leading-none text-foreground-bright">
+                <h1 className="text-xl md:text-xl font-[1000] uppercase tracking-tighter leading-none text-foreground-bright">
                   Hytale<span className="text-purple-500 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">SERVERS</span>
                 </h1>
                 <div className="flex items-center gap-3 mt-3">

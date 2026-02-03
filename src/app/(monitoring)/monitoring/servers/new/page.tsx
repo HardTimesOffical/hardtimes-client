@@ -39,7 +39,7 @@ export default async function NewServersPage({ searchParams }: { searchParams: a
                 </span>
               </div>
               
-              <h1 className="text-3xl md:text-5xl font-[1000] text-foreground-bright uppercase tracking-tighter italic">
+              <h1 className="text-xl md:text-xl font-[1000] text-foreground-bright uppercase tracking-tighter italic">
                 New <span className="text-accent underline decoration-green-500/30">Servers</span>
               </h1>
             </div>

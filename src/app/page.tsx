@@ -21,7 +21,7 @@ export default function Home() {
             Добро пожаловать в <span className="text-accent">HardTimes</span>
           </h1>
           <p className="text-muted text-lg font-medium max-w-xl mx-auto">
-            Выберите направление, чтобы начать путешествие в мире Minecraft
+            Выберите раздел, чтобы продолжить ознакомление с лучшими серверами и контентом для Minecraft.
           </p>
         </div>
 
@@ -50,7 +50,7 @@ export default function Home() {
           </Link>
 
           {/* КАРТОЧКА: КОНТЕНТ */}
-          <Link href="/content/mods" 
+          <Link href="/content" 
             className="group relative overflow-hidden bg-card p-8 rounded-2xl border border-border hover:border-purple-500 transition-all duration-300 shadow-sm"
           >
             <div className="relative z-10 flex flex-col h-full">

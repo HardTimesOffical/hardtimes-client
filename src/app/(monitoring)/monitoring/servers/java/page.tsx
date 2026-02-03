@@ -51,7 +51,7 @@ export default async function JavaServersPage({ searchParams }: { searchParams: 
                  <img className="w-6 h-6" src="/icons/java.svg" alt="Java Icon" />
               </div>
               {/* Заголовок: убрали italic, добавили foreground-bright */}
-              <h1 className="text-2xl md:text-4xl font-black text-foreground-bright tracking-tighter uppercase">
+              <h1 className="text-xl md:text-xl font-black text-foreground-bright tracking-tighter uppercase">
                 Minecraft <span className="text-green-500">Java</span> Edition
               </h1>
             </div>

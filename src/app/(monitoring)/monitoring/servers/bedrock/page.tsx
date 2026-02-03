@@ -47,7 +47,7 @@ export default function BedrockServersPage() {
                  <img className="w-6 h-6" src="/icons/bedrock.svg" alt="Bedrock Icon" />
               </div>
               {/* Заголовок: text-foreground-bright для максимального контраста */}
-              <h1 className="text-2xl md:text-4xl font-[1000] text-foreground-bright tracking-tighter uppercase leading-none">
+              <h1 className="text-xl md:text-xl font-[1000] text-foreground-bright tracking-tighter uppercase leading-none">
                 Minecraft <span className="text-accent">Bedrock</span> Edition
               </h1>
             </div>

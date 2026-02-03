@@ -6,16 +6,27 @@ export const GAME_PLATFORMS = [
 
 // Типы проектов (которые мы будем выбирать уже в настройках, но константы храним тут)
 export const PROJECT_TYPES = [
-  { id: 'mod', label: 'Моды' },
-  { id: 'plugin', label: 'Плагины' },
-  { id: 'shader', label: 'Шейдеры' },
-  { id: 'resourcepack', label: 'Текстурпаки' },
-  { id: 'map', label: 'Карты' },
-  { id: 'modpack', label: 'Сборки' },
-  { id: 'datapack', label: 'Датапаки' },
+  { id: 'mods', label: 'Моды' },
+  { id: 'plugins', label: 'Плагины' },
+  { id: 'server-packs', label: 'Сборки серверов' },
+  { id: 'modpacks', label: 'Сборки модов' },
+  { id: 'translations', label: 'Переводы' },
+  { id: 'configs', label: 'Конфигурации' },
+  { id: 'shaders', label: 'Шейдеры' },
+  { id: 'resourcepacks', label: 'Ресурспаки' },
+  { id: 'maps', label: 'Карты' },
+  { id: 'maps', label: 'Cхематики' },
+  { id: 'datapacks', label: 'Датапаки' },
+  { id: 'scripts', label: 'Скрипты (C#)' },
+  { id: 'models', label: 'Модели и Ассеты' },
+  { id: 'tools', label: 'Инструменты' },
 ];
 
 // Вспомогательная функция для получения названия игры по ID
 export const getGameLabel = (id: string) => {
   return GAME_PLATFORMS.find(game => game.id === id)?.label || id;
+};
+
+export const getProjectTypeLabel = (id: string) => {
+  return PROJECT_TYPES.find(type => type.id === id)?.label || id;
 };

@@ -1,10 +1,13 @@
 'use client';
 
 import React, { useCallback, useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { 
   HiOutlineSearch, HiOutlineCube, HiCheck,
-  HiOutlineAdjustments, HiChevronDown
+  HiOutlineAdjustments, HiChevronDown, HiOutlineFilter,
+  HiOutlineSortAscending, HiOutlineClock, HiOutlineDownload, HiOutlineFire,
+  HiOutlineCollection, HiX
 } from 'react-icons/hi';
 import { PROJECT_TAGS } from '@/constants/projectTags';
 import { GAME_VERSIONS } from '@/constants/gameVersions';
@@ -21,10 +24,7 @@ interface Project {
   iconUrl?: string;
   gameType: string;
   projectType: string;
-  analytics: {
-    views: number;
-    downloads: number;
-  };
+  analytics: { views: number; downloads: number; };
   tags: string[];
   versions: string[];
 }
@@ -38,21 +38,21 @@ interface PageProps {
 export default function GameContentPage({ initialProjects, initialTotal, params }: PageProps) {
   const { game } = params;
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [isTypeSelectOpen, setIsTypeSelectOpen] = useState(false);
+  
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [total, setTotal] = useState(initialTotal);
   const [loading, setLoading] = useState(false);
 
   const currentType = params.slug?.[0] || 'all';
   const gameLabel = getGameLabel(game);
-
-  // Получаем корректный лейбл типа (например, "Моды") из новой структуры
   const gameTypes = PROJECT_TYPES_BY_GAME[game as keyof typeof PROJECT_TYPES_BY_GAME] || [];
-  const typeLabel = gameTypes.find(t => t.value === currentType)?.label || 'Контент';
+  const typeLabel = gameTypes.find(t => t.value === currentType)?.label || 'Весь контент';
   
-  // Чтение параметров из URL
   const activeTags = searchParams.get('tags')?.split(',').filter(Boolean) || [];
   const activeVersions = searchParams.get('versions')?.split(',').filter(Boolean) || [];
   const query = searchParams.get('q') || '';
@@ -65,7 +65,6 @@ export default function GameContentPage({ initialProjects, initialTotal, params 
       if (value) params.set(key, value);
       else params.delete(key);
     });
-    // При любом фильтре сбрасываем страницу на первую
     if (!updates.page) params.set('page', '1'); 
     router.push(`?${params.toString()}`, { scroll: false });
   }, [searchParams, router]);
@@ -77,36 +76,56 @@ export default function GameContentPage({ initialProjects, initialTotal, params 
     updateUrl({ [key]: newArray.length ? newArray.join(',') : null });
   };
 
-  const versionsList = game === 'minecraft' ? GAME_VERSIONS["Minecraft Java"] : (GAME_VERSIONS[game as string] || []);
-  const tagsList = PROJECT_TAGS[currentType as keyof typeof PROJECT_TAGS] || [];
+  const versionsList = (() => {
+    const gameKey = Object.keys(GAME_VERSIONS).find(k => k.toLowerCase() === game.toLowerCase());
+    if (!gameKey && game === 'minecraft') return GAME_VERSIONS["Minecraft Java"];
+    return gameKey ? GAME_VERSIONS[gameKey] : [];
+  })();
 
+    const gameKey = Object.keys(PROJECT_TAGS).find(
+        k => k.toLowerCase() === game.toLowerCase()
+        ) as keyof typeof PROJECT_TAGS;
+
+        // 2. Получаем список тегов
+        const tagsList = (() => {
+        if (!gameKey || currentType === 'all') return [];
+        
+        // Берем теги для конкретного типа (например, 'mods')
+        const tags = PROJECT_TAGS[gameKey]?.[currentType.toLowerCase()];
+        
+        // Если не нашли (например, в URL 'mod', а в константе 'mods'), пробуем найти похожий ключ
+        if (!tags) {
+            const similarKey = Object.keys(PROJECT_TAGS[gameKey]).find(
+            k => k.startsWith(currentType.toLowerCase()) || currentType.toLowerCase().startsWith(k)
+            );
+            return similarKey ? PROJECT_TAGS[gameKey][similarKey] : [];
+        }
+        
+        return tags || [];
+    })();
+    
   const sortOptions = [
-    { id: 'popular', label: 'По популярности' },
-    { id: 'newest', label: 'Сначала новые' },
-    { id: 'updated', label: 'Обновленные' },
-    { id: 'downloads', label: 'Скачивания' },
+    { id: 'popular', label: 'Популярные', icon: <HiOutlineFire /> },
+    { id: 'newest', label: 'Новые', icon: <HiOutlineClock /> },
+    { id: 'downloads', label: 'Скачивания', icon: <HiOutlineDownload /> },
   ];
 
-  // Debounce поиск
   useEffect(() => {
-    if (searchTerm === (searchParams.get('q') || '')) return;
     const handler = setTimeout(() => {
-      updateUrl({ q: searchTerm || null });
-    }, 500);
+      if (searchTerm !== (searchParams.get('q') || '')) {
+        updateUrl({ q: searchTerm || null });
+      }
+    }, 400);
     return () => clearTimeout(handler);
   }, [searchTerm, updateUrl, searchParams]);
 
-  // Fetch данных при смене фильтров
   useEffect(() => {
-    if (!game || !currentType) return;
-
     const fetchProjects = async () => {
       setLoading(true);
       try {
         const { data } = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/projects`, {
           params: {
-            game,
-            type: currentType,
+            game, type: currentType,
             q: searchParams.get('q'),
             tags: searchParams.get('tags'),
             versions: searchParams.get('versions'),
@@ -116,179 +135,144 @@ export default function GameContentPage({ initialProjects, initialTotal, params 
         });
         setProjects(data.projects || []);
         setTotal(data.pagination?.total || 0);
-      } catch (error) {
-        console.error("Ошибка загрузки:", error);
-      } finally {
-        setLoading(false);
-      }
+      } catch (error) { console.error(error); } finally { setLoading(false); }
     };
-
     fetchProjects();
   }, [searchParams, game, currentType]);
 
   return (
-    <div className="min-h-screen bg-white text-slate-900">
-      <div className="pt-10 border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row md:items-center gap-6">
-          <div className="flex flex-col shrink-0">
-            {/* Хлебные крошки — важны для SEO навигации */}
-            <nav className="flex items-center gap-2 text-[10px] font-bold uppercase text-slate-400 mb-1">
-              <a href="/" className="hover:text-orange-500 transition-colors">Главная</a>
-              <span>/</span>
-              <a href={`/content/${game}`} className="hover:text-orange-500 transition-colors">{gameLabel}</a>
-              {currentType !== 'all' && (
-                <>
-                  <span>/</span>
-                  <span className="text-slate-900">{typeLabel}</span>
-                </>
-              )}
-            </nav>
-            {/* H1 Заголовок — основной ключ страницы */}
-            <h1 className="text-2xl font-black uppercase italic tracking-tighter">
-              {typeLabel} <span className="text-orange-500">на {gameLabel}</span>
-            </h1>
-          </div>
-
-          <div className="relative w-full max-w-md md:ml-auto">
-            <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-            <input 
-              type="text"
-              placeholder={`Поиск в категории ${typeLabel.toLowerCase()}...`}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-transparent rounded-xl text-xs font-bold focus:bg-white focus:border-orange-500/30 outline-none transition-all shadow-sm"
-            />
-          </div>
+    <div className="min-h-screen bg-background text-foreground">
+      {/* 1. MINIMAL HEADER */}
+      <div className="bg-card border-b border-border">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-10">
+          <nav className="flex items-center gap-2 text-xs font-medium text-muted-foreground mb-4">
+            <Link href="/" className="hover:text-primary transition-colors">Главная</Link>
+            <span className="opacity-30">/</span>
+            <span className="text-foreground font-semibold">{gameLabel}</span>
+          </nav>
+          <h1 className="text-xl font-extrabold tracking-tight">
+            Каталог <span className="text-primary">{gameLabel}</span>
+          </h1>
+          <p className="text-muted-foreground mt-2 text-sm">Список проектов</p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row gap-12">
-<aside className="w-full md:w-80 shrink-0 flex flex-col gap-5">
-  {/* Визуальный блок (Абстракция) */}
-  <div className="relative h-32 overflow-hidden bg-slate-900 rounded-2xl border-2 border-slate-800 shadow-xl group">
-    {/* Световые пятна */}
-    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_120%,#f97316,transparent_70%)] opacity-20" />
-    
-    <div className="absolute inset-0 flex items-center justify-center">
-      {/* Центр: Большой куб */}
-      <HiOutlineCube 
-        className="text-white opacity-20 group-hover:opacity-40 transition-all duration-500 group-hover:scale-110 rotate-12" 
-        size={80} 
-      />
-      {/* Детали по бокам */}
-      <HiOutlineCube 
-        className="absolute left-10 top-6 text-orange-500/40 -rotate-12 group-hover:translate-x-2 transition-transform" 
-        size={24} 
-      />
-      <HiOutlineCube 
-        className="absolute right-12 bottom-6 text-orange-500/20 rotate-45 group-hover:-translate-y-2 transition-transform" 
-        size={32} 
-      />
-    </div>
-
-    {/* Декоративная сетка */}
-    <div 
-        className="absolute inset-0 opacity-[0.03] pointer-events-none" 
-        style={{ 
-            backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', 
-            backgroundSize: '15px 15px' // Оставьте только это
-        }} 
-        />
-  </div>
-
-  {/* Контейнер фильтров */}
-  <div className="bg-white border-2 border-slate-200 rounded-2xl shadow-[8px_8px_0px_0px_rgba(15,23,42,0.05)] overflow-hidden">
-    <div className="p-4 flex flex-col">
-      
-      {/* Секция тегов */}
-      {tagsList.length > 0 && (
-        <CollapsibleSection title="Категории" icon={<HiOutlineAdjustments size={18} />}>
-          <div className="flex flex-col gap-2 mt-2">
-            {tagsList.map((tag) => (
-              <button
-                key={tag.id}
-                onClick={() => toggleFilter('tags', activeTags, tag.id)}
-                className={`group flex items-center justify-between px-5 py-4 rounded-xl text-[11px] font-black uppercase transition-all duration-200 border-2 ${
-                  activeTags.includes(tag.id) 
-                    ? 'bg-slate-900 border-slate-900 text-white shadow-lg' 
-                    : 'bg-slate-50 border-transparent text-slate-500 hover:border-slate-900 hover:bg-white hover:text-slate-900'
-                }`}
-              >
-                <span className="truncate">{tag.label}</span>
-                {activeTags.includes(tag.id) ? (
-                  <HiCheck size={16} className="text-orange-500" />
-                ) : (
-                  <div className="w-2 h-2 bg-slate-300 group-hover:bg-orange-500 transition-colors" />
-                )}
-              </button>
-            ))}
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-8 flex flex-col md:flex-row gap-8">
+        {/* 2. SIDEBAR (Filters Only) */}
+        <aside className="w-full md:w-60 shrink-0 space-y-6">
+          <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground opacity-70 px-1">
+            <HiOutlineFilter /> Фильтры
           </div>
-        </CollapsibleSection>
-      )}
-
-      {/* Секция версий */}
-      <CollapsibleSection title="Версии" icon={<HiOutlineCube size={18} />}>
-        <div className="mt-2 bg-slate-50 border-2 border-slate-100 rounded-xl p-2">
-          <div className="flex flex-col gap-1 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar">
-            {versionsList.map((v) => (
-              <label 
-                key={v} 
-                className={`flex items-center justify-between px-4 py-3 rounded-lg cursor-pointer transition-all border-2 ${
-                  activeVersions.includes(v) 
-                    ? 'bg-white border-orange-500 text-orange-600 shadow-sm' 
-                    : 'border-transparent hover:bg-white text-slate-500'
-                }`}
-              >
-                <span className="text-[11px] font-black">{v}</span>
-                <input 
-                  type="checkbox" 
-                  className="hidden"
-                  checked={activeVersions.includes(v)}
-                  onChange={() => toggleFilter('versions', activeVersions, v)}
-                />
-                <div className={`w-5 h-5 rounded flex items-center justify-center transition-all border-2 ${
-                  activeVersions.includes(v) ? 'bg-orange-500 border-orange-500' : 'border-slate-200 bg-white'
-                }`}>
-                  {activeVersions.includes(v) && <HiCheck size={12} className="text-white" />}
+          
+          <div className="space-y-1">
+            {tagsList.length > 0 && (
+              <CollapsibleSection title="Категории" defaultOpen={true}>
+                <div className="flex flex-col gap-1 mt-2">
+                  {tagsList.map((tag) => (
+                    <button
+                      key={tag.id}
+                      onClick={() => toggleFilter('tags', activeTags, tag.id)}
+                      className={`flex items-center justify-between px-3 py-1.5 rounded text-sm transition-all ${
+                        activeTags.includes(tag.id) 
+                          ? 'bg-primary/10 text-primary font-bold' 
+                          : 'text-muted-foreground hover:bg-surface hover:text-foreground'
+                      }`}
+                    >
+                      <span>{tag.label}</span>
+                      {activeTags.includes(tag.id) && <HiCheck size={14} />}
+                    </button>
+                  ))}
                 </div>
-              </label>
-            ))}
+              </CollapsibleSection>
+            )}
+
+            <CollapsibleSection title="Версия" defaultOpen={versionsList.length > 0}>
+              <div className="mt-2 flex flex-col gap-1 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                {versionsList.map((v) => (
+                  <label key={v} className="flex items-center gap-2.5 px-3 py-1.5 rounded cursor-pointer text-sm text-muted-foreground hover:text-foreground hover:bg-surface transition-colors">
+                    <input 
+                      type="checkbox" 
+                      className="w-4 h-4 rounded border-border bg-surface text-primary focus:ring-primary"
+                      checked={activeVersions.includes(v)}
+                      onChange={() => toggleFilter('versions', activeVersions, v)}
+                    />
+                    {v}
+                  </label>
+                ))}
+              </div>
+            </CollapsibleSection>
           </div>
-        </div>
-      </CollapsibleSection>
-    </div>
-  </div>
-</aside>
+        </aside>
 
-        <main className="flex-1">
-          <div className="flex items-center justify-between mb-8 border-b border-slate-50 pb-4">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-              Найдено: <span className="text-slate-900">{total}</span> проектов
-            </span>
+        {/* 3. MAIN CONTENT */}
+        <main className="flex-1 min-w-0">
+          {/* TOOLBAR: TYPE + SEARCH + SORT */}
+          <div className="flex flex-wrap items-center gap-2 mb-6 p-2 bg-card border border-border rounded-lg shadow-sm">
+            
+            {/* TYPE SELECT */}
+            <div className="relative">
+              <button 
+                onClick={() => setIsTypeSelectOpen(!isTypeSelectOpen)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-surface border border-border rounded text-sm font-semibold hover:border-primary transition-all min-w-[140px]"
+              >
+                <HiOutlineCollection className="text-primary" />
+                <span className="truncate">{typeLabel}</span>
+                <HiChevronDown className={`ml-auto transition-transform ${isTypeSelectOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {isTypeSelectOpen && (
+                <>
+                  <div className="fixed inset-0 z-30" onClick={() => setIsTypeSelectOpen(false)} />
+                  <div className="absolute left-0 mt-1.5 w-56 bg-card border border-border rounded shadow-xl z-40 py-1">
+                    <Link href={`/content/${game}`} className="block px-4 py-2 text-sm hover:bg-surface" onClick={() => setIsTypeSelectOpen(false)}>Все проекты</Link>
+                    <div className="h-px bg-border my-1" />
+                    {gameTypes.map(t => (
+                      <Link key={t.value} href={`/content/${game}/${t.value}`} className={`block px-4 py-2 text-sm hover:bg-surface ${currentType === t.value ? 'text-primary font-bold' : ''}`} onClick={() => setIsTypeSelectOpen(false)}>
+                        {t.label}
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
 
+            {/* SEARCH INPUT */}
+            <div className="relative flex-1 min-w-[200px]">
+              <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+              <input 
+                type="text"
+                placeholder="Поиск по названию..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-8 py-1.5 bg-surface border border-border rounded text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+              />
+              {searchTerm && (
+                <button onClick={() => setSearchTerm('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <HiX size={14} />
+                </button>
+              )}
+            </div>
+
+            {/* SORT SELECT */}
             <div className="relative">
               <button 
                 onClick={() => setIsSortOpen(!isSortOpen)}
-                className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-900 bg-slate-50 px-4 py-2 rounded-lg hover:bg-slate-100 transition-all"
+                className="flex items-center gap-2 px-3 py-1.5 bg-surface border border-border rounded text-sm font-semibold hover:border-primary transition-all"
               >
-                {sortOptions.find(o => o.id === sortBy)?.label}
+                <HiOutlineSortAscending size={16}/>
+                <span className="hidden sm:inline">{sortOptions.find(o => o.id === sortBy)?.label}</span>
                 <HiChevronDown className={`transition-transform ${isSortOpen ? 'rotate-180' : ''}`} />
               </button>
-              
               {isSortOpen && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setIsSortOpen(false)} />
-                  <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-xl z-20 py-2 overflow-hidden">
+                  <div className="absolute right-0 mt-1.5 w-48 bg-card border border-border rounded shadow-xl z-20 py-1">
                     {sortOptions.map(option => (
                       <button
                         key={option.id}
-                        className="w-full text-left px-4 py-2 text-[10px] font-black uppercase hover:bg-orange-50 hover:text-orange-500 transition-all"
-                        onClick={() => {
-                          updateUrl({ sort: option.id });
-                          setIsSortOpen(false);
-                        }}
+                        className={`w-full flex items-center gap-3 px-4 py-2 text-sm text-left hover:bg-surface ${sortBy === option.id ? 'text-primary font-bold bg-primary/5' : ''}`}
+                        onClick={() => { updateUrl({ sort: option.id }); setIsSortOpen(false); }}
                       >
-                        {option.label}
+                        {option.icon} {option.label}
                       </button>
                     ))}
                   </div>
@@ -297,19 +281,24 @@ export default function GameContentPage({ initialProjects, initialTotal, params 
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4">
-            {loading ? (
+          {/* RESULTS INFO */}
+          <div className="flex items-center justify-between mb-4 px-1 text-xs text-muted-foreground font-medium uppercase tracking-wider">
+            <span>Найдено результатов: {total}</span>
+            {loading && <span className="animate-pulse text-primary">Обновление...</span>}
+          </div>
+
+          {/* PROJECT LIST */}
+          <div className="space-y-3">
+            {loading && projects.length === 0 ? (
               Array.from({ length: 5 }).map((_, i) => <ProjectSkeleton key={i} />)
             ) : projects.length > 0 ? (
-              projects.map((project) => (
-                <ProjectCard key={project._id} project={project} />
-              ))
+              projects.map((p) => <ProjectCard key={p._id} project={p} />)
             ) : (
-              <div className="py-20 text-center">
-                <HiOutlineCube size={48} className="mx-auto text-slate-200 mb-4" />
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  По вашему запросу ничего не найдено
-                </p>
+              <div className="py-20 text-center border-2 border-dashed border-border rounded-xl">
+                <HiOutlineCube size={48} className="mx-auto text-muted-foreground/20 mb-4" />
+                <h3 className="font-bold text-foreground">Ничего не найдено</h3>
+                <p className="text-sm text-muted-foreground mt-1">Попробуйте изменить параметры поиска или фильтры.</p>
+                <button onClick={() => router.push(pathname)} className="mt-4 text-primary text-xs font-bold hover:underline">Сбросить всё</button>
               </div>
             )}
           </div>
@@ -319,53 +308,26 @@ export default function GameContentPage({ initialProjects, initialTotal, params 
   );
 }
 
+// Вспомогательные компоненты (Skeleton, Collapsible) аналогичны предыдущим, но со скруглениями rounded (не rounded-xl)
 const ProjectSkeleton = () => (
-  <div className="w-full h-[120px] bg-white border border-slate-100 rounded-2xl flex gap-4 p-4 animate-pulse">
-    <div className="w-24 h-24 bg-slate-100 rounded-xl shrink-0" />
-    <div className="flex-1 py-2">
-      <div className="h-4 bg-slate-100 rounded w-1/4 mb-4" />
-      <div className="h-3 bg-slate-100 rounded w-full mb-2" />
-      <div className="h-3 bg-slate-100 rounded w-2/3" />
+  <div className="w-full h-24 bg-card border border-border rounded animate-pulse p-4 flex gap-4">
+    <div className="w-16 h-16 bg-surface rounded" />
+    <div className="flex-1 space-y-3 pt-1">
+      <div className="h-4 bg-surface rounded w-1/4" />
+      <div className="h-3 bg-surface rounded w-full" />
     </div>
   </div>
 );
 
-const CollapsibleSection = ({ 
-  title, 
-  children, 
-  icon, 
-}: { 
-  title: string; 
-  children: React.ReactNode; 
-  icon?: React.ReactNode; 
-}) => {
-  const [isOpen, setIsOpen] = useState(true);
-
-  useEffect(() => {
-    if (window.innerWidth < 768) setIsOpen(false);
-  }, []);
-
+const CollapsibleSection = ({ title, children, defaultOpen = true }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   return (
-    <div className="flex flex-col  last:border-0">
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between py-4 px-2 group"
-      >
-        <div className="flex items-center gap-3">
-          {icon && <div className="text-slate-900 group-hover:text-orange-500 transition-colors">{icon}</div>}
-          <h3 className="text-[12px] font-black uppercase tracking-wider text-slate-900">
-            {title}
-          </h3>
-        </div>
-        <HiChevronDown 
-          size={18} 
-          className={`text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
-        />
+    <div className="border-b border-border/60 pb-2 mb-2 last:border-0">
+      <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-between w-full py-2 group">
+        <h3 className="text-[12px] font-bold text-foreground/70 group-hover:text-primary transition-colors uppercase tracking-tight">{title}</h3>
+        <HiChevronDown size={14} className={`text-muted-foreground transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
-      
-      <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-[1200px] opacity-100 pb-4' : 'max-h-0 opacity-0'}`}>
-        {children}
-      </div>
+      {isOpen && <div>{children}</div>}
     </div>
   );
 };

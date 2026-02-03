@@ -1,80 +1,103 @@
 'use client'
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { GAME_PLATFORMS } from '@/constants/project';
+import { GAME_PLATFORMS as STATIC_PLATFORMS } from '@/constants/project';
+
+// Тип для хранения агрегированной статистики игры
+interface GameStats {
+  id: string;
+  label: string;
+  icon: string;
+  projectCount: number;
+  totalDownloads: number;
+}
 
 export default function ContentPage() {
+  const [platforms, setPlatforms] = useState<GameStats[]>([]);
+  const [loading, setLoading] = useState(true);
+  const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
+
+  useEffect(() => {
+    const fetchGameData = async () => {
+      try {
+        // Запрашиваем проекты (без фильтров, чтобы получить всё для статистики)
+        const res = await fetch(`${SERVER_URL}/projects?limit=1000`);
+        const data = await res.json();
+        const projects = data.projects || [];
+
+        // Агрегируем данные: считаем сколько проектов и скачиваний у каждой игры
+        const stats = STATIC_PLATFORMS.map(platform => {
+          const gameProjects = projects.filter((p: any) => 
+            p.gameType.toLowerCase() === platform.id.toLowerCase()
+          );
+
+          const downloads = gameProjects.reduce((sum: number, p: any) => 
+            sum + (p.analytics?.downloads || 0), 0
+          );
+
+          return {
+            ...platform,
+            projectCount: gameProjects.length,
+            totalDownloads: downloads
+          };
+        });
+
+        setPlatforms(stats);
+      } catch (e) {
+        console.error("Ошибка загрузки статистики игр:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGameData();
+  }, [SERVER_URL]);
+
+  if (loading) return <div className="min-h-screen bg-[var(--background)]" />;
+
   return (
-    <div className="min-h-screen bg-white p-6 md:p-12 text-slate-900">
+    <div className="min-h-screen bg-[var(--background)] p-6 md:p-12 transition-colors duration-300">
       <div className="max-w-7xl mx-auto">
         
-        {/* Шапка раздела */}
-        <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-100 pb-10">
-          <div>
-            <h1 className="text-4xl font-black uppercase tracking-tighter italic flex items-center gap-3">
-              <span className="w-2 h-10 bg-orange-500"></span>
-              Библиотека <span className="text-orange-500">игр</span>
-            </h1>
-            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mt-3">
-              Выберите платформу для просмотра модификаций и ресурсов
-            </p>
-          </div>
-          
-          <div className="bg-slate-50 px-4 py-2 rounded border border-slate-100">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-              Всего платформ: {GAME_PLATFORMS.length}
-            </span>
-          </div>
-        </header>
+        <header className="mb-8 flex flex-col gap-1 border-b border-[var(--border)] pb-6"> <h1 className="text-2xl font-bold text-[var(--foreground-bright)] tracking-tight"> Все игры </h1></header>
 
-        {/* Сетка игр (Grid) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {GAME_PLATFORMS.map((game) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+          {platforms.map((game) => (
             <Link key={game.id} href={`/content/${game.id}`}>
-              <motion.div
-                whileHover={{ y: -2 }}
-                className="group relative flex flex-col bg-white border border-slate-200 rounded-xl p-4 transition-all hover:border-orange-500/50 hover:bg-slate-50/50"
-              >
-                {/* Место под ЛОГОТИП */}
-                <div className="aspect-square w-full mb-4 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-center overflow-hidden transition-all group-hover:bg-white">
-                {/* Проверяем game.icon, так как в типе именно он */}
-                {game.icon && game.icon.startsWith('http') ? (
-                    <img 
-                    src={game.icon} 
-                    alt={game.label} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                    />
-                ) : (
-                    <span className="text-4xl grayscale group-hover:grayscale-0 transition-all">
-                    {game.icon}
-                    </span>
-                )}
+              <motion.div whileHover={{ y: -4 }} className="group flex flex-col">
+                <div className="relative aspect-square w-full bg-[var(--card)] border border-[var(--border)] rounded-xl overflow-hidden transition-all duration-300 group-hover:border-[var(--muted)]">
+                  {game.icon && game.icon.startsWith('http') ? (
+                    <img src={game.icon} alt={game.label} className="w-full h-full object-cover opacity-90 group-hover:opacity-100" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-[var(--surface)] text-4xl grayscale group-hover:grayscale-0">
+                      {game.icon}
+                    </div>
+                  )}
                 </div>
 
-                {/* Инфо */}
-                <div className="flex flex-col gap-1">
-                  <h3 className="font-bold text-sm text-slate-900 uppercase tracking-tight group-hover:text-orange-600 transition-colors">
+                <div className="mt-3 px-1">
+                  <h3 className="font-bold text-[13px] text-[var(--foreground)] uppercase tracking-tight group-hover:text-[var(--accent)] transition-colors">
                     {game.label}
                   </h3>
-                  <div className="flex items-center justify-between text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                    <span>Перейти</span>
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity text-orange-500">→</span>
+                  
+                  <div className="flex flex-col gap-0.5 mt-1.5 border-l-2 border-[var(--border)] pl-2 group-hover:border-[var(--accent)] transition-colors">
+                    <div className="flex items-center gap-1.5 text-[9px] font-black text-[var(--muted)] uppercase tracking-wider">
+                      <span>Проектов:</span>
+                      <span className="text-[var(--foreground)]">{game.projectCount}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[9px] font-black text-[var(--muted)] uppercase tracking-wider">
+                      <span>Загрузок:</span>
+                      <span className="text-[var(--accent)]">
+                        {game.totalDownloads > 999 ? `${(game.totalDownloads / 1000).toFixed(1)}k` : game.totalDownloads}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </motion.div>
             </Link>
           ))}
-        </div>
-
-        {/* Текстовая заглушка для большого количества */}
-        <div className="mt-16 pt-8 border-t border-slate-50 flex justify-center">
-            <div className="flex items-center gap-6 opacity-30">
-                 <span className="h-[1px] w-20 bg-slate-400"></span>
-                 <p className="text-[9px] font-black uppercase tracking-[0.4em]">HardTimes Repository</p>
-                 <span className="h-[1px] w-20 bg-slate-400"></span>
-            </div>
         </div>
       </div>
     </div>
