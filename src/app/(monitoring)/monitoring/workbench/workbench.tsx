@@ -10,7 +10,6 @@ import { LANGUAGES } from "@/constants/languages";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import InfoBlock from "../../../components/blocks/InfoBlock";
-import { useLanguage } from "@/context/LanguageContext";
 
 interface CustomSelectProps {
   options: string[];
@@ -24,39 +23,23 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, selected, multiple
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
-  const { user } = useAuth();
-
-  const router = useRouter();
-
   useEffect(() => {
-    if (!user) {
-      router.push("/login");
-    }
-  }, [user]);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (selectRef.current && !selectRef.current.contains(event.target as Node)) setIsOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const toggleOption = (option: string) => {
     if (multiple) {
       const arr = Array.isArray(selected) ? [...selected] : [];
-      if (arr.includes(option)) {
-        onChange(arr.filter(v => v !== option));
-      } else {
-        onChange([...arr, option]);
-      }
+      onChange(arr.includes(option) ? arr.filter(v => v !== option) : [...arr, option]);
     } else {
       onChange(option);
       setIsOpen(false);
     }
   };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const displayValue = multiple
     ? (Array.isArray(selected) ? selected.join(", ") : "")
@@ -64,31 +47,33 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, selected, multiple
 
   return (
     <div className={styles.customSelectWrapper} ref={selectRef}>
-  <div className={styles.customSelectInput} onClick={() => setIsOpen(!isOpen)}>
-    {displayValue || placeholder || "Select..."}
-    <span className={styles.arrow}>{isOpen ? "▲" : "▼"}</span>
-  </div>
-  <div
-    className={`${styles.customSelectDropdown} ${isOpen ? styles.open : ""}`}
-  >
-    {options.map(option => (
-      <div
-        key={option}
-        className={styles.customSelectOption}
-        onClick={() => toggleOption(option)}
-      >
-        {multiple && Array.isArray(selected) && (
-          <input type="checkbox" readOnly checked={selected.includes(option)} />
-        )}
-        <span>{option}</span>
+      <div className={styles.customSelectInput} onClick={() => setIsOpen(!isOpen)}>
+        <span className="truncate">{displayValue || placeholder || "Выбрать..."}</span>
+        <span className="text-[10px] opacity-50">{isOpen ? "▲" : "▼"}</span>
       </div>
-    ))}
-  </div>
-</div>
+      <div className={`${styles.customSelectDropdown} ${isOpen ? styles.open : ""}`}>
+        {options.map(option => (
+          <div key={option} className={styles.customSelectOption} onClick={() => toggleOption(option)}>
+            {multiple && (
+              <input 
+                type="checkbox" 
+                checked={Array.isArray(selected) && selected.includes(option)} 
+                readOnly
+                className="mr-2 accent-[var(--accent)]" 
+              />
+            )}
+            {option}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
 export default function Workbench() {
+  const { user, accessToken } = useAuth();
+  const router = useRouter();
+
   const [serverName, setServerName] = useState("");
   const [ips, setIps] = useState({ java: "", bedrock: "", hytale: "" });
   const [gameType, setGameType] = useState(GAME_TYPES[0]);
@@ -100,235 +85,163 @@ export default function Workbench() {
   const [website, setWebsite] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
-  const { accessToken } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { t } = useLanguage()
 
   useEffect(() => {
-    setGameVersion("");
-  }, [gameType]);
+    if (!user && !accessToken) router.push("/login");
+  }, [user, accessToken, router]);
 
-  const availableVersions = (() => {
-    if (gameType === "JAVA & BEDROCK") {
-      // Если оба типа, принудительно берем версии для Java
-      return GAME_VERSIONS["Minecraft Java"] || [];
-    }
-    // В остальных случаях берем по ключу
-    return gameType ? GAME_VERSIONS[gameType] || [] : [];
-  })();
+  const availableVersions = gameType === "JAVA & BEDROCK" 
+    ? (GAME_VERSIONS["Minecraft Java"] || []) 
+    : (GAME_VERSIONS[gameType] || []);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
 
 const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
+
+    // --- ВАЛИДАЦИЯ ---
+    let finalIp = "";
+    if (gameType === "JAVA & BEDROCK") {
+      // Для комбинированного типа проверяем оба поля
+      if (!ips.java.trim() || !ips.bedrock.trim()) {
+        alert("Заполните оба IP адреса (Java и Bedrock)");
+        return;
+      }
+      finalIp = JSON.stringify({ java: ips.java.trim(), bedrock: ips.bedrock.trim() });
+    } else if (gameType === "Hytale") {
+      if (!ips.hytale.trim()) { alert("Введите адрес Hytale"); return; }
+      finalIp = ips.hytale.trim();
+    } else if (gameType === "Minecraft Bedrock") {
+      if (!ips.bedrock.trim()) { alert("Введите Bedrock IP"); return; }
+      finalIp = ips.bedrock.trim();
+    } else {
+      if (!ips.java.trim()) { alert("Введите Java IP"); return; }
+      finalIp = ips.java.trim();
+    }
+
+    // Проверка дополнительных обязательных полей
+    if (!serverName.trim()) { alert("Введите название сервера"); return; }
+    if (!gameVersion) { alert("Выберите версию игры"); return; }
+
     setIsSubmitting(true);
 
     try {
-        const formData = new FormData();
-        
-        // Четкое распределение IP по типам игр
-        let finalIp = "";
-        if (gameType === "JAVA & BEDROCK") {
-            finalIp = JSON.stringify({ java: ips.java, bedrock: ips.bedrock });
-        } else if (gameType === "Hytale") {
-            finalIp = ips.hytale; // Берем из своего поля
-        } else if (gameType === "Minecraft Bedrock") {
-            finalIp = ips.bedrock;
-        } else {
-            finalIp = ips.java;
-        }
+      const formData = new FormData();
+      formData.append("ipAddress", finalIp);
+      formData.append("serverName", serverName.trim());
+      formData.append("gameType", gameType);
+      formData.append("gameVersion", gameVersion);
+      formData.append("categories", JSON.stringify(categories));
+      formData.append("tags", JSON.stringify(tags));
+      formData.append("languages", JSON.stringify(languages));
+      formData.append("discord", discord.trim());
+      formData.append("website", website.trim());
+      if (imageFile) formData.append("image", imageFile);
 
-        if (!finalIp) {
-            alert("Пожалуйста, введите IP адрес сервера");
-            setIsSubmitting(false);
-            return;
-        }
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/servers/add-server`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${accessToken}` },
+        body: formData,
+      });
 
-        formData.append("ipAddress", finalIp);
-        formData.append("serverName", serverName);
-        formData.append("gameType", gameType);
-        formData.append("gameVersion", gameVersion || "TBA"); // Hytale версии еще нет
-        formData.append("categories", JSON.stringify(categories));
-        formData.append("tags", JSON.stringify(tags));
-        formData.append("languages", JSON.stringify(languages));
-        formData.append("discord", discord);
-        formData.append("website", website);
-        
-        if (imageFile) formData.append("image", imageFile);
+      const result = await res.json();
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/servers/add-server`, {
-            method: "POST",
-            headers: { Authorization: `Bearer ${accessToken}` },
-            body: formData,
-        });
+      if (!res.ok) throw new Error(result.message || "Ошибка при сохранении");
 
-        const result = await res.json();
-        if (!res.ok) throw new Error(result.message || "Ошибка при добавлении");
-
-        alert("Сервер успешно добавлен!");
+      // --- РЕДИРЕКТ ---
+      // Бэкенд должен возвращать объект сервера, где есть slug или id
+      // Например: { success: true, server: { slug: "my-cool-server" } }
+      if (result.server?.slug) {
+        router.push(`/monitoring/${result.server.slug}`);
+      } else {
+        // Если слаг не пришел, отправляем в общий список
+        router.push("/workbench/servers");
+      }
+      
     } catch (error: any) {
-        console.error(error);
-        alert(error.message);
-        setIsSubmitting(false);
+      alert(error.message);
+      setIsSubmitting(false);
     }
-};
+  };
 
   return (
-  <div className="flex justify-center p-4 min-h-screen">
-      <form className={`flex flex-col gap-4 w-full max-w-5xl ${styles.workbenchForm}`} onSubmit={handleSubmit}>
-        <div className="w-full max-w-5xl">
-        <InfoBlock 
-          title="Важно" 
-          text="Дополнительную информацию можно добавить в редакторе сервера только после публикации."
-        />
-      </div>
-        <div className="flex flex-col md:flex-row gap-4 min-h-screen">
-          
-          <div className={`${styles.container} flex flex-col gap-2 flex-1`}>
-            <div className={styles.sectionTitle}>НАЗВАНИЕ СЕРВЕРА</div>
-            <input className={styles.input} type="text" placeholder="Мой уютный сервер" value={serverName} onChange={e => setServerName(e.target.value)} />
+    <div className="w-full max-w-5xl mx-auto flex flex-col gap-6">
+      <InfoBlock title="Мастерская" text="Заполните базовые данные сервера." />
 
-            <div className={styles.sectionTitle}>ТИП ИГРЫ</div>
-            <CustomSelect
-              options={[...GAME_TYPES, "JAVA & BEDROCK"]} 
-              selected={gameType}
-              onChange={v => setGameType(v as string)}
-              placeholder="Выберите тип игры"
-            />
+      <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-6">
+        {/* ЛЕВАЯ ЧАСТЬ */}
+        <div className="flex-1 flex flex-col gap-6">
+          <div className={styles.container}>
+            <div className={styles.sectionTitle}>Название сервера</div>
+            <input className={styles.input} value={serverName} onChange={e => setServerName(e.target.value)} required />
 
-            {/* БЛОК IP АДРЕСОВ */}
-            <div className="flex flex-col gap-2 mt-2">
-              {/* Поле Java: показываем для Java или для Комбо */}
-              {(gameType === "Minecraft Java" || gameType === "JAVA & BEDROCK") && (
-                <div className="flex flex-col gap-1">
-                  <div className={styles.sectionTitle} style={{fontSize: '10px', opacity: 0.8}}>JAVA IP</div>
-                  <input 
-                    className={styles.input} 
-                    type="text" 
-                    placeholder="mc.example.com" 
-                    value={ips.java} 
-                    onChange={e => setIps({...ips, java: e.target.value})} 
-                  />
+            <div className={styles.sectionTitle}>Тип игры</div>
+            <CustomSelect options={[...GAME_TYPES, "JAVA & BEDROCK"]} selected={gameType} onChange={v => setGameType(v as string)} />
+
+            <div className={styles.ipGroup}>
+              {(gameType.includes("Java") || gameType === "JAVA & BEDROCK") && (
+                <div className="mb-4">
+                  <div className="text-[10px] font-bold opacity-50 mb-1 text-[var(--foreground)] uppercase">Java IP</div>
+                  <input className={styles.input} value={ips.java} onChange={e => setIps({...ips, java: e.target.value})} placeholder="mc.server.com" />
                 </div>
               )}
-
-              {gameType === "JAVA & BEDROCK" && <div className="border-t border-white/5 my-2" />}
-
-              {/* Поле Bedrock: показываем для Bedrock или для Комбо */}
-              {(gameType === "Minecraft Bedrock" || gameType === "JAVA & BEDROCK") && (
-                <div className="flex flex-col gap-1">
-                  <div className={styles.sectionTitle} style={{fontSize: '10px', opacity: 0.8}}>BEDROCK IP / PORT</div>
-                  <input 
-                    className={styles.input} 
-                    type="text" 
-                    placeholder="pe.example.com:19132" 
-                    value={ips.bedrock} 
-                    onChange={e => setIps({...ips, bedrock: e.target.value})} 
-                  />
+              {(gameType.includes("Bedrock") || gameType === "JAVA & BEDROCK") && (
+                <div>
+                  <div className="text-[10px] font-bold opacity-50 mb-1 text-[var(--foreground)] uppercase">Bedrock IP</div>
+                  <input className={styles.input} value={ips.bedrock} onChange={e => setIps({...ips, bedrock: e.target.value})} placeholder="pe.server.com:19132" />
                 </div>
               )}
-                {gameType === "Hytale" && (
-                  <div className="flex flex-col gap-1">
-                    <div className={styles.sectionTitle} style={{fontSize: '10px', color: '#a855f7'}}>
-                        HYTALE IP
-                    </div>
-                    <input 
-                      className={styles.input} 
-                      type="text" 
-                      placeholder="hytale.example.com" 
-                      value={ips.hytale} 
-                      onChange={e => setIps({...ips, hytale: e.target.value})} 
-                      style={{ borderColor: 'rgba(168, 85, 247, 0.3)' }} // Фиолетовая рамка для стиля
-                    />
-                  </div>
-                )}
             </div>
 
-            <div className={styles.sectionTitle}>ВЕРСИЯ ИГРЫ</div>
-            <CustomSelect
-              options={availableVersions}
-              selected={gameVersion}
-              onChange={v => setGameVersion(v as string)}
-              placeholder="Выберите версию игры"
-            />
-            <div className={styles.sectionTitle}>КАТЕГОРИИ</div>
-            <CustomSelect
-              options={CATEGORIES}
-              selected={categories}
-              multiple
-              onChange={v => setCategories(v as string[])}
-              placeholder="Выберите категории"
-            />
-          </div>
-
-
-          {/* Правая колонка - изменена ширина w-full md:w-1/2 */}
-          <div className="flex flex-col gap-4 w-full md:w-1/2">
-            <div className={`${styles.container} flex flex-col gap-2`}>
-              <div className={styles.sectionTitle}>ТЕГИ</div>
-              <CustomSelect
-                options={TAGS}
-                selected={tags}
-                multiple
-                onChange={v => setTags(v as string[])}
-                placeholder="Выберите теги"
-              />
-
-              <div className={styles.sectionTitle}>ЯЗЫКИ</div>
-              <CustomSelect
-                options={LANGUAGES}
-                selected={languages}
-                multiple
-                onChange={v => setLanguages(v as string[])}
-                placeholder="Выберите языки"
-              />
-
-              {/* Социалки: адаптивный ряд */}
-              <div className="flex flex-col sm:flex-row gap-2">
-                <div className="flex flex-col gap-1 w-full sm:w-1/2">
-                  <div className={styles.sectionTitle}>DISCORD</div>
-                  <input className={styles.input} type="text" placeholder="Discord" value={discord} onChange={e => setDiscord(e.target.value)} />
-                </div>
-                <div className="flex flex-col gap-1 w-full sm:w-1/2">
-                  <div className={styles.sectionTitle}>САЙТ</div>
-                  <input className={styles.input} type="text" placeholder="САЙТ" value={website} onChange={e => setWebsite(e.target.value)} />
-                </div>
+            <div className="grid grid-cols-2 gap-4 mt-2">
+              <div>
+                <div className={styles.sectionTitle}>Версия</div>
+                <CustomSelect options={availableVersions} selected={gameVersion} onChange={v => setGameVersion(v as string)} />
+              </div>
+              <div>
+                <div className={styles.sectionTitle}>Категории</div>
+                <CustomSelect options={CATEGORIES} selected={categories} multiple onChange={v => setCategories(v as string[])} />
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Контейнер изображения */}
-            <div className={`${styles.container} ${styles.imageContainer} min-h-[160px] flex flex-col items-center justify-center p-4`}>
-              <label className="cursor-pointer w-full flex flex-col items-center text-center">
-                {imagePreview ? (
-                  <img src={imagePreview} alt="Preview" className="max-h-40 w-full object-contain border border-white/10 rounded" />
-                ) : (
-                  <span className="text-gray-400">Нажмите чтобы загрузить GIF | 470x60</span>
-                )}
-                <input type="file" accept="image/*,video/gif" onChange={handleImageChange} className="hidden" />
-              </label>
+        {/* ПРАВАЯ ЧАСТЬ */}
+        <div className="w-full lg:w-[360px] flex flex-col gap-6">
+          <div className={styles.container}>
+            <div className={styles.sectionTitle}>Дополнительно</div>
+            <div className="flex flex-col gap-3">
+              <CustomSelect options={TAGS} selected={tags} multiple onChange={v => setTags(v as string[])} placeholder="Теги" />
+              <CustomSelect options={LANGUAGES} selected={languages} multiple onChange={v => setLanguages(v as string[])} placeholder="Языки" />
             </div>
-
-           <div className="w-full flex justify-end mt-2">
-            <button 
-              className={`${styles.submit} text-sm font-bold`} // Добавили text-sm
-              type="submit"
-              disabled={isSubmitting}
-              style={{ 
-                opacity: isSubmitting ? 0.6 : 1, 
-                cursor: isSubmitting ? 'not-allowed' : 'pointer' 
-              }}
-            >
-              {isSubmitting ? "Добавление..." : "+ Добавить"}
-            </button>
-          </div>
+            <div className="mt-4 flex flex-col gap-2">
+              <input className={styles.input} placeholder="Discord" value={discord} onChange={e => setDiscord(e.target.value)} />
+              <input className={styles.input} placeholder="Сайт" value={website} onChange={e => setWebsite(e.target.value)} />
+            </div>
           </div>
 
+          <div className={`${styles.container} flex flex-col items-center justify-center border-2 border-dashed border-[var(--auth-stroke)] min-h-[120px] cursor-pointer`}>
+            <label className="w-full h-full flex flex-col items-center justify-center p-4 cursor-pointer">
+              {imagePreview ? <img src={imagePreview} className="h-10 object-contain" /> : <span className="text-[10px] font-bold opacity-40 uppercase">Баннер 468x60</span>}
+              <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
+            </label>
+          </div>
+
+         <button 
+          type="submit" 
+          disabled={isSubmitting} 
+          className={styles.submitBtn}
+        >
+          {isSubmitting ? "Отправка..." : "Опубликовать"}
+        </button>
         </div>
       </form>
     </div>

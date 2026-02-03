@@ -1,4 +1,4 @@
-import Sidebar from "@/app/components/dashboard/dashboard"; // Твой новый Sidebar
+import Sidebar from "@/app/components/dashboard/dashboard"; 
 import ServerList from "../ServersList";
 import ServerFilters from "@/app/components/servercard/ServerFilters";
 import HeroSection from "@/app/components/header/HeroSection";
@@ -15,54 +15,57 @@ export const metadata: Metadata = {
     "лучшие сервера майнкрафт"
   ],
   alternates: {
-    canonical: "https://hardmonitoring.ru/servers/java",
+    canonical: "https://hardmonitoring.ru/monitoring/servers/java",
   },
   openGraph: {
     title: "Мониторинг серверов Minecraft Java Edition",
     description: "Рейтинг, онлайн и лучшие игровые проекты в одном списке.",
-    url: "https://hardmonitoring.ru/servers/java",
+    url: "https://hardmonitoring.ru/monitoring/servers/java",
     type: "website",
     siteName: "HardMonitoring"
   },
 };
 
 export default async function JavaServersPage({ searchParams }: { searchParams: any }) {
-  // В Next.js 15 searchParams — это Promise
   const filters = await searchParams;
 
   return (
-    <div className="flex min-h-screen bg-[#f8f9fa]">
+    // bg-background вместо #f8f9fa
+    <div className="flex min-h-screen bg-background text-foreground transition-colors duration-200">
+      
       {/* 1. Боковое меню */}
       <Sidebar />
 
-      {/* 2. Основной контент */}
-      <main className="flex-1 flex flex-col items-center min-w-0">
+      {/* 2. Основной контент (добавили md:pl-20 для компенсации Sidebar) */}
+      <main className="flex-1 flex flex-col items-center min-w-0 transition-all duration-300">
         
-        {/* Заменяем проп showHero={true} прямой вставкой компонента */}
+        {/* Шапка страницы */}
         <HeroSection />
 
         <div className="w-full max-w-[1000px] px-4 md:px-6 py-10">
           
           <header className="mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-green-600/10 rounded-lg">
+              {/* Фон иконки: bg-surface и border-border */}
+              <div className="p-2 bg-surface border border-border rounded-xl">
                  <img className="w-6 h-6" src="/icons/java.svg" alt="Java Icon" />
               </div>
-              <h1 className="text-2xl md:text-4xl font-black text-gray-900 tracking-tighter uppercase italic">
-                Minecraft <span className="text-green-600">Java</span> Edition
+              {/* Заголовок: убрали italic, добавили foreground-bright */}
+              <h1 className="text-2xl md:text-4xl font-black text-foreground-bright tracking-tighter uppercase">
+                Minecraft <span className="text-green-500">Java</span> Edition
               </h1>
             </div>
-            <p className="text-gray-500 font-medium max-w-2xl">
+            <p className="text-muted font-medium max-w-2xl">
               Лучшие классические сервера для ПК. Выбирай версию, проверяй онлайн и заходи играть.
             </p>
           </header>
 
           <div className="flex flex-col gap-6">
-            {/* Панель фильтров */}
+            {/* Панель фильтров: убедись, что внутри неё используются bg-card и border-border */}
             <ServerFilters />
 
-            {/* Список серверов с фильтром по Java */}
-            <div className="list-con w-full">
+            {/* Список серверов */}
+            <div className="w-full">
               <ServerList filters={filters} game="java" />
             </div>
           </div>

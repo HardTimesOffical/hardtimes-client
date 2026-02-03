@@ -5,8 +5,36 @@ import { useRouter } from "next/navigation";
 import ServerCard from "@/app/components/servercard/ServerCard";
 import { useAuth } from "@/context/AuthContext";
 import WeeklyTimer from "@/app/components/servercard/WeeklyTimer";
-import LoadingCrystal from "@/app/components/loading/LoadingCrystal";
 import Pagination from "@/app/components/blocks/Pagination";
+import { HiPlus } from "react-icons/hi2";
+
+// Компонент скелетона внутри файла для удобства (или вынеси в отдельный файл)
+const ServerCardSkeleton = () => (
+  <div className="w-full h-[180px] md:h-[165px] bg-surface border border-border rounded-2xl overflow-hidden flex flex-col md:flex-row animate-pulse">
+    <div className="flex-1 p-5 flex flex-col gap-4">
+      {/* Заголовок и версия */}
+      <div className="flex justify-between items-start">
+        <div className="flex flex-col gap-2">
+          <div className="h-5 w-48 bg-border rounded-md" />
+          <div className="h-3 w-32 bg-border/50 rounded-md" />
+        </div>
+        <div className="h-6 w-12 bg-border/50 rounded-lg" />
+      </div>
+      {/* Баннер */}
+      <div className="h-[84px] w-full bg-border/30 rounded-xl" />
+      {/* Кнопки */}
+      <div className="flex gap-3">
+        <div className="h-10 flex-1 bg-border/40 rounded-xl" />
+        <div className="h-10 w-32 bg-border/40 rounded-xl" />
+      </div>
+    </div>
+    {/* Блок онлайна справа */}
+    <div className="md:w-[130px] border-t md:border-t-0 md:border-l border-border bg-background/10 flex flex-col items-center justify-center gap-2">
+      <div className="h-10 w-12 bg-border/60 rounded-lg" />
+      <div className="h-3 w-16 bg-border/40 rounded-md" />
+    </div>
+  </div>
+);
 
 interface Props {
   game: "java" | "bedrock" | "hytale" | "all";
@@ -16,10 +44,9 @@ interface Props {
     category?: string;
     lang?: string;
   };
-  isDark?: boolean; // Добавили новый пропс
 }
 
-export default function ServerList({ game, filters, sort, isDark }: Props) {
+export default function ServerList({ game, filters, sort }: Props) {
   const [servers, setServers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -32,7 +59,6 @@ export default function ServerList({ game, filters, sort, isDark }: Props) {
     setLoading(true);
     setCurrentPage(1);
 
-    // Формируем URL с учетом фильтров
     const params = new URLSearchParams();
     if (game !== "all") params.append("game", game);
     if (sort) params.append("sort", sort); 
@@ -44,38 +70,31 @@ export default function ServerList({ game, filters, sort, isDark }: Props) {
       ? `${process.env.NEXT_PUBLIC_SERVER_URL}/servers?${params.toString()}`
       : `/api/servers?${params.toString()}`;
 
-fetch(apiUrl)
-  .then(res => {
-    if (!res.ok) throw new Error(`Error: ${res.status}`);
-    return res.json();
-  })
-  .then(data => {
-    let finalData = data;
-
-    // ПРАВКА: Сортируем по рейтингу ТОЛЬКО если это не раздел "Новые"
-    if (sort !== "new") {
-      finalData = [...data].sort((a: any, b: any) => {
-        const aPremium = a.premiumVotes || 0;
-        const bPremium = b.premiumVotes || 0;
-        const aWeekly = a.votesWeekly || 0;
-        const bWeekly = b.votesWeekly || 0;
-
-        if (aPremium !== bPremium) return bPremium - aPremium;
-        return bWeekly - aWeekly;
-      });
-    } else {
-      // Если sort === "new", оставляем порядок как прислал бэкенд
-      finalData = data;
-    }
-
-    setServers(finalData);
-    setLoading(false);
-  })
+    fetch(apiUrl)
+      .then(res => {
+        if (!res.ok) throw new Error(`Error: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        let finalData = data;
+        if (sort !== "new") {
+          finalData = [...data].sort((a: any, b: any) => {
+            const aPremium = a.premiumVotes || 0;
+            const bPremium = b.premiumVotes || 0;
+            const aWeekly = a.votesWeekly || 0;
+            const bWeekly = b.votesWeekly || 0;
+            if (aPremium !== bPremium) return bPremium - aPremium;
+            return bWeekly - aWeekly;
+          });
+        }
+        setServers(finalData);
+        setLoading(false);
+      })
       .catch(err => {
         console.error("Fetch error:", err);
         setLoading(false);
       });
-  }, [game, filters, sort]); // Добавляем filters в зависимости
+  }, [game, filters, sort]);
 
   const currentServers = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
@@ -91,90 +110,71 @@ fetch(apiUrl)
     router.push(user ? "/workbench" : "/login");
   };
 
-  if (loading) return (
-    <div className="relative w-full h-[60vh] flex items-center justify-center">
-      <LoadingCrystal />
-    </div>
-  );
-
   return (
-    <div className={`flex flex-col w-full max-w-5xl mb-5 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+    <div className="flex flex-col w-full max-w-5xl mb-20">
       
-      {/* Шапка списка */}
-      <div className={`flex flex-col w-full justify-between items-center pb-4 border-b ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
-      <button 
-        onClick={handleAddServer}
-        className={`
-          relative overflow-hidden transition-all duration-300 group
-          px-6 py-2.5 rounded-xl font-[900] text-xs uppercase tracking-[0.15em]
-          active:scale-95 active:duration-75
-          ${isDark 
-            ? "bg-purple-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] hover:bg-purple-500 border border-white/20" 
-            : "bg-[#FF6A00] text-white shadow-[0_4px_15px_rgba(255,106,0,0.3)] hover:bg-[#e66e00] hover:-translate-y-0.5"
-          }
-        `}
-      >
-        {/* Эффект блика при наведении (только для темной темы) */}
-        {isDark && (
-          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
-        )}
-        
-        <span className="relative z-10 flex items-center gap-2">
-          <span className="text-lg leading-none">+</span>
-          Добавить
-        </span>
-      </button>
+      {/* ШАПКА СПИСКА */}
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-border">
+        <button 
+          onClick={handleAddServer}
+          className="flex items-center gap-2 px-6 py-2.5 bg-accent hover:bg-accent/90 text-contrast-text rounded-xl font-[1000] text-[11px] uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-accent/20 shrink-0"
+        >
+          <HiPlus className="w-4 h-4" />
+          Добавить сервер
+        </button>
         
         <div className="flex items-center">
-          <Pagination 
-            currentPage={currentPage}
-            totalItems={servers.length}
-            pageSize={pageSize}
-            onPageChange={handlePageChange}
-            // Если компонент Pagination поддерживает темную тему, прокиньте и туда
-          />
+          {!loading && (
+            <Pagination 
+              currentPage={currentPage}
+              totalItems={servers.length}
+              pageSize={pageSize}
+              onPageChange={handlePageChange}
+            />
+          )}
         </div>
       </div>
 
-      {/* Список серверов */}
-      <div className="flex flex-col gap-3 w-full mt-4">       
-        {currentServers.length > 0 ? (
-          currentServers.map((server, index) => {
-            const globalIndex = (currentPage - 1) * pageSize + index + 1;
-            return (
-              <ServerCard 
-                key={server._id} 
-                server={server} 
-                rank={globalIndex} 
-                isDark={isDark} // ПРОКИДЫВАЕМ ТЕМУ В КАРТОЧКУ
-              />
-            );
-          })
+      {/* Список серверов или Скелетоны */}
+      <div className="flex flex-col gap-4 w-full mt-6">       
+        {loading ? (
+          // Показываем 5 скелетонов во время загрузки
+          Array.from({ length: 5 }).map((_, i) => <ServerCardSkeleton key={i} />)
+        ) : currentServers.length > 0 ? (
+          currentServers.map((server, index) => (
+            <ServerCard 
+              key={server._id} 
+              server={server} 
+              rank={(currentPage - 1) * pageSize + index + 1} 
+            />
+          ))
         ) : (
-          <div className={`py-20 text-center rounded-3xl border-2 border-dashed ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-100'}`}>
-            <p className="text-gray-400 font-medium">No servers found.</p>
+          <div className="py-24 text-center rounded-[2rem] border-2 border-dashed border-border bg-surface/50">
+            <p className="text-muted font-bold uppercase tracking-widest text-xs">Серверы не найдены</p>
           </div>
         )}
       </div>
-      <div className="flex items-center">
-          <Pagination 
-            currentPage={currentPage}
-            totalItems={servers.length}
-            pageSize={pageSize}
-            onPageChange={handlePageChange}
-            // Если компонент Pagination поддерживает темную тему, прокиньте и туда
-          />
-        </div>
-      
-      {/* Нижний таймер - адаптируем под темный фон */}
-      <div className="mt-8">
-         <div className={`flex flex-row justify-between items-center p-4 rounded-2xl ${isDark ? 'bg-white/5 border border-white/10' : 'bg-gray-50'}`}> 
+
+      {/* Нижняя пагинация и инфо */}
+      {!loading && servers.length > 0 && (
+        <div className="mt-10 flex flex-col gap-6">
+          <div className="flex justify-center border-t border-border pt-6">
+            <Pagination 
+                currentPage={currentPage}
+                totalItems={servers.length}
+                pageSize={pageSize}
+                onPageChange={handlePageChange}
+              />
+          </div>
+
+          <div className="flex flex-col sm:flex-row justify-between items-center p-5 rounded-2xl bg-surface border border-border gap-4"> 
             <WeeklyTimer /> 
-            <span className="text-sm font-bold text-gray-400">
-              Total: <span className={isDark ? "text-white" : "text-gray-900"}>{servers.length}</span>
-            </span> 
-         </div>
-      </div>
+            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted">
+              Всего проектов: <span className="text-foreground-bright text-xs">{servers.length}</span>
+            </div> 
+          </div>
+        </div>
+      )}
     </div>
   );
 }
