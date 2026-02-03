@@ -31,6 +31,7 @@ export const PROJECT_TYPES_BY_GAME: Record<string, { label: string; value: strin
     { label: 'Ресурспаки', value: 'resourcepack' },
     { label: 'Карты', value: 'map' },
     { label: 'Датапаки', value: 'datapack' },
+    { label: 'Схематики', value: 'shematic' },
   ],
   'hytale': [
     { label: 'Моды', value: 'mod' },
