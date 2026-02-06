@@ -1,6 +1,7 @@
-import styles from "./profile.module.css";
 import Link from "next/link";
 import LogoutButton from "@/app/profile/[username]/LogoutButton";
+import { HiOutlineServer, HiOutlineCube, HiOutlineCalendar, HiOutlineMapPin } from "react-icons/hi2";
+import ProfileTabs from "@/app/profile/[username]/profileTabs";
 
 interface ProfilePageProps {
   params: Promise<{ username: string }>;
@@ -9,121 +10,37 @@ interface ProfilePageProps {
 export default async function ProfilePage({ params }: ProfilePageProps) {
   const { username } = await params;
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/users/${username}`,
-    { cache: "no-store" }
-  );
-
-  if (!res.ok) {
-    throw new Error("User not found");
-  }
-
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${username}`, { cache: "no-store" });
+  if (!res.ok) throw new Error("User not found");
   const user = await res.json();
-  const firstLetter = user.username ? user.username.charAt(0).toUpperCase() : "?";
-  const joinedDate = new Date(user.createdAt).toLocaleDateString('en-US', {
-    month: 'short',
-    year: 'numeric'
-  });
+
+  // Логика проверки владельца (примерная, зависит от вашей auth системы)
+  // В идеале вы получаете сессию через cookie или заголовок
+  const isOwner = true; // Замените на реальную проверку session.user.username === username
 
   return (
-    <div className={styles.container}>
-      <div className={styles.headerBanner}>
-        <div className={styles.bannerOverlay} />
-      </div>
-
-      <div className={styles.content}>
-        <div className={styles.profileSidebar}>
-          <div className={styles.avatarWrapper}>
-            {user.avatar ? (
-              <img src={user.avatar} alt={user.username} className={styles.avatar} />
-            ) : (
-              <div className={styles.avatarPlaceholder}>{firstLetter}</div>
-            )}
-          </div>
-          
-          <div className={styles.mainInfo}>
-            <h1 className={styles.username}>{user.username}</h1>
-            <div className={styles.badge}>User</div>
-            <p className={styles.bio}>{user.bio || "No bio yet"}</p>
-            
-            {/* Кнопка выхода под био */}
-            <div className="mt-6 w-full">
-               <LogoutButton />
-            </div>
+   <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+      {/* Sidebar: Уменьшаем ширину и аватар */}
+      <aside className="w-full lg:w-64 shrink-0 flex flex-col items-center lg:items-start text-center lg:text-left">
+        <div className="relative mb-4 w-32 h-32 lg:w-48 lg:h-48"> 
+          <img 
+            src={user.avatar || "/default-avatar.png"} 
+            className="w-full h-full rounded-xl border border-border bg-card shadow-sm object-cover" 
+            alt={user.username}
+          />
+        </div>
+        <div className="w-full">
+          <h1 className="text-xl lg:text-2xl font-bold text-foreground-bright break-words">{user.username}</h1>
+          <p className="text-muted text-sm mt-2 line-clamp-3">{user.bio}</p>
+          <div className="mt-6">
+            <LogoutButton />
           </div>
         </div>
+      </aside>
 
-        <div className={styles.mainContent}>
-          <div className={styles.statsGrid}>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>Votes (Weekly)</span>
-              <span className={styles.statValue}>{user.votesWeekly || 0}</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>Total Votes</span>
-              <span className={styles.statValue}>{user.votesTotal || 0}</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>Joined</span>
-              <span className={styles.statValue}>{joinedDate}</span>
-            </div>
-          </div>
-
-          <div className={styles.section}>
-            <h2 className={styles.sectionTitle}>User Servers</h2>
-            {user.servers && user.servers.length > 0 ? (
-              <div className="grid grid-cols-1 gap-6">
-                {user.servers.map((server: any) => (
-                  <Link 
-                    key={server._id} 
-                    href={`/${server.slug}`}
-                    className="group flex flex-col bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/[0.08] hover:border-blue-500/50 transition-all"
-                  >
-                    <div className="relative w-full h-20 bg-gray-900 border-b border-white/5 overflow-hidden">
-                      {server.imageUrl ? (
-                        <img src={server.imageUrl} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-white/10 text-xs uppercase tracking-widest">No Banner</div>
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60" />
-                    </div>
-                    
-                    <div className="p-4 flex items-center justify-between">
-                      <div className="flex flex-col">
-                        <h3 className="font-bold text-lg text-black/50 group-hover:text-blue-400 transition">{server.serverName}</h3>
-                        <p className="text-xs text-white/40 font-mono tracking-tighter">{server.ipAddress}</p>
-                      </div>
-                      <div className="flex items-center gap-6">
-                        <div className="text-right hidden sm:flex flex-col items-end">
-                          {server.status?.online ? (
-                            <>
-                              <div className="flex items-center gap-1.5 text-green-400 text-sm font-bold">
-                                <span className="relative flex h-2 w-2">
-                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                                </span>
-                                ONLINE
-                              </div>
-                              <span className="text-[10px] text-white/40 font-medium">{server.status.players}/{server.status.maxPlayers} PLAYERS</span>
-                            </>
-                          ) : (
-                            <div className="flex items-center gap-1.5 text-red-500 text-sm font-bold opacity-70">
-                              <span className="h-2 w-2 rounded-full bg-red-600"></span>
-                              OFFLINE
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className={styles.emptyState}>No servers added yet.</div>
-            )}
-          </div>
-        </div>
-      </div>
+      <main className="flex-1 min-w-0"> {/* min-w-0 важен для предотвращения распирания сетки */}
+        <ProfileTabs user={user} isOwner={isOwner} />
+      </main>
     </div>
   );
 }

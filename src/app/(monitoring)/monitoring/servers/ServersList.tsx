@@ -107,7 +107,7 @@ export default function ServerList({ game, filters, sort }: Props) {
   };
 
   const handleAddServer = () => {
-    router.push(user ? "/workbench" : "/login");
+    router.push(user ? "/monitoring/workbench" : "/login");
   };
 
   return (
