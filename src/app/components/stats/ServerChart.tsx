@@ -86,26 +86,37 @@ export default function ServerChart({ data }: ServerChartProps) {
             tickFormatter={(value) => value.toLocaleString()}
           />
           
-          <Tooltip 
-            cursor={{ stroke: '#f97316', strokeWidth: 1.5, strokeDasharray: '4 4' }}
-            contentStyle={{ 
-              backgroundColor: 'var(--card)', 
-              border: '1px solid var(--border)', 
-              borderRadius: '8px',
-              fontSize: '11px',
-              fontWeight: '800',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-              padding: '8px 12px'
-            }}
-            itemStyle={{ color: '#f97316', textTransform: 'uppercase' }}
-            labelStyle={{ color: '#64748b', marginBottom: '4px', fontSize: '9px', fontWeight: 'bold' }}
-            // Исправленный форматер для TS
-            formatter={(value: number | string) => {
-                const numValue = typeof value === 'string' ? parseFloat(value) : value;
-                return [numValue, "Игроков"] as [number, string];
-            }}
-            labelFormatter={(label) => `Время: ${label}`}
-          />
+          Эта ошибка возникает из-за того, что типы Recharts ожидают, что параметр value в функции formatter может быть undefined, а ваша текущая типизация (value: number | string) это не учитывает.
+
+TypeScript видит, что библиотека может передать undefined, но ваша функция не знает, что с этим делать, и выдает ошибку несовместимости.
+
+Исправление ошибки
+Замените ваш блок <Tooltip /> на следующий код. Мы добавим поддержку undefined и упростим возвращаемое значение (Recharts достаточно вернуть массив, типизация выведется автоматически):
+
+TypeScript
+<Tooltip 
+  cursor={{ stroke: '#f97316', strokeWidth: 1.5, strokeDasharray: '4 4' }}
+  contentStyle={{ 
+    backgroundColor: 'var(--card)', 
+    border: '1px solid var(--border)', 
+    borderRadius: '8px',
+    fontSize: '11px',
+    fontWeight: '800',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+    padding: '8px 12px'
+  }}
+  itemStyle={{ color: '#f97316', textTransform: 'uppercase' }}
+  labelStyle={{ color: '#64748b', marginBottom: '4px', fontSize: '9px', fontWeight: 'bold' }}
+  
+  // ИСПРАВЛЕННЫЙ ФОРМАТТЕР
+  formatter={(value: number | string | any) => {
+    // Если значения нет, возвращаем 0
+    const numValue = typeof value === 'string' ? parseFloat(value) : (value ?? 0);
+    return [numValue, "Игроков"];
+  }}
+  
+  labelFormatter={(label) => `Время: ${label}`}
+/>
           
           <Area 
             type="monotone" 
