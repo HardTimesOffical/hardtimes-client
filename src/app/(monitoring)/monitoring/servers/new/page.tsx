@@ -3,6 +3,7 @@ import ServerList from "../ServersList";
 import ServerFilters from "@/app/components/servercard/ServerFilters";
 import HeroSection from "@/app/components/header/HeroSection";
 import { Metadata } from "next";
+import PromoBanner from "@/app/components/blocks/PromoBanner";
 
 export const metadata: Metadata = {
   title: "Новые сервера Майнкрафт — Свежие проекты",
@@ -54,6 +55,7 @@ export default async function NewServersPage({ searchParams }: { searchParams: a
             
             {/* Панель фильтров (теперь она сворачивается внутри компонента) */}
             <section className="relative z-20">
+              <PromoBanner/>
               <ServerFilters />
             </section>
             

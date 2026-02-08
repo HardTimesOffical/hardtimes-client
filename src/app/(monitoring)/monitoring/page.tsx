@@ -3,6 +3,8 @@ import Sidebar from "@/app/components/dashboard/dashboard";
 import ServerList from "./servers/ServersList";
 import ServerFilters from "@/app/components/servercard/ServerFilters";
 import HeroSection from "@/app/components/header/HeroSection";
+import PromoBanner from "@/app/components/blocks/PromoBanner";
+
 
 export const metadata: Metadata = {
   title: "Мониторинг серверов Майнкрафт — Топ список Java и Bedrock",
@@ -48,6 +50,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
 
             {/* Панель фильтров */}
             <div className="relative z-30">
+              <PromoBanner/>
               <ServerFilters />
             </div>
 

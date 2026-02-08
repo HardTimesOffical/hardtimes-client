@@ -2,6 +2,8 @@ import Sidebar from "@/app/components/dashboard/dashboard";
 import ServerList from "../ServersList";
 import HeroSection from "@/app/components/header/HeroSection";
 import { Metadata } from "next";
+import PromoBanner from "@/app/components/blocks/PromoBanner";
+import ServerFilters from "@/app/components/servercard/ServerFilters";
 
 export const metadata: Metadata = {
   title: "Сервера Майнкрафт Бедрок (PE) — ТОП мониторинг серверов Bedrock Edition",
@@ -24,7 +26,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BedrockServersPage() {
+export default async function BedrockServersPage({ searchParams }: { searchParams: any }) {
+
+  const filters = await searchParams;
+
   return (
     /* Используем bg-background для адаптивности */
     <div className="flex min-h-screen bg-background text-foreground transition-colors duration-200">
@@ -58,9 +63,15 @@ export default function BedrockServersPage() {
           </header>
 
           {/* Список серверов */}
-          <div className="w-full">
-             {/* ServerList теперь будет использовать bg-card из глобальных стилей */}
-             <ServerList game="bedrock" />
+          <div className="flex flex-col gap-6">
+                      {/* Панель фильтров: убедись, что внутри неё используются bg-card и border-border */}
+                      <PromoBanner/>
+                      <ServerFilters />
+          
+                      {/* Список серверов */}
+                      <div className="w-full">
+                        <ServerList filters={filters} game="java" />
+                      </div>
           </div>
           
         </div>

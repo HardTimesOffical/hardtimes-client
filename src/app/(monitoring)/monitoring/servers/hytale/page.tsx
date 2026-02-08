@@ -1,6 +1,7 @@
 import Sidebar from "@/app/components/dashboard/dashboard";
 import ServerList from "../ServersList";
 import { Metadata } from "next";
+import PromoBanner from "@/app/components/blocks/PromoBanner";
 
 export const metadata: Metadata = {
   title: "Сервера Hytale 2026 | Топ мониторинг и рейтинг серверов Хайтейл",
@@ -77,6 +78,7 @@ export default function HytaleServersPage() {
 
             {/* Список серверов */}
             <div className="relative min-h-[600px]">
+              <PromoBanner/>
               {/* Убираем жесткий isDark={true}, пусть ServerList сам подхватывает тему через CSS переменные */}
               <ServerList game="hytale" />
             </div>

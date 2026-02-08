@@ -3,6 +3,7 @@ import ServerList from "../ServersList";
 import ServerFilters from "@/app/components/servercard/ServerFilters";
 import HeroSection from "@/app/components/header/HeroSection";
 import { Metadata } from "next";
+import PromoBanner from "@/app/components/blocks/PromoBanner";
 
 export const metadata: Metadata = {
   title: "Сервера Майнкрафт Java Edition — ТОП мониторинг и IP адреса",
@@ -62,6 +63,7 @@ export default async function JavaServersPage({ searchParams }: { searchParams: 
 
           <div className="flex flex-col gap-6">
             {/* Панель фильтров: убедись, что внутри неё используются bg-card и border-border */}
+            <PromoBanner/>
             <ServerFilters />
 
             {/* Список серверов */}
