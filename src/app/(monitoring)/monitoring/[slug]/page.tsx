@@ -6,11 +6,11 @@ type Props = {
 };
 
 // Функция получения данных на сервере для SEO
+// В файле page.tsx (Server Component)
 async function getServerData(slug: string) {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/servers/by-slug/${slug}`, {
-      // Кэшируем данные, например, на 1 час (3600 сек) для скорости
-      next: { revalidate: 3600 } 
+      cache: 'no-store' // Отключает кэширование полностью
     });
     if (!res.ok) return null;
     return res.json();
@@ -18,7 +18,6 @@ async function getServerData(slug: string) {
     return null;
   }
 }
-
 // ГЕНЕРАЦИЯ МЕТАДАННЫХ (SEO)
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Ждем разрешения Promise params

@@ -9,7 +9,8 @@ import { useLanguage } from "@/context/LanguageContext";
 import ServerChart from "../../../components/stats/ServerChart";
 import { BoostModal } from "../../../components/payment/BoostModal";
 import api from "@/lib/api";
-import { HiOutlineArrowTopRightOnSquare, HiOutlineGlobeAlt, HiOutlineChatBubbleLeftRight, HiOutlineCog6Tooth } from 'react-icons/hi2';
+// Используем HiOutlineClipboard для копирования
+import { HiOutlineArrowTopRightOnSquare, HiOutlineGlobeAlt, HiOutlineChatBubbleLeftRight, HiOutlineCog6Tooth, HiOutlineClipboard, HiOutlineCheck } from 'react-icons/hi2';
 
 interface IServerData {
   _id: string;
@@ -52,16 +53,8 @@ export default function ServerPageClient({ slug, initialData }: Props) {
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
 
-  // Проверка прав на редактирование
   const canEdit = server?.isOwner || (user && server?.owner === user._id);
-
-  const defaultDescription = `Добро пожаловать в мир нашего игрового проекта! 🚀
-
-    Мы создали уникальное пространство для выживания и творчества. 
-    На текущий момент описание сервера находится в стадии обновления, 
-    но наши двери уже открыты для новых игроков. 
-
-    Присоединяйся и начни свою историю прямо сейчас!`;
+  const defaultDescription = `Добро пожаловать на наш проект! Описание сервера скоро будет обновлено.`;
 
   useEffect(() => {
     if (server?._id) {
@@ -71,7 +64,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
             setStats(res.data[res.data.length - 1].points || []);
           }
         })
-        .catch(err => console.error("Stats loading error:", err));
+        .catch(err => console.error("Ошибка статистики:", err));
     }
   }, [server?._id]);
 
@@ -93,7 +86,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
         setServer((prev) => prev ? ({ ...prev, votesWeekly: (prev.votesWeekly || 0) + 1 }) : null);
       }
     } catch (err: any) {
-      setMessage({ type: 'error', text: err.response?.data?.message || 'Ошибка при голосовании' });
+      setMessage({ type: 'error', text: err.response?.data?.message || 'Ошибка' });
     } finally {
       setVoteLoading(false);
     }
@@ -103,10 +96,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
     setBoostLoading(true);
     try {
       const res = await api.post('/boost/boost', {
-        serverId: server?._id,
-        votes: option.votes,
-        days: option.days,
-        price: option.price
+        serverId: server?._id, votes: option.votes, days: option.days, price: option.price
       });
       if (res.data.success) {
         updateUser({ balance: res.data.newBalance });
@@ -114,211 +104,184 @@ export default function ServerPageClient({ slug, initialData }: Props) {
         setServer((prev) => prev ? ({ ...prev, premiumVotes: (prev.premiumVotes || 0) + option.votes }) : null);
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || "Ошибка покупки");
+      alert(err.response?.data?.message || "Ошибка");
     } finally {
       setBoostLoading(false);
     }
   };
 
+  const hasSocialLinks = server?.website || server?.discord;
+
   if (loading && !server) return <div className="relative w-full h-[60vh] flex items-center justify-center"><LoadingCrystal /></div>;
-  if (error || !server) return <div className="p-10 text-center font-bold text-gray-500 uppercase text-[10px]">Сервер не найден</div>;
+  if (error || !server) return <div className="p-10 text-center font-bold text-muted-foreground uppercase text-[10px]">Сервер не найден</div>;
 
   const isOnline = server.status?.online;
-
-  const renderIpBlock = () => {
-    let ipData = server.ipAddress;
-    if (typeof ipData === 'string' && ipData.includes('"java"')) {
-      try { ipData = JSON.parse(ipData); } catch (e) { console.error(e); }
-    }
-
-    const IpCard = ({ ip, label, statusKey }: { ip: string, label: string, statusKey: string }) => (
-      <div 
-        onClick={() => copyToClipboard(ip, statusKey)} 
-        className="p-3 bg-gray-50 rounded-xl border border-gray-100 cursor-pointer hover:bg-white hover:shadow-sm transition-all group relative overflow-hidden flex justify-between items-center"
-      >
-        <div className="text-left">
-          <p className="text-gray-400 text-[8px] uppercase font-black mb-0.5 tracking-wider">{label}</p>
-          <p className="font-mono text-[11px] text-gray-800 font-bold group-hover:text-orange-500 transition">{ip}</p>
-        </div>
-        <div className={`text-[8px] font-black px-2 py-1 rounded-md transition uppercase ${copyStatus === statusKey ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-500 opacity-0 group-hover:opacity-100'}`}>
-          {copyStatus === statusKey ? 'Copied' : 'Copy'}
-        </div>
-      </div>
-    );
-
-    if (typeof ipData === 'object' && ipData !== null) {
-      const ipObj = ipData as { java?: string; bedrock?: string };
-      return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
-          {ipObj.java && <IpCard ip={ipObj.java} label="Java IP" statusKey="java" />}
-          {ipObj.bedrock && <IpCard ip={ipObj.bedrock} label="Bedrock IP" statusKey="bedrock" />}
-        </div>
-      );
-    }
-    return <IpCard ip={String(ipData)} label="Server IP" statusKey="main" />;
-  };
+  console.log({serverImageUrl: server.imageUrl})
+  
 
   return (
-    <div className="flex pt-15 min-h-screen bg-[#f8f9fa]">
+ <div className="flex pt-16 min-h-screen bg-background text-foreground transition-colors duration-200">
       <Sidebar />
 
       <main className="flex-1 w-full pb-10">
-        <div className="max-w-5xl mx-auto px-4 md:px-6 space-y-4 mt-6 md:mt-10">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 space-y-4 mt-6">
           
-          {/* Баннер */}
-          <div className="relative h-40 md:h-44 w-full rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm">
-            {server.imageUrl ? (
-              <img src={server.imageUrl} alt={server.serverName} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-200 bg-gray-50 font-black italic tracking-tighter text-lg uppercase">Asset missing</div>
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex items-end p-5 md:p-6">
-              <div className="flex flex-col md:flex-row md:items-end justify-between w-full gap-3">
-                <div translate="no">
-                  <h1 className="text-xl md:text-3xl font-black tracking-tighter uppercase text-white leading-none drop-shadow-md">
-                    {server.serverName}
-                  </h1>
-                  <div className="flex items-center gap-2 mt-2">
-                    <div className="flex items-center bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
-                      <span className={`h-1.5 w-1.5 rounded-full mr-2 ${isOnline ? 'bg-orange-500 animate-pulse' : 'bg-gray-500'}`}></span>
-                      <p className="text-[8px] font-black uppercase tracking-[0.2em] text-white">
-                        {isOnline ? `${server.status?.players} / ${server.status?.maxPlayers} ONLINE` : 'OFFLINE'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* КНОПКА РЕДАКТИРОВАНИЯ */}
-                {canEdit && (
-                  <Link 
-                    href={`/monitoring/edit-server/${server.slug}`} 
-                    className="flex items-center gap-2 px-5 py-2.5 bg-white/10 backdrop-blur-md text-white border border-white/20 font-black rounded-xl text-[9px] uppercase hover:bg-white hover:text-black transition-all shadow-xl group"
-                  >
-                    <HiOutlineCog6Tooth className="w-3.5 h-3.5 group-hover:rotate-90 transition-transform duration-500" />
-                    Настройки
-                  </Link>
-                )}
+          {/* Баннер проекта */}
+          <div className="relative overflow-hidden border border-border rounded-lg bg-card shadow-sm">
+            <div className="h-28 md:h-36 w-full bg-muted/20">
+              {server.imageUrl && <img src={server.imageUrl} alt={server.serverName} className="w-full h-full object-cover" />}
+            </div>
+            
+            <div className="p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <h1 className="text-xl md:text-2xl font-black tracking-tight flex items-center gap-2 uppercase">
+                  {server.serverName}
+                  {/* Зеленая лампочка онлайна */}
+                  <span className={`h-3 w-3 rounded-full shadow-sm ${isOnline ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.4)] animate-pulse' : 'bg-gray-500'}`} />
+                </h1>
+                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-[0.1em] mt-1">
+                  {isOnline ? (
+                    <span className="text-green-600 dark:text-green-500">{server.status?.players} / {server.status?.maxPlayers} Игроков в сети</span>
+                  ) : 'Статус: Оффлайн'}
+                </p>
               </div>
+
+              {canEdit && (
+                <Link 
+                  href={`/monitoring/edit-server/${server.slug}`} 
+                  className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground border border-border rounded-lg text-[11px] font-bold uppercase hover:bg-orange-500 hover:text-white transition-all shadow-sm group"
+                >
+                  <HiOutlineCog6Tooth size={15} className="group-hover:rotate-90 transition-transform" /> Настройки
+                </Link>
+              )}
             </div>
           </div>
 
-          {/* Табы и контент (остальная часть без изменений) */}
-          <div className="flex gap-1 p-1 bg-gray-200/40 rounded-xl border border-gray-200 w-fit">
+          {/* Контейнер вкладок - сделан чище */}
+          <div className="flex gap-1.5 p-1 bg-card border border-border rounded-lg w-fit shadow-sm">
             {(['info', 'stats'] as const).map((tab) => (
-              <button key={tab} onClick={() => setActiveTab(tab)} className={`px-5 py-1.5 rounded-lg text-[9px] font-black transition-all tracking-widest uppercase ${activeTab === tab ? 'bg-white text-orange-500 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-                {tab === 'info' ? 'Обзор' : 'Аналитика'}
+              <button 
+                key={tab} 
+                onClick={() => setActiveTab(tab)} 
+                className={`px-6 py-2 rounded-md text-[11px] font-black transition-all uppercase tracking-wider ${
+                  activeTab === tab 
+                  ? 'bg-orange-500 text-white shadow-md' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                }`}
+              >
+                {tab === 'info' ? 'Обзор' : 'Статистика'}
               </button>
             ))}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-4">
                {activeTab === 'info' ? (
-                  <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <div className="h-3 w-1 bg-orange-500 rounded-full"></div>
-                        <h2 className="text-[9px] font-black uppercase tracking-widest text-gray-400">Connection</h2>
-                      </div>
-                      <div className="bg-gray-50/50 p-1 rounded-xl border border-gray-100">
-                        {renderIpBlock()}
+                  <div className="space-y-4">
+                    {/* IP адрес с зеленым акцентом при копировании */}
+                    <div className="border border-border rounded-lg bg-card p-5">
+                      <h3 className="text-[10px] font-black text-muted-foreground uppercase mb-4 tracking-widest flex items-center gap-2">
+                        <div className="w-1 h-3 bg-orange-500 rounded-full" />
+                        Подключение
+                      </h3>
+                      <div 
+                        onClick={() => copyToClipboard(String(server.ipAddress), 'main')}
+                        className={`flex justify-between items-center p-3 border rounded-lg cursor-pointer transition-all group ${
+                          copyStatus === 'main' ? 'bg-green-500/5 border-green-500' : 'bg-muted/10 border-border hover:border-orange-500/50'
+                        }`}
+                      >
+                        <code className={`text-xs font-mono font-bold ${copyStatus === 'main' ? 'text-green-600 dark:text-green-400' : ''}`}>
+                          {String(server.ipAddress)}
+                        </code>
+                        <div className={`flex items-center gap-2 text-[10px] font-bold uppercase ${copyStatus === 'main' ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground group-hover:text-orange-500'}`}>
+                          {copyStatus === 'main' ? (
+                            <><HiOutlineCheck size={16} /> Готово</>
+                          ) : (
+                            <><HiOutlineClipboard size={16} /> Копировать</>
+                          )}
+                        </div>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="p-4 bg-gray-50 rounded-xl border border-transparent hover:border-orange-100 transition-all group">
-                        <p className="text-gray-400 text-[7px] uppercase font-black mb-1 tracking-widest">Version</p>
-                        <p className="font-black text-gray-900 text-lg group-hover:text-orange-500 transition-colors tracking-tighter">{server.gameVersion}</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="border border-border rounded-lg bg-card p-4">
+                        <p className="text-muted-foreground text-[9px] font-black uppercase mb-1 tracking-widest">Версия</p>
+                        <p className="text-sm font-black text-foreground">{server.gameVersion}</p>
                       </div>
-                      <div className="p-4 bg-gray-50 rounded-xl border border-transparent hover:border-orange-100 transition-all group">
-                        <p className="text-gray-400 text-[7px] uppercase font-black mb-1 tracking-widest">Type</p>
-                        <p className="font-black text-gray-900 text-lg group-hover:text-orange-500 transition-colors tracking-tighter">{server.gameType}</p>
+                      <div className="border border-border rounded-lg bg-card p-4">
+                        <p className="text-muted-foreground text-[9px] font-black uppercase mb-1 tracking-widest">Режим</p>
+                        <p className="text-sm font-black text-foreground">{server.gameType}</p>
                       </div>
                     </div>
 
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <div className="h-3 w-1 bg-orange-500 rounded-full"></div>
-                        <h2 className="text-[9px] font-black uppercase tracking-widest text-gray-400">Description</h2>
-                      </div>
-                      <div className="text-gray-600 leading-relaxed bg-gray-50/20 p-5 rounded-xl border border-gray-100 text-xs italic whitespace-pre-wrap">
+                    <div className="border border-border rounded-lg bg-card p-5">
+                      <h3 className="text-[10px] font-black text-muted-foreground uppercase mb-4 tracking-widest flex items-center gap-2">
+                        <div className="w-1 h-3 bg-orange-500 rounded-full" />
+                        Описание
+                      </h3>
+                      <div className="text-[13px] text-foreground/80 leading-relaxed whitespace-pre-wrap font-medium">
                         {server.description || defaultDescription}
                       </div>
                     </div>
-
-                    <div className="flex flex-wrap gap-1.5">
-                      {server.categories?.map((cat, i) => (
-                        <span key={i} className="px-3 py-1 bg-white text-orange-500 text-[8px] font-black rounded-lg uppercase border border-orange-100 shadow-sm"># {cat}</span>
-                      ))}
-                    </div>
                   </div>
                ) : (
-                  <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm min-h-[300px]">
-                      {stats.length > 0 ? <ServerChart data={stats} /> : <p className="text-center text-gray-300 font-black text-[9px] uppercase mt-20">Analyzing data...</p>}
+                  <div className="border border-border rounded-lg bg-card p-5 min-h-[350px]">
+                      {stats.length > 0 ? <ServerChart data={stats} /> : <p className="text-center text-muted-foreground text-[11px] uppercase mt-24 font-bold">Данные обновляются...</p>}
                   </div>
                )}
             </div>
 
             <div className="space-y-4">
-              {/* Vote Block */}
-              <div className="bg-white p-5 rounded-2xl border-2 border-orange-500 shadow-lg shadow-orange-500/5 text-center">
-                <h3 className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Support project</h3>
+              {/* Голоса с зеленым уведомлением */}
+              <div className="border border-border rounded-lg bg-card p-5 flex flex-col gap-4 shadow-sm">
+                <div className="text-center">
+                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em] mb-1">Голоса Проекта</p>
+                  <p className="text-3xl font-black text-foreground tracking-tighter">{server.votesWeekly || 0}</p>
+                </div>
                 <button 
                   onClick={handleVote}
                   disabled={!accessToken || voteLoading}
-                  className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-black shadow-md transition-all active:scale-95 uppercase text-[10px] tracking-widest disabled:opacity-50"
+                  className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-black transition-all shadow-md shadow-orange-500/20 text-xs uppercase tracking-widest disabled:opacity-50 active:scale-95"
                 >
-                  {voteLoading ? "Wait..." : "Vote"}
+                  {voteLoading ? "Загрузка..." : "Проголосовать"}
                 </button>
                 {message && (
-                  <div className={`mt-3 p-3 rounded-lg text-[8px] font-black uppercase tracking-tighter border ${
-                    message.type === 'success' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-600 border-red-100'
+                  <div className={`text-[9px] text-center font-bold uppercase p-2.5 rounded-md border shadow-sm ${
+                    message.type === 'success' 
+                    ? 'bg-green-500/10 text-green-600 border-green-500/20' 
+                    : 'bg-red-500/10 text-red-500 border-red-500/20'
                   }`}>
                     {message.text}
                   </div>
                 )}
               </div>
 
-              {/* Boost Block */}
-              <div onClick={() => setIsBoostOpen(true)} className="bg-[#111] p-5 rounded-2xl cursor-pointer hover:bg-black transition-all group border border-white/5 relative overflow-hidden">
-                <div className="flex justify-between items-start relative z-10">
-                  <div>
-                    <p className="text-orange-500 text-[8px] font-black uppercase tracking-widest mb-1">Boost stars</p>
-                    <p className="text-4xl font-black text-white italic tracking-tighter leading-none">{server.premiumVotes || 0}</p>
-                  </div>
-                  <div className="w-9 h-9 bg-orange-500 rounded-lg flex items-center justify-center text-white shadow-lg">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-                  </div>
+              {/* Буст */}
+              <div onClick={() => setIsBoostOpen(true)} className="border border-border rounded-lg bg-foreground text-background p-5 cursor-pointer hover:shadow-lg transition-all flex justify-between items-center group relative overflow-hidden">
+                <div className="relative z-10">
+                  <p className="text-[9px] font-black uppercase opacity-60 tracking-widest">Буст-звезды</p>
+                  <p className="text-3xl font-black">{server.premiumVotes || 0}</p>
                 </div>
-                <p className="text-white/20 text-[7px] font-black uppercase mt-5 tracking-widest group-hover:text-white transition-colors flex items-center gap-1">
-                  Boost priority <HiOutlineArrowTopRightOnSquare className="w-2.5 h-2.5" />
-                </p>
+                <div className="text-orange-500 relative z-10 group-hover:scale-110 transition-transform">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                </div>
               </div>
 
-              {/* Weekly Stats */}
-              <div className="bg-white p-5 rounded-2xl border border-gray-100 flex justify-between items-center">
-                  <div>
-                    <p className="text-gray-400 text-[8px] font-black uppercase tracking-widest">Weekly</p>
-                    <p className="text-2xl font-black text-gray-900 tracking-tighter leading-none">{server.votesWeekly || 0}</p>
-                  </div>
-                  <div className="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center text-gray-300 border border-gray-100">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><path d="M5 15l7-7 7 7"/></svg>
-                  </div>
-              </div>
-
-              <div className="bg-white p-5 rounded-2xl border border-gray-100 space-y-2">
-                <h3 className="text-[8px] font-black uppercase text-gray-300 tracking-widest mb-2">Network</h3>
-                {server.website && (
-                  <a href={server.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2.5 rounded-lg bg-gray-50 text-gray-700 hover:bg-orange-500 hover:text-white transition-all text-[9px] font-black uppercase group">
-                    <HiOutlineGlobeAlt className="w-3.5 h-3.5" /> Web
-                  </a>
-                )}
-                {server.discord && (
-                  <a href={server.discord} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2.5 rounded-lg bg-gray-50 text-gray-700 hover:bg-[#5865F2] hover:text-white transition-all text-[9px] font-black uppercase group">
-                    <HiOutlineChatBubbleLeftRight className="w-3.5 h-3.5" /> Discord
-                  </a>
-                )}
-              </div>
+              {hasSocialLinks && (
+                <div className="border border-border rounded-lg bg-card p-5 space-y-3">
+                  <h3 className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mb-2">Ссылки</h3>
+                  {server.website && (
+                    <a href={server.website} target="_blank" className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/30 text-foreground hover:bg-orange-500 hover:text-white transition-all text-[11px] font-bold border border-border group">
+                      <HiOutlineGlobeAlt size={16} /> Сайт проекта
+                    </a>
+                  )}
+                  {server.discord && (
+                    <a href={server.discord} target="_blank" className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/30 text-foreground hover:bg-[#5865F2] hover:text-white transition-all text-[11px] font-bold border border-border group">
+                      <HiOutlineChatBubbleLeftRight size={16} /> Сообщество Discord
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -335,3 +298,4 @@ export default function ServerPageClient({ slug, initialData }: Props) {
     </div>
   );
 }
+

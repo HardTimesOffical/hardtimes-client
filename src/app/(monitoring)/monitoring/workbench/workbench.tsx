@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useRef, useEffect, ChangeEvent, FormEvent } from "react";
-import styles from "./workbench.module.css";
 import { GAME_TYPES } from "@/constants/gameTypes";
 import { GAME_VERSIONS } from "@/constants/gameVersions";
 import { CATEGORIES } from "@/constants/categories";
@@ -11,15 +10,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import InfoBlock from "../../../components/blocks/InfoBlock";
 
-interface CustomSelectProps {
-  options: string[];
-  selected: string | string[];
-  multiple?: boolean;
-  onChange: (value: string | string[]) => void;
-  placeholder?: string;
-}
-
-const CustomSelect: React.FC<CustomSelectProps> = ({ options, selected, multiple = false, onChange, placeholder }) => {
+// Вспомогательный компонент CustomSelect (тот же дизайн)
+const CustomSelect: React.FC<any> = ({ options, selected, multiple = false, onChange, placeholder }) => {
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
@@ -41,31 +33,31 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, selected, multiple
     }
   };
 
-  const displayValue = multiple
-    ? (Array.isArray(selected) ? selected.join(", ") : "")
-    : (selected as string || "");
+  const displayValue = multiple ? (Array.isArray(selected) ? selected.join(", ") : "") : (selected as string || "");
 
   return (
-    <div className={styles.customSelectWrapper} ref={selectRef}>
-      <div className={styles.customSelectInput} onClick={() => setIsOpen(!isOpen)}>
+    <div className="relative w-full text-sm font-sans" ref={selectRef}>
+      <div 
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between w-full px-3 py-2 bg-card border border-border rounded-md cursor-pointer text-foreground hover:border-accent transition-colors shadow-sm"
+      >
         <span className="truncate">{displayValue || placeholder || "Выбрать..."}</span>
         <span className="text-[10px] opacity-50">{isOpen ? "▲" : "▼"}</span>
       </div>
-      <div className={`${styles.customSelectDropdown} ${isOpen ? styles.open : ""}`}>
-        {options.map(option => (
-          <div key={option} className={styles.customSelectOption} onClick={() => toggleOption(option)}>
-            {multiple && (
-              <input 
-                type="checkbox" 
-                checked={Array.isArray(selected) && selected.includes(option)} 
-                readOnly
-                className="mr-2 accent-[var(--accent)]" 
-              />
-            )}
-            {option}
-          </div>
-        ))}
-      </div>
+      {isOpen && (
+        <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-md shadow-xl max-h-60 overflow-y-auto scrollbar-thin">
+          {options.map((option: string) => (
+            <div
+              key={option}
+              onClick={() => toggleOption(option)}
+              className="flex items-center gap-2 px-3 py-2 hover:bg-surface cursor-pointer text-foreground border-b border-border/30 last:border-0"
+            >
+              {multiple && <input type="checkbox" readOnly checked={Array.isArray(selected) && selected.includes(option)} className="accent-accent" />}
+              <span>{option}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -95,44 +87,27 @@ export default function Workbench() {
     ? (GAME_VERSIONS["Minecraft Java"] || []) 
     : (GAME_VERSIONS[gameType] || []);
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
+  const labelStyle = "text-[10px] font-bold text-muted uppercase tracking-widest mb-1.5 block";
+  const inputStyle = "w-full px-3 py-2 bg-card border border-border rounded-md text-foreground focus:border-accent outline-none transition-all text-sm shadow-sm placeholder:text-muted/50";
 
-const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
 
-    // --- ВАЛИДАЦИЯ ---
     let finalIp = "";
     if (gameType === "JAVA & BEDROCK") {
-      // Для комбинированного типа проверяем оба поля
-      if (!ips.java.trim() || !ips.bedrock.trim()) {
-        alert("Заполните оба IP адреса (Java и Bedrock)");
-        return;
-      }
+      if (!ips.java.trim() || !ips.bedrock.trim()) return alert("Заполните оба IP адреса");
       finalIp = JSON.stringify({ java: ips.java.trim(), bedrock: ips.bedrock.trim() });
     } else if (gameType === "Hytale") {
-      if (!ips.hytale.trim()) { alert("Введите адрес Hytale"); return; }
       finalIp = ips.hytale.trim();
-    } else if (gameType === "Minecraft Bedrock") {
-      if (!ips.bedrock.trim()) { alert("Введите Bedrock IP"); return; }
-      finalIp = ips.bedrock.trim();
     } else {
-      if (!ips.java.trim()) { alert("Введите Java IP"); return; }
-      finalIp = ips.java.trim();
+      finalIp = gameType === "Minecraft Bedrock" ? ips.bedrock.trim() : ips.java.trim();
     }
 
-    // Проверка дополнительных обязательных полей
-    if (!serverName.trim()) { alert("Введите название сервера"); return; }
-    if (!gameVersion) { alert("Выберите версию игры"); return; }
+    if (!finalIp) return alert("Введите IP адрес");
+    if (!serverName.trim()) return alert("Введите название сервера");
 
     setIsSubmitting(true);
-
     try {
       const formData = new FormData();
       formData.append("ipAddress", finalIp);
@@ -153,19 +128,9 @@ const handleSubmit = async (e: FormEvent) => {
       });
 
       const result = await res.json();
-
       if (!res.ok) throw new Error(result.message || "Ошибка при сохранении");
-
-      // --- РЕДИРЕКТ ---
-      // Бэкенд должен возвращать объект сервера, где есть slug или id
-      // Например: { success: true, server: { slug: "my-cool-server" } }
-      if (result.server?.slug) {
-        router.push(`/monitoring/${result.server.slug}`);
-      } else {
-        // Если слаг не пришел, отправляем в общий список
-        router.push("/workbench/servers");
-      }
       
+      router.push(`/monitoring/${result.server?.slug || ""}`);
     } catch (error: any) {
       alert(error.message);
       setIsSubmitting(false);
@@ -173,75 +138,102 @@ const handleSubmit = async (e: FormEvent) => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto flex flex-col gap-6">
-      <InfoBlock title="Мастерская" text="Заполните базовые данные сервера." />
+    <div className="w-full max-w-5xl mx-auto flex flex-col gap-6 font-sans">
+      <InfoBlock title="Мастерская" text="Дополнительная ифнормация доступна в редакторе проекта!" />
 
-      <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-6">
-        {/* ЛЕВАЯ ЧАСТЬ */}
-        <div className="flex-1 flex flex-col gap-6">
-          <div className={styles.container}>
-            <div className={styles.sectionTitle}>Название сервера</div>
-            <input className={styles.input} value={serverName} onChange={e => setServerName(e.target.value)} required />
+      <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-6">
+        {/* ЛЕВАЯ КОЛОНКА */}
+        <div className="flex-1 flex flex-col gap-4">
+          <div className="bg-card border border-border rounded-md p-5 shadow-sm space-y-4">
+            <div>
+              <label className={labelStyle}>Название сервера</label>
+              <input className={inputStyle} value={serverName} onChange={e => setServerName(e.target.value)} placeholder="Например: Survival World" required />
+            </div>
 
-            <div className={styles.sectionTitle}>Тип игры</div>
-            <CustomSelect options={[...GAME_TYPES, "JAVA & BEDROCK"]} selected={gameType} onChange={v => setGameType(v as string)} />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className={labelStyle}>Тип игры</label>
+                <CustomSelect options={[...GAME_TYPES, "JAVA & BEDROCK"]} selected={gameType} onChange={(v:any) => { setGameType(v); setGameVersion(""); }} />
+              </div>
+              <div>
+                <label className={labelStyle}>Версия</label>
+                <CustomSelect options={availableVersions} selected={gameVersion} onChange={(v:any) => setGameVersion(v)} placeholder="Выбрать версию" />
+              </div>
+            </div>
 
-            <div className={styles.ipGroup}>
+            <div className="space-y-3 bg-surface p-3 rounded-md border border-border/50">
               {(gameType.includes("Java") || gameType === "JAVA & BEDROCK") && (
-                <div className="mb-4">
-                  <div className="text-[10px] font-bold opacity-50 mb-1 text-[var(--foreground)] uppercase">Java IP</div>
-                  <input className={styles.input} value={ips.java} onChange={e => setIps({...ips, java: e.target.value})} placeholder="mc.server.com" />
+                <div>
+                  <label className={labelStyle}>Java IP</label>
+                  <input className={inputStyle} value={ips.java} onChange={e => setIps({...ips, java: e.target.value})} placeholder="mc.server.com" />
                 </div>
               )}
               {(gameType.includes("Bedrock") || gameType === "JAVA & BEDROCK") && (
                 <div>
-                  <div className="text-[10px] font-bold opacity-50 mb-1 text-[var(--foreground)] uppercase">Bedrock IP</div>
-                  <input className={styles.input} value={ips.bedrock} onChange={e => setIps({...ips, bedrock: e.target.value})} placeholder="pe.server.com:19132" />
+                  <label className={labelStyle}>Bedrock IP</label>
+                  <input className={inputStyle} value={ips.bedrock} onChange={e => setIps({...ips, bedrock: e.target.value})} placeholder="pe.server.com:19132" />
+                </div>
+              )}
+              {gameType === "Hytale" && (
+                <div>
+                  <label className={labelStyle}>Hytale Address</label>
+                  <input className={inputStyle} value={ips.hytale} onChange={e => setIps({...ips, hytale: e.target.value})} placeholder="hytale.server.com" />
                 </div>
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mt-2">
-              <div>
-                <div className={styles.sectionTitle}>Версия</div>
-                <CustomSelect options={availableVersions} selected={gameVersion} onChange={v => setGameVersion(v as string)} />
-              </div>
-              <div>
-                <div className={styles.sectionTitle}>Категории</div>
-                <CustomSelect options={CATEGORIES} selected={categories} multiple onChange={v => setCategories(v as string[])} />
-              </div>
+            <div>
+              <label className={labelStyle}>Категории</label>
+              <CustomSelect options={CATEGORIES} selected={categories} multiple onChange={(v:any) => setCategories(v)} placeholder="Выберите жанры" />
             </div>
           </div>
         </div>
 
-        {/* ПРАВАЯ ЧАСТЬ */}
-        <div className="w-full lg:w-[360px] flex flex-col gap-6">
-          <div className={styles.container}>
-            <div className={styles.sectionTitle}>Дополнительно</div>
-            <div className="flex flex-col gap-3">
-              <CustomSelect options={TAGS} selected={tags} multiple onChange={v => setTags(v as string[])} placeholder="Теги" />
-              <CustomSelect options={LANGUAGES} selected={languages} multiple onChange={v => setLanguages(v as string[])} placeholder="Языки" />
+        {/* ПРАВАЯ КОЛОНКА */}
+        <div className="w-full md:w-[360px] flex flex-col gap-4">
+          <div className="bg-card border border-border rounded-md p-5 shadow-sm space-y-4">
+            <div>
+              <label className={labelStyle}>Дополнительно</label>
+              <div className="flex flex-col gap-3">
+                <CustomSelect options={TAGS} selected={tags} multiple onChange={(v:any) => setTags(v)} placeholder="Теги" />
+                <CustomSelect options={LANGUAGES} selected={languages} multiple onChange={(v:any) => setLanguages(v)} placeholder="Языки" />
+              </div>
             </div>
-            <div className="mt-4 flex flex-col gap-2">
-              <input className={styles.input} placeholder="Discord" value={discord} onChange={e => setDiscord(e.target.value)} />
-              <input className={styles.input} placeholder="Сайт" value={website} onChange={e => setWebsite(e.target.value)} />
+            
+            <div className="space-y-3 pt-2">
+              <input className={inputStyle} placeholder="Discord (ссылка)" value={discord} onChange={e => setDiscord(e.target.value)} />
+              <input className={inputStyle} placeholder="Сайт (https://...)" value={website} onChange={e => setWebsite(e.target.value)} />
             </div>
           </div>
 
-          <div className={`${styles.container} flex flex-col items-center justify-center border-2 border-dashed border-[var(--auth-stroke)] min-h-[120px] cursor-pointer`}>
-            <label className="w-full h-full flex flex-col items-center justify-center p-4 cursor-pointer">
-              {imagePreview ? <img src={imagePreview} className="h-10 object-contain" /> : <span className="text-[10px] font-bold opacity-40 uppercase">Баннер 468x60</span>}
-              <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
-            </label>
+          <div className="bg-card border border-border rounded-md p-4 shadow-sm">
+            <label className={labelStyle}>Баннер сервера</label>
+            <div 
+              className="aspect-video bg-surface rounded-md border border-dashed border-border flex items-center justify-center overflow-hidden cursor-pointer group relative transition-all hover:border-accent"
+              onClick={() => document.getElementById('img-input-create')?.click()}
+            >
+              {imagePreview ? (
+                <img src={imagePreview} className="w-full h-full object-cover" />
+              ) : (
+                <div className="text-center p-4">
+                  <div className="text-xl mb-1 text-muted">+</div>
+                  <div className="text-[10px] font-bold text-muted uppercase">Загрузить 468x60</div>
+                </div>
+              )}
+              <input id="img-input-create" type="file" accept="image/*" className="hidden" onChange={e => {
+                const file = e.target.files?.[0];
+                if (file) { setImageFile(file); setImagePreview(URL.createObjectURL(file)); }
+              }} />
+            </div>
           </div>
 
-         <button 
-          type="submit" 
-          disabled={isSubmitting} 
-          className={styles.submitBtn}
-        >
-          {isSubmitting ? "Отправка..." : "Опубликовать"}
-        </button>
+          <button 
+            type="submit" 
+            disabled={isSubmitting} 
+            className="w-full py-3 bg-accent text-contrast-text font-bold rounded-md hover:opacity-90 disabled:opacity-50 transition-all shadow-md mt-2"
+          >
+            {isSubmitting ? "Публикация..." : "Опубликовать сервер"}
+          </button>
         </div>
       </form>
     </div>
