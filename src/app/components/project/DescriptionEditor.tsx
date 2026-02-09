@@ -31,19 +31,21 @@ export default function DescriptionEditor({ initialContent, onSave }: EditorProp
       }),
       Underline,
       CodeBlock.configure({
-        HTMLAttributes: { class: 'bg-orange-50 text-orange-900 p-4 rounded-xl font-mono my-4 border border-orange-100 whitespace-pre-wrap break-all' },
+        HTMLAttributes: { 
+          class: 'bg-[var(--background)] text-[var(--foreground)] p-4 rounded-md font-mono my-4 border border-[var(--border)] whitespace-pre-wrap break-all' 
+        },
       }),
       Image.configure({
-        HTMLAttributes: { class: 'rounded-2xl shadow-md my-6 max-w-full h-auto' },
+        HTMLAttributes: { class: 'rounded-lg shadow-md my-6 max-w-full h-auto border border-[var(--border)]' },
       }),
       Youtube.configure({
         width: 840,
         height: 480,
-        HTMLAttributes: { class: 'rounded-2xl overflow-hidden my-6 shadow-lg max-w-full aspect-video' }
+        HTMLAttributes: { class: 'rounded-lg overflow-hidden my-6 shadow-lg max-w-full aspect-video border border-[var(--border)]' }
       }),
       Link.configure({
         openOnClick: true,
-        HTMLAttributes: { class: 'text-orange-600 underline font-bold break-all' }
+        HTMLAttributes: { class: 'text-[var(--accent)] underline font-bold break-all hover:opacity-80' }
       }),
       Placeholder.configure({
         placeholder: 'Введите описание проекта...',
@@ -56,8 +58,7 @@ export default function DescriptionEditor({ initialContent, onSave }: EditorProp
     },
     editorProps: {
       attributes: {
-        // Добавлен break-words и min-w-full для предотвращения сжатия
-        class: 'prose prose-orange focus:outline-none min-h-[400px] p-6 md:p-10 text-gray-800 bg-white min-w-full max-w-full break-words whitespace-pre-wrap',
+        class: 'prose prose-invert focus:outline-none min-h-[450px] p-6 md:p-10 text-[var(--foreground)] bg-[var(--card)] min-w-full max-w-full break-words whitespace-pre-wrap',
       },
     },
   });
@@ -83,68 +84,74 @@ export default function DescriptionEditor({ initialContent, onSave }: EditorProp
 
   return (
     <div className="flex flex-col w-full min-w-full space-y-6">
-      {/* Принудительный фикс ширины внутри редактора */}
       <style dangerouslySetInnerHTML={{ __html: `
         .ProseMirror { 
           width: 100% !important; 
           max-width: 100% !important; 
           word-break: break-word !important; 
+          color: var(--foreground) !important;
+        }
+        .ProseMirror p.is-editor-empty:first-child::before {
+          content: attr(data-placeholder);
+          float: left;
+          color: var(--muted);
+          pointer-events: none;
+          height: 0;
         }
       `}} />
 
-      <div className="w-full bg-white rounded-[2.5rem] border-2 border-orange-100 shadow-sm overflow-hidden flex flex-col">
+      <div className="w-full bg-[var(--card)] rounded-md border border-[var(--border)] shadow-sm overflow-hidden flex flex-col transition-colors duration-300">
         
         {/* TOOLBAR */}
-        <div className="flex flex-wrap items-center gap-1 p-4 border-b border-orange-50 bg-white">
+        <div className="flex flex-wrap items-center gap-1 p-2 border-b border-[var(--border)] bg-[var(--surface)]">
           <ToolbarButton 
             onClick={() => editor.chain().focus().toggleBold().run()} 
             active={editor.isActive('bold')} 
-            icon={<LuBold size={20} />} 
+            icon={<LuBold size={16} />} 
           />
           <ToolbarButton 
             onClick={() => editor.chain().focus().toggleItalic().run()} 
             active={editor.isActive('italic')} 
-            icon={<LuItalic size={18} />} 
+            icon={<LuItalic size={16} />} 
           />
           <ToolbarButton 
             onClick={() => editor.chain().focus().toggleUnderline().run()} 
             active={editor.isActive('underline')} 
-            icon={<LuUnderline size={18} />} 
+            icon={<LuUnderline size={16} />} 
           />
           <ToolbarButton 
             onClick={() => editor.chain().focus().toggleStrike().run()} 
             active={editor.isActive('strike')} 
-            icon={<LuStrikethrough size={18} />} 
+            icon={<LuStrikethrough size={16} />} 
           />
           
-          <div className="w-[1px] h-6 bg-orange-100 mx-2" />
+          <div className="w-[1px] h-4 bg-[var(--border)] mx-1" />
 
           <ToolbarButton 
             onClick={() => editor.chain().focus().toggleCodeBlock().run()} 
             active={editor.isActive('codeBlock')} 
-            icon={<LuCode size={18} />} 
+            icon={<LuCode size={16} />} 
           />
-          <ToolbarButton onClick={addLink} active={editor.isActive('link')} icon={<LuLink size={18} />} />
-          <ToolbarButton onClick={addImage} icon={<LuImage size={18} />} />
-          <ToolbarButton onClick={addYoutube} icon={<LuYoutube size={18} />} />
+          <ToolbarButton onClick={addLink} active={editor.isActive('link')} icon={<LuLink size={16} />} />
+          <ToolbarButton onClick={addImage} icon={<LuImage size={16} />} />
+          <ToolbarButton onClick={addYoutube} icon={<LuYoutube size={16} />} />
         </div>
 
         {/* EDITOR AREA */}
-        <div className="w-full flex-1 overflow-x-hidden overflow-y-auto bg-white">
+        <div className="w-full flex-1 overflow-x-hidden overflow-y-auto bg-[var(--card)]">
           <EditorContent editor={editor} className="w-full h-full" />
         </div>
       </div>
 
       {/* FOOTER */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6 px-4">
-        <div className="flex flex-col w-full md:w-auto">
-          <div className={`text-xs font-black uppercase tracking-widest flex items-center gap-2 mb-2 ${isRequirementMet ? 'text-green-500' : 'text-orange-400'}`}>
-             <span>Символов: {chars} / 200</span>
-             {!isRequirementMet && <span className="animate-pulse">●</span>}
+     <div className="flex flex-col md:flex-row items-center justify-between gap-6 px-1  pb-2">
+        <div className="flexflex-col w-full md:w-auto">
+          <div className={`m-5 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 mb-2 ${isRequirementMet ? 'text-green-500' : 'text-[var(--accent)]'}`}>
+              <span>Символов: {chars} / 200</span>
           </div>
-          <div className="w-full md:w-64 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div className="w-full m-5 md:w-64 h-1 bg-[var(--surface)] rounded-full overflow-hidden">
             <div 
-              className={`h-full transition-all duration-500 ${isRequirementMet ? 'bg-green-500' : 'bg-orange-400'}`}
+              className={`h-full transition-all duration-500 ${isRequirementMet ? 'bg-green-500' : 'bg-[var(--accent)]'}`}
               style={{ width: `${Math.min((chars / 200) * 100, 100)}%` }}
             />
           </div>
@@ -154,16 +161,16 @@ export default function DescriptionEditor({ initialContent, onSave }: EditorProp
           onClick={() => onSave(editor.getHTML())}
           disabled={!isRequirementMet}
           className={`
-            relative w-full md:w-auto px-12 py-5 rounded-[1.5rem] font-black uppercase text-xs tracking-[0.2em] transition-all
+            px-10 py-3.5 m-5 rounded-md font-black uppercase text-[10px] tracking-[0.15em] transition-all
             flex items-center justify-center gap-3
             ${isRequirementMet 
-              ? 'bg-orange-500 text-white shadow-xl shadow-orange-100 hover:bg-orange-600 active:scale-95 cursor-pointer' 
-              : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-70 grayscale'
+              ? 'bg-[var(--foreground-bright)] text-[var(--background)] hover:bg-[var(--accent)] active:scale-95' 
+              : 'bg-[var(--surface)] text-[var(--muted)] cursor-not-allowed opacity-50'
             }
           `}
         >
-          <LuSave size={20} />
-          Сохранить всё
+          <LuSave size={16} />
+          Сохранить описание
         </button>
       </div>
     </div>
@@ -175,10 +182,10 @@ function ToolbarButton({ onClick, active, icon }: { onClick: () => void, active?
     <button
       type="button"
       onClick={onClick}
-      className={`p-3 rounded-xl transition-all ${
+      className={`p-2.5 rounded-md transition-all ${
         active 
-          ? 'bg-orange-500 text-white shadow-md' 
-          : 'text-gray-400 hover:bg-orange-50 hover:text-orange-500'
+          ? 'bg-[var(--accent)] text-[var(--contrast-text)] shadow-sm' 
+          : 'text-[var(--muted)] hover:bg-[var(--background)] hover:text-[var(--foreground)]'
       }`}
     >
       {icon}

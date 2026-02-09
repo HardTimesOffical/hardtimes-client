@@ -1,26 +1,38 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
-import { HiOutlineCube, HiArrowUp, HiCheck, HiLockClosed, HiChevronDown } from 'react-icons/hi';
+import { 
+  HiOutlineCube, 
+  HiArrowUp, 
+  HiCheck, 
+  HiLockClosed, 
+  HiChevronDown,
+  HiCheckCircle,
+  HiExclamationCircle 
+} from 'react-icons/hi';
 import api from '@/lib/api';
 import { PROJECT_TYPES_BY_GAME } from '@/constants/projectTypes';
+import { useRouter } from 'next/navigation';
+import { useProject } from './ProjectContext';
 
 export default function SettingsPage() {
   const { slug } = useParams();
   
   // Данные проекта
-  const [project, setProject] = useState<any>(null);
+  const { project, updateProject } = useProject();
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [projectType, setProjectType] = useState("");
   const [iconPreview, setIconPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const router = useRouter();
 
   // UI Состояния
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSelectOpen, setIsSelectOpen] = useState(false);
+  const [toast, setToast] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const selectRef = useRef<HTMLDivElement>(null);
@@ -30,7 +42,7 @@ export default function SettingsPage() {
       try {
         const res = await api.get(`/projects/${slug}`);
         const data = res.data;
-        setProject(data);
+        updateProject(data);
         setTitle(data.title);
         setSummary(data.summary || "");
         setProjectType(data.projectType || "");
@@ -54,7 +66,6 @@ export default function SettingsPage() {
     setHasChanges(isChanged);
   }, [title, summary, projectType, selectedFile, project]);
 
-  // Закрытие селекта при клике вне
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
@@ -64,6 +75,11 @@ export default function SettingsPage() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const showToast = (type: 'success' | 'error', msg: string) => {
+    setToast({ type, msg });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -85,11 +101,13 @@ export default function SettingsPage() {
       const res = await api.patch(`/projects/edit/${slug}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      setProject(res.data.project);
+      updateProject(res.data.project);
       setSelectedFile(null);
-      alert("Изменения сохранены!");
+      showToast('success', 'Изменения успешно сохранены!');
+      router.refresh(); 
+
     } catch (err) {
-      alert("Ошибка при сохранении");
+      showToast('error', 'Ошибка при сохранении изменений');
     } finally {
       setSaving(false);
     }
@@ -97,60 +115,85 @@ export default function SettingsPage() {
 
   const availableTypes = PROJECT_TYPES_BY_GAME[project?.gameType] || PROJECT_TYPES_BY_GAME['default'];
 
-  if (loading) return <div className="p-8 text-orange-500 font-bold animate-pulse text-center">Загрузка...</div>;
+  if (loading) return (
+    <div className="p-8 text-[var(--accent)] font-bold animate-pulse text-center uppercase tracking-widest text-xs">
+      Загрузка...
+    </div>
+  );
 
   return (
-    <div className="space-y-10 pb-32 bg-white min-h-screen">
-      <header>
-        <h2 className="text-2xl font-black text-gray-900 mb-1 uppercase tracking-tight">Project information</h2>
-        <p className="text-sm text-gray-400 font-semibold tracking-wide uppercase">Core Identification</p>
+    <div className="space-y-10 pb-32 bg-transparent transition-colors duration-300 relative">
+      
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-top-4 duration-300 px-4 w-full max-w-max">
+          <div className={`px-5 py-2.5 rounded-md shadow-2xl flex items-center gap-3 border backdrop-blur-md ${
+            toast.type === 'success' ? 'bg-[var(--foreground)] border-[var(--border)] text-[var(--background)]' : 'bg-red-500 border-red-600 text-white'
+          }`}>
+            {toast.type === 'success' ? <HiCheckCircle className="text-[var(--accent)]" size={18} /> : <HiExclamationCircle size={18} />}
+            <span className="text-[10px] font-black uppercase tracking-wider">{toast.msg}</span>
+          </div>
+        </div>
+      )}
+
+      <header className="border-b border-[var(--border)] pb-5">
+        <h2 className="text-xl font-black text-[var(--foreground-bright)] mb-1 uppercase tracking-tight">
+          Информация о проекте
+        </h2>
+        <p className="text-[10px] text-[var(--muted)] font-bold tracking-widest uppercase">
+          Основная идентификация и брендинг
+        </p>
       </header>
 
       {/* ICON SECTION */}
-      <section className="flex items-center gap-8">
-        <div className="relative w-28 h-28 bg-gray-50 rounded-[2.5rem] border-2 border-dashed border-gray-200 flex items-center justify-center group overflow-hidden transition-all hover:border-orange-300">
+      <section className="flex flex-col sm:flex-row items-center gap-8">
+        <div className="relative w-28 h-28 bg-[var(--surface)] rounded-2xl border border-[var(--border)] flex items-center justify-center group overflow-hidden transition-all hover:border-[var(--accent)]">
           {iconPreview ? (
-            <img src={iconPreview} alt="Icon" className="w-full h-full object-cover" />
+            <img src={iconPreview} alt="Иконка" className="w-full h-full object-cover" />
           ) : (
-            <HiOutlineCube size={48} className="text-gray-300" />
+            <HiOutlineCube size={40} className="text-[var(--muted)] opacity-50" />
           )}
           <div 
             onClick={() => fileInputRef.current?.click()}
-            className="absolute inset-0 bg-orange-600/80 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center cursor-pointer"
+            className="absolute inset-0 bg-[var(--accent)]/90 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center cursor-pointer"
           >
-            <HiArrowUp className="text-white" size={28} />
+            <HiArrowUp className="text-[var(--contrast-text)]" size={24} />
           </div>
         </div>
         
-        <div className="space-y-3">
+        <div className="space-y-3 text-center sm:text-left">
           <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
           <button 
             onClick={() => fileInputRef.current?.click()}
-            className="bg-gray-900 hover:bg-orange-600 text-white px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all"
+            className="bg-[var(--foreground)] hover:bg-[var(--accent)] text-[var(--background)] px-5 py-2.5 rounded-md text-[11px] font-black uppercase tracking-widest transition-all active:scale-95"
           >
-            Upload New Icon
+            Загрузить иконку
           </button>
-          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Recommended: 256x256 PNG</p>
+          <p className="text-[10px] text-[var(--muted)] font-bold uppercase tracking-widest">
+            Рекомендуется: 256x256 PNG
+          </p>
         </div>
       </section>
 
       {/* FORM FIELDS */}
-      <div className="space-y-8 max-w-2xl">
+      <div className="space-y-6 max-w-2xl">
         
-        {/* Project Type - CUSTOM SELECT */}
+        {/* Project Type */}
         <div className="space-y-2" ref={selectRef}>
-          <label className="text-[11px] font-black uppercase text-gray-400 ml-1 tracking-widest">Project Type</label>
+          <label className="text-[10px] font-black uppercase text-[var(--muted)] ml-1 tracking-widest">
+            Тип проекта
+          </label>
           <div className="relative">
             <button
               onClick={() => setIsSelectOpen(!isSelectOpen)}
-              className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold flex justify-between items-center hover:border-orange-200 transition-all text-gray-700"
+              className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-md px-4 py-3 text-sm font-bold flex justify-between items-center hover:border-[var(--accent)] transition-all text-[var(--foreground)]"
             >
               {availableTypes.find(t => t.value === projectType)?.label || "Выберите тип..."}
-              <HiChevronDown className={`transition-transform duration-300 ${isSelectOpen ? 'rotate-180' : ''}`} size={20} />
+              <HiChevronDown className={`transition-transform duration-300 ${isSelectOpen ? 'rotate-180' : ''}`} size={18} />
             </button>
 
             {isSelectOpen && (
-              <div className="absolute z-50 mt-2 w-full bg-white border-2 border-gray-100 rounded-3xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+              <div className="absolute z-50 mt-1 w-full bg-[var(--card)] border border-[var(--border)] rounded-md shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                 {availableTypes.map((type) => (
                   <button
                     key={type.value}
@@ -158,7 +201,7 @@ export default function SettingsPage() {
                       setProjectType(type.value);
                       setIsSelectOpen(false);
                     }}
-                    className={`w-full px-6 py-4 text-left text-sm font-bold transition-colors hover:bg-orange-50 ${projectType === type.value ? 'bg-orange-50 text-orange-600' : 'text-gray-600'}`}
+                    className={`w-full px-4 py-3 text-left text-xs font-bold transition-colors hover:bg-[var(--surface)] ${projectType === type.value ? 'text-[var(--accent)] bg-[var(--surface)]' : 'text-[var(--foreground)]'}`}
                   >
                     {type.label}
                   </button>
@@ -170,30 +213,36 @@ export default function SettingsPage() {
 
         {/* Name */}
         <div className="space-y-2">
-          <label className="text-[11px] font-black uppercase text-gray-400 ml-1 tracking-widest">Project Name</label>
+          <label className="text-[10px] font-black uppercase text-[var(--muted)] ml-1 tracking-widest">
+            Название проекта
+          </label>
           <input 
             type="text" 
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold focus:border-orange-400 focus:bg-white outline-none transition-all text-gray-700" 
+            className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-md px-4 py-3 text-sm font-bold focus:border-[var(--accent)] outline-none transition-all text-[var(--foreground)]" 
           />
         </div>
 
-        {/* URL (Slug) - Locked */}
+        {/* URL (Slug) */}
         <div className="space-y-2">
-          <label className="text-[11px] font-black uppercase text-gray-400 ml-1 tracking-widest">Project URL</label>
-          <div className="flex items-center bg-gray-50 border-2 border-gray-100 rounded-2xl px-6 py-4 cursor-not-allowed">
-             <span className="text-sm font-bold text-gray-300 mr-1 italic">/project/</span>
-             <input type="text" className="bg-transparent text-sm font-bold text-gray-400 outline-none flex-1" value={slug} disabled />
-             <HiLockClosed className="text-gray-200" size={18} />
+          <label className="text-[10px] font-black uppercase text-[var(--muted)] ml-1 tracking-widest">
+            URL Проекта
+          </label>
+          <div className="flex items-center bg-[var(--surface)] border border-[var(--border)] rounded-md px-4 py-3 cursor-not-allowed opacity-60">
+              <span className="text-sm font-bold text-[var(--muted)] mr-1 italic">/project/</span>
+              <input type="text" className="bg-transparent text-sm font-bold text-[var(--foreground)] outline-none flex-1" value={slug} disabled />
+              <HiLockClosed className="text-[var(--muted)]" size={16} />
           </div>
         </div>
 
         {/* Summary */}
         <div className="space-y-2">
           <div className="flex justify-between items-center px-1">
-            <label className="text-[11px] font-black uppercase text-gray-400 tracking-widest">Summary</label>
-            <span className={`text-[10px] font-black px-2 py-1 rounded-lg ${summary.length < 30 ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600'}`}>
+            <label className="text-[10px] font-black uppercase text-[var(--muted)] tracking-widest">
+              Краткое описание
+            </label>
+            <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${summary.length < 30 ? 'bg-[var(--accent)]/10 text-[var(--accent)]' : 'bg-green-500/10 text-green-500'}`}>
                {summary.length}/150
             </span>
           </div>
@@ -201,25 +250,29 @@ export default function SettingsPage() {
             value={summary}
             onChange={(e) => setSummary(e.target.value)}
             maxLength={150}
-            className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold focus:border-orange-400 focus:bg-white outline-none transition-all min-h-[120px] resize-none leading-relaxed text-gray-700"
+            className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-md px-4 py-3 text-sm font-bold focus:border-[var(--accent)] outline-none transition-all min-h-[100px] resize-none leading-relaxed text-[var(--foreground)]"
           />
         </div>
       </div>
 
       {/* STICKY SAVE BAR */}
       {hasChanges && (
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-[550px] z-50 px-4">
-          <div className="bg-gray-900 border border-white/10 p-2 pl-8 rounded-[2.5rem] shadow-2xl flex justify-between items-center animate-in slide-in-from-bottom-10">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-[600px] z-50 px-4">
+          <div className="bg-[var(--foreground)] border border-[var(--border)] p-1.5 pl-6 rounded-lg shadow-2xl flex justify-between items-center animate-in slide-in-from-bottom-6">
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500">Careful!</span>
-              <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest">You have unsaved changes</span>
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[var(--accent)]">
+                Внимание!
+              </span>
+              <span className="text-[10px] font-bold text-[var(--background)] opacity-70 uppercase tracking-widest">
+                У вас есть несохраненные изменения
+              </span>
             </div>
             <button 
               onClick={handleSave}
               disabled={saving}
-              className={`bg-orange-500 hover:bg-orange-400 text-white px-10 py-4 rounded-[2rem] text-[11px] font-black uppercase tracking-widest transition-all shadow-lg shadow-orange-500/30 ${saving ? 'opacity-50' : 'active:scale-95'}`}
+              className={`bg-[var(--accent)] hover:brightness-110 text-[var(--contrast-text)] px-8 py-3 rounded-md text-[10px] font-black uppercase tracking-widest transition-all ${saving ? 'opacity-50' : 'active:scale-95'}`}
             >
-              {saving ? 'Saving...' : 'Save changes'}
+              {saving ? 'Сохранение...' : 'Сохранить изменения'}
             </button>
           </div>
         </div>

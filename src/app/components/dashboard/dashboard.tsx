@@ -17,31 +17,43 @@ import {
 const GAME_PLATFORMS = [
   { id: 'minecraft', label: 'Minecraft', icon: '⛏️' },
   { id: 'hytale', label: 'Hytale', icon: '💎' },
+  { id: 'voxelcore', label: 'VoxelCore', icon: '🏗️' },
 ];
 
 export const PROJECT_TYPES_BY_GAME: Record<string, { label: string; value: string }[]> = {
   'minecraft': [
-    { label: 'Моды', value: 'mod' },
-    { label: 'Плагины', value: 'plugin' },
-    { label: 'Сборки серверов', value: 'server-pack' },
-    { label: 'Сборки модов', value: 'modpack' },
-    { label: 'Переводы', value: 'translation' },
-    { label: 'Конфигурации', value: 'config' },
-    { label: 'Шейдеры', value: 'shader' },
-    { label: 'Ресурспаки', value: 'resourcepack' },
-    { label: 'Карты', value: 'map' },
-    { label: 'Датапаки', value: 'datapack' },
-    { label: 'Схематики', value: 'schematic' },
+    { label: 'Моды', value: 'mods' },
+    { label: 'Плагины', value: 'plugins' },
+    { label: 'Сборки серверов', value: 'server-packs' },
+    { label: 'Сборки модов', value: 'modpacks' },
+    { label: 'Переводы', value: 'translations' },
+    { label: 'Конфигурации', value: 'configs' },
+    { label: 'Шейдеры', value: 'shaders' },
+    { label: 'Ресурспаки', value: 'resourcepacks' },
+    { label: 'Карты', value: 'maps' },
+    { label: 'Датапаки', value: 'datapacks' },
+    { label: 'Схематики', value: 'schematics' },
   ],
   'hytale': [
-    { label: 'Моды', value: 'mod' },
-    { label: 'Скрипты (C#)', value: 'script' },
-    { label: 'Сборки серверов', value: 'server-pack' },
-    { label: 'Конфигурации', value: 'config' },
-    { label: 'Переводы', value: 'translation' },
-    { label: 'Модели и Ассеты', value: 'model' },
-    { label: 'Миры и Карты', value: 'world' },
-    { label: 'Инструменты', value: 'tool' },
+    { label: 'Моды', value: 'mods' },
+    { label: 'Скрипты (C#)', value: 'scripts' },
+    { label: 'Сборки серверов', value: 'server-packs' },
+    { label: 'Конфигурации', value: 'configs' },
+    { label: 'Переводы', value: 'translations' },
+    { label: 'Модели и Ассеты', value: 'models' },
+    { label: 'Миры и Карты', value: 'maps' }, // В тегах используется 'maps'
+    { label: 'Инструменты', value: 'tools' },
+  ],
+  'voxelcore': [
+    { label: 'Моды', value: 'mods' },
+    { label: 'Библиотеки', value: 'libraries' },
+    { label: 'Текстурпаки', value: 'texture-packs' },
+    { label: 'Схематики', value: 'schematics' },
+    { label: 'Миры', value: 'worlds' },
+    { label: 'Сборки модов', value: 'modpacks' },
+    { label: 'Ядро', value: 'core' },
+    { label: 'Инструменты', value: 'tools' },
+    
   ]
 };
 
@@ -70,21 +82,35 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
   }, [pathname]);
 
   // Эффект для загрузки количества проектов
-  useEffect(() => {
+useEffect(() => {
     const fetchCounts = async () => {
-      if (!isInsideGame || !currentGameId) return;
+      // 1. Добавляем проверку: если мы не внутри игры, обнуляем счетчики
+      if (!isInsideGame || !currentGameId) {
+        setCounts({});
+        return;
+      }
+      
       try {
+        // Убедитесь, что бэкенд корректно обрабатывает query параметр gameType
         const res = await fetch(`${SERVER_URL}/projects?gameType=${currentGameId}&limit=1000`);
         const data = await res.json();
         const projects = data.projects || [];
 
         const projectCounts: Record<string, number> = {};
+        let totalForCurrentGame = 0;
+
         projects.forEach((p: any) => {
-          const type = p.projectType;
-          projectCounts[type] = (projectCounts[type] || 0) + 1;
+          // 2. Дополнительная проверка на фронте (на случай если API вернуло лишнее)
+          if (p.gameType?.toLowerCase() === currentGameId.toLowerCase()) {
+            const type = p.projectType;
+            projectCounts[type] = (projectCounts[type] || 0) + 1;
+            totalForCurrentGame++;
+          }
         });
         
-        projectCounts['all'] = projects.length;
+        // 3. Записываем количество только для этой игры
+        projectCounts['all'] = totalForCurrentGame;
+        
         setCounts(projectCounts);
       } catch (e) {
         console.error("Sidebar stats error:", e);

@@ -54,27 +54,30 @@ export default function AddVersionModal({ project, onClose, onRefresh }: any) {
     if (isSubmitting) return;
     setIsSubmitting(true);
 
-    if (!file) return alert("Выберите файл");
+    if (!file) {
+        setIsSubmitting(false);
+        return alert("Выберите файл");
+    }
 
-   const formData = new FormData();
-    formData.append('file', file); // Имя должно быть 'file'
+    const formData = new FormData();
+    formData.append('file', file);
     formData.append('versionNumber', versionNumber || '');
     formData.append('releaseType', releaseType || 'release');
     formData.append('changelog', changelog || '');
     formData.append('environment', environment || 'both');
-
-    // Массивы ОБЯЗАТЕЛЬНО как JSON-строки
     formData.append('loaders', JSON.stringify(selectedLoaders || []));
     formData.append('gameVersions', JSON.stringify(selectedGameVersions || []));
 
     try {
       await api.post(`/projects/${project.slug}/versions`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },});
-      onRefresh();
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      
+      // Вызываем обновление и закрываем
+      if (onRefresh) await onRefresh(); 
       onClose();
     } catch (err) {
+      console.error(err);
       alert("Ошибка при сохранении версии");
     } finally {
       setIsSubmitting(false);
@@ -86,82 +89,75 @@ export default function AddVersionModal({ project, onClose, onRefresh }: any) {
   );
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-white text-gray-900 w-full max-w-xl rounded-[2.5rem] shadow-2xl border border-gray-100 my-auto animate-in zoom-in-95 duration-200 overflow-hidden">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+      <div className="bg-[var(--card)] text-[var(--foreground)] w-full max-w-xl rounded-2xl shadow-2xl border border-[var(--border)] my-auto animate-in zoom-in-95 duration-200 overflow-hidden">
         
         {/* HEADER */}
-        <div className="p-6 border-b border-gray-50">
+        <div className="p-6 border-b border-[var(--border)] bg-[var(--surface)]/30">
           <div className="flex justify-between items-center mb-6">
-            <nav className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+            <nav className="flex items-center gap-3 overflow-x-auto no-scrollbar">
               {steps.map((s, i) => (
-                <div key={s} className="flex items-center gap-2 flex-shrink-0">
-                  <span className={`text-[10px] font-black uppercase tracking-widest ${step === s ? 'text-orange-500' : 'text-gray-300'}`}>
+                <div key={s} className="flex items-center gap-3 flex-shrink-0">
+                  <span className={`text-[10px] font-black uppercase tracking-[0.15em] transition-colors ${step === s ? 'text-[var(--accent)]' : 'text-[var(--muted)]'}`}>
                     {s}
                   </span>
-                  {i < steps.length - 1 && <div className="w-1 h-1 rounded-full bg-gray-200" />}
+                  {i < steps.length - 1 && <div className="w-1 h-1 rounded-full bg-[var(--border)]" />}
                 </div>
               ))}
             </nav>
-            <button onClick={onClose} className="p-2 hover:bg-gray-50 rounded-full text-gray-400 transition-colors">
+            <button onClick={onClose} className="p-2 hover:bg-[var(--surface)] rounded-md text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">
               <HiX size={20} />
             </button>
           </div>
-          {/* Progress Bar */}
-          <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-1 w-full bg-[var(--border)] rounded-full overflow-hidden">
             <div 
-              className="h-full bg-orange-500 transition-all duration-500 ease-out" 
+              className="h-full bg-[var(--accent)] transition-all duration-500 ease-out" 
               style={{ width: `${((steps.indexOf(step) + 1) / steps.length) * 100}%` }}
             />
           </div>
         </div>
 
         {/* CONTENT */}
-        <div className="p-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
+        <div className="p-8 max-h-[60vh] overflow-y-auto custom-scrollbar bg-[var(--card)]">
           
           {step === 'Files' && (
-            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
+            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-3 duration-300">
               <div 
                 onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-[2rem] py-12 transition-all cursor-pointer text-center
-                  ${file ? 'border-orange-500 bg-orange-50/30' : 'border-gray-100 hover:border-orange-300 hover:bg-gray-50/50'}
+                className={`group border-2 border-dashed rounded-2xl py-14 transition-all cursor-pointer text-center
+                  ${file ? 'border-[var(--accent)] bg-[var(--accent)]/5' : 'border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--surface)]'}
                 `}
               >
-                <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    className="hidden" 
-                    onChange={(e) => {
-                        const selectedFile = e.target.files?.[0];
-                        if (selectedFile) {
-                        console.log("Файл выбран:", selectedFile.name, selectedFile.size); // Проверь лог здесь
-                        setFile(selectedFile); 
-                        setTimeout(handleNext, 400);
-                        }
-                    }} 
-                    />
-                <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center ${file ? 'bg-orange-500 text-white' : 'bg-gray-50 text-gray-400'}`}>
+                <input type="file" ref={fileInputRef} className="hidden" onChange={(e) => {
+                    const selectedFile = e.target.files?.[0];
+                    if (selectedFile) {
+                      setFile(selectedFile); 
+                      setTimeout(handleNext, 400);
+                    }
+                }} />
+                <div className={`w-16 h-16 mx-auto mb-5 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 ${file ? 'bg-[var(--accent)] text-[var(--contrast-text)] shadow-lg shadow-[var(--accent)]/20' : 'bg-[var(--surface)] text-[var(--muted)]'}`}>
                   <HiCloudUpload size={32} />
                 </div>
-                <h3 className="text-sm font-black uppercase tracking-tight text-gray-800">Загрузить основной файл</h3>
-                <p className="text-xs text-gray-400 mt-2 font-medium px-6">{file ? file.name : 'Перетащите .jar, .zip или .mrpack файл сюда'}</p>
+                <h3 className="text-[11px] font-black uppercase tracking-widest text-[var(--foreground)]">Загрузить основной файл</h3>
+                <p className="text-[10px] text-[var(--muted)] mt-2 font-bold px-10 leading-relaxed italic">{file ? file.name : 'Перетащите .jar, .zip или .mrpack файл сюда'}</p>
               </div>
             </div>
           )}
 
           {step === 'Loaders' && (
-            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-              <h3 className="text-[11px] font-black uppercase text-gray-400 tracking-widest mb-4">Доступные загрузчики</h3>
+            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-3 duration-300">
+              <h3 className="text-[10px] font-black uppercase text-[var(--muted)] tracking-widest mb-4">Доступные загрузчики</h3>
               <div className="grid grid-cols-2 gap-3">
                 {availableLoaders.map((loader: any) => {
                   const active = selectedLoaders.includes(loader.id);
                   return (
                     <button key={loader.id} onClick={() => setSelectedLoaders(prev => active ? prev.filter(id => id !== loader.id) : [...prev, loader.id])}
-                      className={`p-4 rounded-2xl border-2 transition-all flex items-center justify-between text-xs font-bold
-                        ${active ? 'border-orange-500 bg-orange-50 text-orange-600' : 'border-gray-50 bg-gray-50/50 text-gray-500 hover:border-gray-200'}
+                      className={`p-4 rounded-xl border transition-all flex items-center justify-between text-[11px] font-black uppercase tracking-tight
+                        ${active ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]' : 'border-[var(--border)] bg-[var(--surface)]/50 text-[var(--muted)] hover:border-[var(--muted)]/50'}
                       `}>
                       {loader.label}
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${active ? 'bg-orange-500 border-orange-500' : 'bg-white border-gray-200'}`}>
-                        {active && <HiCheck size={12} className="text-white" />}
+                      <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${active ? 'bg-[var(--accent)] border-[var(--accent)]' : 'bg-[var(--card)] border-[var(--border)]'}`}>
+                        {active && <HiCheck size={12} className="text-[var(--contrast-text)]" />}
                       </div>
                     </button>
                   );
@@ -171,21 +167,21 @@ export default function AddVersionModal({ project, onClose, onRefresh }: any) {
           )}
 
           {step === 'Environment' && (
-            <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2">
-              <h3 className="text-[11px] font-black uppercase text-gray-400 tracking-widest mb-4">Среда выполнения</h3>
+            <div className="space-y-3 animate-in fade-in slide-in-from-bottom-3 duration-300">
+              <h3 className="text-[10px] font-black uppercase text-[var(--muted)] tracking-widest mb-4">Среда выполнения</h3>
               {[
-                { id: 'client', label: 'Client', desc: 'Для установки только на сторону игрока.', icon: <HiDesktopComputer size={20}/> },
+                { id: 'client', label: 'Client', desc: 'Только на сторону игрока.', icon: <HiDesktopComputer size={20}/> },
                 { id: 'server', label: 'Server', desc: 'Для серверных ядер и прокси.', icon: <HiServer size={20}/> },
-                { id: 'both', label: 'Universal', desc: 'Подходит для обеих сторон.', icon: <div className="flex gap-0.5"><HiDesktopComputer size={12}/><HiServer size={12}/></div> }
+                { id: 'both', label: 'Universal', desc: 'Подходит для всех сторон.', icon: <div className="flex gap-0.5"><HiDesktopComputer size={12}/><HiServer size={12}/></div> }
               ].map((opt) => (
                 <button key={opt.id} onClick={() => setEnvironment(opt.id as any)}
-                  className={`w-full p-5 rounded-2xl border-2 text-left transition-all flex gap-4 items-center
-                    ${environment === opt.id ? 'border-orange-500 bg-orange-50 shadow-sm' : 'border-gray-50 bg-gray-50/50 hover:bg-gray-100/50'}
+                  className={`w-full p-4 rounded-xl border text-left transition-all flex gap-4 items-center
+                    ${environment === opt.id ? 'border-[var(--accent)] bg-[var(--accent)]/5 shadow-sm' : 'border-[var(--border)] bg-[var(--surface)]/50 hover:bg-[var(--surface)]'}
                   `}>
-                  <div className={`p-3 rounded-xl ${environment === opt.id ? 'bg-orange-500 text-white' : 'bg-white text-gray-400'}`}>{opt.icon}</div>
+                  <div className={`p-3 rounded-lg ${environment === opt.id ? 'bg-[var(--accent)] text-[var(--contrast-text)]' : 'bg-[var(--card)] text-[var(--muted)] border border-[var(--border)]'}`}>{opt.icon}</div>
                   <div>
-                    <div className={`text-xs font-black uppercase tracking-tight ${environment === opt.id ? 'text-orange-600' : 'text-gray-700'}`}>{opt.label}</div>
-                    <div className="text-[10px] text-gray-400 font-bold mt-0.5">{opt.desc}</div>
+                    <div className={`text-[11px] font-black uppercase tracking-tight ${environment === opt.id ? 'text-[var(--accent)]' : 'text-[var(--foreground)]'}`}>{opt.label}</div>
+                    <div className="text-[9px] text-[var(--muted)] font-bold mt-0.5 uppercase tracking-wide opacity-70">{opt.desc}</div>
                   </div>
                 </button>
               ))}
@@ -193,13 +189,13 @@ export default function AddVersionModal({ project, onClose, onRefresh }: any) {
           )}
 
           {step === 'Versions' && (
-            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
+            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-3 duration-300">
               <div className="flex justify-between items-center mb-2">
-                <h3 className="text-[11px] font-black uppercase text-gray-400 tracking-widest">Версии игры</h3>
+                <h3 className="text-[10px] font-black uppercase text-[var(--muted)] tracking-widest">Версии игры</h3>
                 <div className="relative">
-                  <HiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" size={14} />
+                  <HiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted)]" size={14} />
                   <input type="text" placeholder="Поиск..." value={searchVer} onChange={e => setSearchVer(e.target.value)}
-                    className="pl-9 pr-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-[11px] font-bold outline-none focus:border-orange-300 w-36 transition-all" />
+                    className="pl-9 pr-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[10px] font-black uppercase tracking-wider outline-none focus:border-[var(--accent)] w-36 transition-all" />
                 </div>
               </div>
               <div className="grid grid-cols-4 gap-2 max-h-[180px] overflow-y-auto pr-2 custom-scrollbar">
@@ -207,8 +203,8 @@ export default function AddVersionModal({ project, onClose, onRefresh }: any) {
                   const active = selectedGameVersions.includes(v);
                   return (
                     <button key={v} onClick={() => setSelectedGameVersions(prev => active ? prev.filter(id => id !== v) : [...prev, v])}
-                      className={`py-3 rounded-xl border-2 text-[10px] font-black transition-all
-                        ${active ? 'bg-orange-500 border-orange-500 text-white shadow-lg shadow-orange-500/20' : 'bg-gray-50 border-gray-50 text-gray-400 hover:border-gray-200'}
+                      className={`py-3 rounded-lg border text-[9px] font-black transition-all
+                        ${active ? 'bg-[var(--accent)] border-[var(--accent)] text-[var(--contrast-text)] shadow-md' : 'bg-[var(--surface)] border-[var(--border)] text-[var(--muted)] hover:border-[var(--muted)]/50'}
                       `}>
                       {v}
                     </button>
@@ -219,17 +215,17 @@ export default function AddVersionModal({ project, onClose, onRefresh }: any) {
           )}
 
           {step === 'Details' && (
-            <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2">
+            <div className="space-y-5 animate-in fade-in slide-in-from-bottom-3 duration-300">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Версия</label>
+                  <label className="text-[9px] font-black text-[var(--muted)] uppercase ml-1 tracking-widest">Версия</label>
                   <input type="text" placeholder="1.0.0" value={versionNumber} onChange={e => setVersionNumber(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-orange-500 focus:bg-white transition-all" />
+                    className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3.5 text-[11px] font-black outline-none focus:border-[var(--accent)] focus:bg-[var(--card)] transition-all" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Тип релиза</label>
+                  <label className="text-[9px] font-black text-[var(--muted)] uppercase ml-1 tracking-widest">Тип релиза</label>
                   <select value={releaseType} onChange={e => setReleaseType(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-orange-500 focus:bg-white appearance-none cursor-pointer transition-all">
+                    className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3.5 text-[11px] font-black outline-none focus:border-[var(--accent)] focus:bg-[var(--card)] appearance-none cursor-pointer transition-all uppercase tracking-wider">
                     <option value="release">Release</option>
                     <option value="beta">Beta</option>
                     <option value="alpha">Alpha</option>
@@ -237,27 +233,27 @@ export default function AddVersionModal({ project, onClose, onRefresh }: any) {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Список изменений</label>
-                <textarea placeholder="Опишите, что нового в этом обновлении..." value={changelog} onChange={e => setChangelog(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 text-xs font-medium outline-none focus:border-orange-500 focus:bg-white h-32 resize-none transition-all" />
+                <label className="text-[9px] font-black text-[var(--muted)] uppercase ml-1 tracking-widest">Список изменений</label>
+                <textarea placeholder="Опишите, что нового..." value={changelog} onChange={e => setChangelog(e.target.value)}
+                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-4 text-[11px] font-medium outline-none focus:border-[var(--accent)] focus:bg-[var(--card)] h-32 resize-none transition-all custom-scrollbar" />
               </div>
             </div>
           )}
         </div>
 
         {/* FOOTER */}
-        <div className="p-6 bg-gray-50/50 border-t border-gray-50 flex justify-between items-center">
+        <div className="p-6 bg-[var(--surface)]/50 border-t border-[var(--border)] flex justify-between items-center">
           <button disabled={step === steps[0]} onClick={handleBack}
-            className="flex items-center gap-2 text-[11px] font-black uppercase text-gray-400 hover:text-gray-900 disabled:opacity-0 transition-all">
+            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[var(--muted)] hover:text-[var(--foreground)] disabled:opacity-0 transition-all">
             <HiArrowLeft size={16} /> Назад
           </button>
           <button 
             onClick={step === steps[steps.length - 1] ? handleSubmit : handleNext}
             disabled={(step === 'Files' && !file) || isSubmitting}
-            className={`px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-2
+            className={`px-10 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 active:scale-95
               ${(step === 'Files' && !file) || isSubmitting 
-                ? 'bg-gray-200 text-gray-400' 
-                : 'bg-gray-900 text-white hover:bg-orange-500 shadow-xl shadow-gray-200 hover:shadow-orange-500/20'}
+                ? 'bg-[var(--surface)] text-[var(--muted)] border border-[var(--border)] opacity-50 cursor-not-allowed' 
+                : 'bg-[var(--foreground)] text-[var(--background)] hover:bg-[var(--accent)] hover:text-[var(--contrast-text)] shadow-lg shadow-black/10'}
             `}
           >
             {isSubmitting ? 'Загрузка...' : step === steps[steps.length - 1] ? 'Опубликовать' : 'Далее'} <HiArrowRight size={16} />

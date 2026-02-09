@@ -36,13 +36,9 @@ export default function TagsSettingsPage() {
     fetchProject();
   }, [slug]);
 
-  // --- ИСПРАВЛЕННАЯ ЛОГИКА ТУТ ---
   const gameKey = project?.gameType?.toLowerCase() || 'minecraft';
   const typeKey = project?.projectType?.toLowerCase() || 'mods';
-  
-  // Достаем теги из иерархии: Игра -> Тип
   const availableTags = PROJECT_TAGS[gameKey]?.[typeKey] || [];
-  // -------------------------------
 
   const toggleTag = (tagId: string) => {
     if (selectedTags.includes(tagId)) {
@@ -78,76 +74,80 @@ export default function TagsSettingsPage() {
 
   const hasChanges = JSON.stringify([...selectedTags].sort()) !== JSON.stringify([...initialTags].sort());
 
-  if (loading) return <div className="p-20 text-center animate-pulse text-gray-400">Загрузка...</div>;
+  if (loading) return (
+    <div className="p-20 text-center animate-pulse text-[var(--muted)] text-xs font-bold uppercase tracking-widest">
+      Загрузка тегов...
+    </div>
+  );
 
   return (
-    <div className="space-y-8 pb-32 bg-white min-h-screen relative px-4">
+    <div className="space-y-8 pb-32 bg-transparent min-h-screen relative transition-colors duration-300">
       {/* Toast */}
       {toast && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
-          <div className={`px-5 py-2.5 rounded-xl shadow-2xl flex items-center gap-3 border backdrop-blur-md ${
-            toast.type === 'success' ? 'bg-gray-900 border-white/10 text-white' : 'bg-red-50 border-red-100 text-red-600'
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-top-4 duration-300 px-4 w-full max-w-max">
+          <div className={`px-5 py-2.5 rounded-md shadow-2xl flex items-center gap-3 border backdrop-blur-md ${
+            toast.type === 'success' ? 'bg-[var(--foreground)] border-[var(--border)] text-[var(--background)]' : 'bg-red-500 border-red-600 text-white'
           }`}>
-            {toast.type === 'success' ? <HiCheckCircle className="text-orange-500" size={18} /> : <HiExclamationCircle size={18} />}
+            {toast.type === 'success' ? <HiCheckCircle className="text-[var(--accent)]" size={18} /> : <HiExclamationCircle size={18} />}
             <span className="text-[10px] font-black uppercase tracking-wider">{toast.msg}</span>
           </div>
         </div>
       )}
 
       {/* Шапка */}
-      <header>
-        <h2 className="text-xl font-black text-gray-900 mb-1 uppercase tracking-tight">Теги проекта</h2>
-        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">
-          Игра: <span className="text-gray-900">{gameKey}</span> | Тип: <span className="text-orange-500">{typeKey}</span>
+      <header className="border-b border-[var(--border)] pb-5">
+        <h2 className="text-xl font-black text-[var(--foreground-bright)] mb-1 uppercase tracking-tight">Теги проекта</h2>
+        <p className="text-[10px] text-[var(--muted)] font-bold uppercase tracking-widest mt-1">
+          Игра: <span className="text-[var(--foreground)]">{gameKey}</span> | Категория: <span className="text-[var(--accent)]">{typeKey}</span>
         </p>
       </header>
 
-      {/* Сетка */}
+      {/* Сетка тегов */}
       {availableTags.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {availableTags.map((tag) => {
             const isSelected = selectedTags.includes(tag.id);
             return (
               <button
                 key={tag.id}
                 onClick={() => toggleTag(tag.id)}
-                className={`flex items-center justify-between p-3.5 rounded-2xl border transition-all duration-300 group ${
+                className={`flex items-center justify-between p-3.5 rounded-md border transition-all duration-200 group ${
                   isSelected 
-                  ? 'bg-gray-900 border-gray-900 shadow-md' 
-                  : 'bg-gray-50 border-gray-100 hover:border-orange-300 hover:bg-white shadow-sm'
+                  ? 'bg-[var(--foreground)] border-[var(--foreground)] shadow-sm' 
+                  : 'bg-[var(--surface)] border-[var(--border)] hover:border-[var(--accent)]'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${isSelected ? 'bg-orange-500 text-white' : 'bg-white text-gray-400 group-hover:text-orange-500 shadow-sm'}`}>
+                  <div className={`p-1.5 rounded-md transition-colors ${isSelected ? 'bg-[var(--accent)] text-[var(--contrast-text)]' : 'bg-[var(--card)] text-[var(--muted)] group-hover:text-[var(--accent)]'}`}>
                     <HiOutlineHashtag size={14} />
                   </div>
-                  <span className={`text-[11px] font-bold uppercase tracking-wide ${isSelected ? 'text-white' : 'text-gray-500 group-hover:text-gray-900'}`}>
+                  <span className={`text-[11px] font-bold uppercase tracking-wide transition-colors ${isSelected ? 'text-[var(--background)]' : 'text-[var(--foreground)]'}`}>
                     {tag.label}
                   </span>
                 </div>
-                {isSelected && <HiCheckCircle className="text-orange-500" size={18} />}
+                {isSelected && <HiCheckCircle className="text-[var(--accent)]" size={18} />}
               </button>
             );
           })}
         </div>
       ) : (
-        <div className="p-10 border-2 border-dashed border-gray-100 rounded-3xl text-center text-gray-400 text-xs font-bold uppercase">
+        <div className="p-12 border border-dashed border-[var(--border)] rounded-lg text-center text-[var(--muted)] text-[10px] font-bold uppercase tracking-widest">
           Теги не найдены для этой категории
         </div>
       )}
 
-      {/* Кнопка сохранения (без изменений) */}
+      {/* Панель сохранения */}
       {hasChanges && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-50 px-4">
-          <div className="bg-gray-900 border border-white/10 p-1.5 pl-6 rounded-2xl shadow-2xl flex justify-between items-center">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-[550px] z-50 px-4">
+          <div className="bg-[var(--foreground)] border border-[var(--border)] p-2 pl-6 rounded-lg shadow-2xl flex justify-between items-center animate-in slide-in-from-bottom-6">
             <div className="flex flex-col text-left">
-              <span className="text-[9px] font-black uppercase text-orange-500">Несохраненные данные</span>
-              <span className="text-[9px] font-bold text-white/40 uppercase">Теги были изменены</span>
+              <span className="text-[9px] font-black uppercase tracking-widest text-[var(--accent)]">Внимание!</span>
+              <span className="text-[9px] font-bold text-[var(--background)] opacity-60 uppercase">Теги были изменены</span>
             </div>
             <button 
               onClick={handleSave}
               disabled={saving}
-              className="bg-orange-500 hover:bg-orange-400 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+              className={`bg-[var(--accent)] hover:brightness-110 text-[var(--contrast-text)] px-8 py-3 rounded-md text-[10px] font-black uppercase tracking-widest transition-all ${saving ? 'opacity-50' : 'active:scale-95'}`}
             >
               {saving ? 'Сохранение...' : 'Сохранить'}
             </button>

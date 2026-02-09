@@ -173,6 +173,82 @@ export const PROJECT_TAGS: ProjectTags = {
       { id: 'ru', label: 'Русский' },
       { id: 'ua', label: 'Українська' },
     ],
+  },
+  voxelcore: {
+    // МОДЫ
+    mods: [
+      { id: 'content', label: 'Контентный' },
+      { id: 'mechanics', label: 'Механики' },
+      { id: 'generation', label: 'Генерация' },
+      { id: 'technology', label: 'Технологии' },
+      { id: 'magic', label: 'Магия' },
+      { id: 'adventure', label: 'Приключения' },
+      { id: 'mobs', label: 'Мобы' },
+      { id: 'equipment', label: 'Снаряжение' },
+      { id: 'food', label: 'Еда' },
+      { id: 'decoration', label: 'Декорации' },
+      { id: 'optimization', label: 'Оптимизация' },
+      { id: 'ui-ux', label: 'Интерфейс' },
+      { id: 'multiplayer', label: 'Мультиплеер' },
+    ],
+
+    // БИБЛИОТЕКИ
+    libraries: [
+      { id: 'api-wrapper', label: 'API Обертка' },
+      { id: 'rendering', label: 'Рендеринг' },
+      { id: 'networking', label: 'Сеть' },
+      { id: 'events', label: 'События' },
+    ],
+
+    // ТЕКСТУРПАКИ
+    'texture-packs': [
+      { id: '128x128', label: '128x128' },
+      { id: '64x64', label: '64x64' },
+      { id: '32x32', label: '32x32' },
+      { id: '16x16', label: '16x16' },
+      { id: 'stylized', label: 'Стилизация' },
+      { id: 'pbr', label: 'PBR материалы' },
+      { id: 'interface', label: 'UI/Иконки' },
+    ],
+
+    // СБОРКИ МОДОВ
+    modpacks: [
+      { id: 'hardcore', label: 'Выживание' },
+      { id: 'optimization', label: 'Оптимизация' },
+    ],
+
+    // ЯДРО (Core)
+    core: [
+      { id: 'engine-patch', label: 'Патч движка' },
+      { id: 'system', label: 'Системный' },
+      { id: 'experimental', label: 'Экспериментальный' },
+      { id: 'server-only', label: 'Только сервер' },
+    ],
+
+    // ИНСТРУМЕНТЫ
+    tools: [
+      { id: 'editor', label: 'Редактор' },
+      { id: 'converter', label: 'Конвертер' },
+      { id: 'debugger', label: 'Отладка' },
+      { id: 'builder', label: 'Сборщик' },
+    ],
+    maps: [
+    { id: 'schematic', label: 'Схематика' },
+    { id: 'adventure', label: 'Приключения' },
+    { id: 'survival', label: 'Выживание' },
+    { id: 'parkour', label: 'Паркур' },
+    { id: 'horror', label: 'Хоррор' },
+    { id: 'minigame', label: 'Мини-игры' },
+    { id: 'puzzle', label: 'Головоломка' },
+    { id: 'city', label: 'Город' },
+    { id: 'medieval', label: 'Средневековье' },
+    { id: 'spawn', label: 'Спавн' },
+    { id: 'server', label: 'Для сервера' },
+    { id: 'lobby', label: 'Лобби' },
+  ],
+    schematics: [
+    { id: 'world-edit', label: 'Meownatica' },
+  ],
   }
 
 };
