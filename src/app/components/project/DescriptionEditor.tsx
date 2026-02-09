@@ -8,6 +8,7 @@ import Underline from '@tiptap/extension-underline';
 import Image from '@tiptap/extension-image';
 import CodeBlock from '@tiptap/extension-code-block';
 import Youtube from '@tiptap/extension-youtube';
+import { useEffect } from 'react';
 
 import { 
   LuBold, LuItalic, LuStrikethrough, LuCode, 
@@ -77,6 +78,12 @@ export default function DescriptionEditor({ initialContent, onSave }: EditorProp
     const url = window.prompt('Ссылка на YouTube:');
     if (url) editor?.commands.setYoutubeVideo({ src: url });
   }, [editor]);
+
+    useEffect(() => {
+  if (editor && initialContent) {
+    setChars(editor.getText().length);
+  }
+  }, [editor, initialContent]);
 
   if (!editor) return null;
 

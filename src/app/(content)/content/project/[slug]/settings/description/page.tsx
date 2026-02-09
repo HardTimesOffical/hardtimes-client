@@ -4,17 +4,19 @@ import { useParams } from 'next/navigation';
 import api from '@/lib/api';
 import DescriptionEditor from '@/app/components/project/DescriptionEditor';
 import { HiCheckCircle, HiExclamationCircle } from 'react-icons/hi2';
+import { useProject } from "../ProjectContext"
 
 export default function ProjectDescriptionPage() {
   const { slug } = useParams();
-  const [project, setProject] = useState<any>(null);
+  const { project, updateProject } = useProject();
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
+  
 
   useEffect(() => {
     api.get(`/projects/${slug}`).then(res => {
-      setProject(res.data);
+      updateProject(res.data);
       setLoading(false);
     }).catch(err => {
       console.error("Ошибка загрузки:", err);
@@ -36,7 +38,8 @@ export default function ProjectDescriptionPage() {
 
       if (response.status === 200 || response.status === 201) {
         showToast('success', 'Описание успешно сохранено!');
-        setProject((prev: any) => ({ ...prev, description: htmlContent }));
+        // Передавай весь объект из бэкенда, чтобы чек-лист нашел поле description
+        updateProject(response.data.project); 
       }
     } catch (error: any) {
       console.error("Save error:", error);
@@ -94,6 +97,7 @@ export default function ProjectDescriptionPage() {
       {/* EDITOR CONTAINER */}
       <div className="w-full rounded-md overflow-hidden border border-[var(--border)] bg-[var(--surface)] shadow-sm">
       <DescriptionEditor 
+        key={project?._id || 'loading'} // Добавь ключ, чтобы редактор обновился, когда данные придут с сервера
         initialContent={project?.description || ''} 
         onSave={handleSaveDescription} 
       />
