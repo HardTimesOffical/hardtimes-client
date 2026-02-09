@@ -40,9 +40,11 @@ export const LOADERS_BY_GAME: Record<string, any> = {
   'hytale': {
     'mod': [
       { id: 'hytale-core', label: 'Hytale Core' }
-    ],
-    'script': [
-      { id: 'hytale-script', label: 'Hytale Scripting' }
+    ]
+  },
+   'voxelcore': {
+    'mod': [
+      { id: 'quartz', label: 'Quartz' }
     ]
   }
 };

@@ -9,7 +9,8 @@ type Step = 'Files' | 'Loaders' | 'Environment' | 'Versions' | 'Details';
 
 const GAME_NAME_MAP: Record<string, string> = {
   'minecraft': 'Minecraft Java',
-  'hytale': 'Hytale'
+  'hytale': 'Hytale',
+  'voxelcore': 'VoxelCore' // Добавь эту строку!
 };
 
 export default function AddVersionModal({ project, onClose, onRefresh }: any) {

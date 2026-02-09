@@ -232,8 +232,7 @@ export const PROJECT_TAGS: ProjectTags = {
       { id: 'debugger', label: 'Отладка' },
       { id: 'builder', label: 'Сборщик' },
     ],
-    maps: [
-    { id: 'schematic', label: 'Схематика' },
+    worlds: [
     { id: 'adventure', label: 'Приключения' },
     { id: 'survival', label: 'Выживание' },
     { id: 'parkour', label: 'Паркур' },
