@@ -166,15 +166,15 @@ export default function ServerCard({ server }: any) {
 
         </Link>
       </div>
-
-      <BoostModal 
-        isOpen={isBoostOpen} 
-        onClose={() => setIsBoostOpen(false)} 
-        serverName={server.serverName} 
-        userBalance={user?.balance || 0} 
-        onPurchase={handleBoostPurchase} 
-        loading={boostLoading} 
-      />
+        <BoostModal 
+          isOpen={isBoostOpen}
+          onClose={() => setIsBoostOpen(false)}
+          serverId={server._id}        // <--- ДОБАВЬ ЭТО
+          serverName={server.serverName}
+          userBalance={user?.balance ?? 0}
+          onPurchase={handleBoostPurchase}
+          loading={boostLoading}
+        />
     </>
   );
 }
