@@ -33,7 +33,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   return (
     <AuthProvider>
       <LanguageProvider>
-        <SnowEffect />
         
         <div className="flex min-h-screen">
           <Sidebar isMobileOpen={isMobileMenuOpen} setIsMobileOpen={setIsMobileMenuOpen} />
