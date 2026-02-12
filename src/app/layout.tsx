@@ -33,12 +33,12 @@ export default function RootLayout({
     <html lang="ru">
       <head>
         {/* 2. Добавляем скрипт AdSense здесь */}
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5552018699701280"
-          crossOrigin="anonymous"
-          strategy="afterInteractive" // Скрипт загрузится после того, как страница станет интерактивной
-        />
+      <Script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5552018699701280"
+        crossOrigin="anonymous"
+        strategy="beforeInteractive" // Попробуй этот вариант для проверки
+      />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} antialiased`}>
         <ThemeProvider>
