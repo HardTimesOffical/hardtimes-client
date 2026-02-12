@@ -62,10 +62,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (projectsRes.ok) {
       const projects = await projectsRes.json();
       const projectUrls = projects.map((p: any) => ({
-        url: `${baseUrl}/content/${p.game}/${p.type}/${p.slug}`,
+        // Используем ПРЯМОЙ путь к проекту, а не через категории
+        url: `${baseUrl}/content/project/${p.slug}`, 
         lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
         changeFrequency: 'weekly',
-        priority: 0.5,
+        priority: 0.6,
       }));
       dynamicPages = [...dynamicPages, ...projectUrls];
     }

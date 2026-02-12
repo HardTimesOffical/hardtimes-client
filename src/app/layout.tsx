@@ -3,7 +3,8 @@ import { Geist, Geist_Mono, Nunito } from "next/font/google";
 import "./globals.css";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import ClientLayout from "./ClientLayout"; // Импорт нашей обертки
-import { ThemeProvider } from "@/context/ThemeContext"
+import { ThemeProvider } from "@/context/ThemeContext";
+import Script from "next/script";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -30,12 +31,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
+      <head>
+        {/* 2. Добавляем скрипт AdSense здесь */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5552018699701280"
+          crossOrigin="anonymous"
+          strategy="afterInteractive" // Скрипт загрузится после того, как страница станет интерактивной
+        />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} antialiased`}>
-        {/* Оборачиваем всё в клиентскую логику */}
         <ThemeProvider>
-        <ClientLayout>
-          {children}
-        </ClientLayout>
+          <ClientLayout>
+            {children}
+          </ClientLayout>
         </ThemeProvider>
         
         <GoogleAnalytics gaId="G-04ESSL6306" />
