@@ -112,7 +112,7 @@ export default function GlobalChat() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-[100] flex flex-col items-end font-sans text-white">
+    <div className="fixed bottom-15 right-4 z-[100] flex flex-col items-end font-sans text-white">
       {isOpen && (
         <div className="mb-3 w-[300px] h-[500px] bg-[#0b0f1a]/95 backdrop-blur-xl rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-white/10 animate-in fade-in zoom-in-95 duration-300">
           

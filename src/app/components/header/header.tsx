@@ -1,11 +1,12 @@
 "use client";
 import React from "react";
+import { usePathname } from "next/navigation"; // Импортируем хук
 import styles from "./header.module.css";
 import { HeaderBalance } from "./HeaderBalance";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
-import { useTheme } from "@/context/ThemeContext"; // Импортируем хук темы
-import { HiMenuAlt2, HiMoon, HiSun } from 'react-icons/hi'; // Добавляем иконки солнца и луны
+import { useTheme } from "@/context/ThemeContext";
+import { HiMenuAlt2, HiMoon, HiSun } from 'react-icons/hi';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -13,7 +14,14 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick }: HeaderProps) {
   const { user } = useAuth();
-  const { isDark, toggleTheme } = useTheme(); // Достаем состояние и функцию переключения
+  const { isDark, toggleTheme } = useTheme();
+  const pathname = usePathname(); // Получаем текущий путь
+
+  // Проверяем, начинается ли путь с /forum
+  // Это скроет шапку и на /forum, и на /forum/post-slug
+  if (pathname.startsWith('/forum')) {
+    return null;
+  }
 
   return (
     <header className="fixed top-0 right-0 left-0 md:left-20 h-16 md:h-20 z-[90] pointer-events-none transition-all duration-300">
@@ -32,7 +40,6 @@ export default function Header({ onMenuClick }: HeaderProps) {
         {/* Правая часть */}
         <div className="flex items-center gap-2 md:gap-4 pointer-events-auto">
           
-          {/* КНОПКА ПЕРЕКЛЮЧЕНИЯ ТЕМЫ */}
           <button 
             onClick={toggleTheme}
             className={`p-2.5 rounded-xl border transition-all active:scale-90

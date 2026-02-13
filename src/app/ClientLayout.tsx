@@ -9,11 +9,13 @@ import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import SnowEffect from "./components/snow/SnowEffect";
 import Footer from "./components/footer/footer";
+import MobileNav from "./components/dashboard/MobileNav";
+
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   // Проверяем, находится ли пользователь в админке
   const isAdminPage = pathname.startsWith('/hard-stuff');
 
@@ -35,16 +37,21 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <LanguageProvider>
         
         <div className="flex min-h-screen">
+          {/* Сайдбар слушает isMobileMenuOpen */}
           <Sidebar isMobileOpen={isMobileMenuOpen} setIsMobileOpen={setIsMobileMenuOpen} />
           
           <div className="flex-1 flex flex-col min-w-0 md:pl-20 transition-all duration-300">
+            {/* Хедер открывает меню через setIsMobileMenuOpen */}
             <Header onMenuClick={() => setIsMobileMenuOpen(true)} />
             <main className="flex-1">
               {children}
             </main>
             <Footer/>
           </div>
-        </div>
+
+        {/* ИСПРАВЛЕНО: Передаем ту же функцию setIsMobileMenuOpen */}
+        <MobileNav onMenuClick={() => setIsMobileMenuOpen(true)} />
+      </div>
 
         <GlobalChat />
       </LanguageProvider>

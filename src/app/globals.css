@@ -84,3 +84,7 @@ body {
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #484f58;
 }
+
+@keyframes shimmer {
+    100% { transform: translateX(300%) skew-x(-25deg); }
+  }
