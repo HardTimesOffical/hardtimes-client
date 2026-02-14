@@ -63,100 +63,95 @@ export default function CategorySelect({ selected, onSelect }: CategorySelectPro
 
   return (
     <div className="relative w-full" ref={containerRef}>
-      <label className="text-xs font-black uppercase tracking-widest text-[var(--muted)] flex items-center gap-2 mb-3">
-        <HiSquares2X2 className="text-[var(--accent)] w-4 h-4" /> Раздел форума
-      </label>
+  {/* Основная кнопка выпадающего списка */}
+  <button
+    type="button"
+    onClick={() => setIsOpen(!isOpen)}
+    className={`w-full flex items-center justify-between bg-[var(--surface)] border ${
+      isOpen ? 'border-blue-500 ring-1 ring-blue-500/20' : 'border-[var(--border)]'
+    } px-3 py-2 rounded-lg text-[var(--foreground)] transition-all outline-none`}
+  >
+    <span className={`text-sm ${selected ? 'text-[var(--foreground-bright)] font-medium' : 'text-[var(--muted)]/60'}`}>
+      {selected || "Выберите раздел..."}
+    </span>
+    <HiChevronDown className={`w-4 h-4 text-[var(--muted)] transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+  </button>
 
-      {/* Основная кнопка выпадающего списка */}
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between bg-[var(--surface)] border ${
-          isOpen ? 'border-[var(--accent)] shadow-[0_0_0_1px_var(--accent)]' : 'border-[var(--border)]'
-        } p-4 rounded-xl text-[var(--foreground)] transition-all outline-none`}
-      >
-        <span className={selected ? 'text-[var(--foreground-bright)] font-semibold' : 'text-[var(--muted)]/50'}>
-          {selected || "Выберите раздел..."}
-        </span>
-        <HiChevronDown className={`w-5 h-5 text-[var(--muted)] transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
+  {/* Выпадающее меню */}
+  {isOpen && (
+    <div className="absolute z-[110] w-full mt-1.5 bg-[var(--card)] border border-[var(--border)] rounded-lg shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+      
+      {/* Поле поиска внутри списка */}
+      <div className="p-2 border-b border-[var(--border)] bg-[var(--surface)]/30">
+        <div className="relative">
+          <HiMagnifyingGlass className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--muted)] w-3.5 h-3.5" />
+          <input
+            autoFocus
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Поиск раздела..."
+            className="w-full bg-[var(--card)] border border-[var(--border)] py-1.5 pl-8 pr-3 rounded-md text-[13px] text-[var(--foreground)] outline-none focus:border-blue-500 transition-all placeholder:opacity-50"
+          />
+        </div>
+      </div>
 
-      {/* Выпадающее меню */}
-      {isOpen && (
-        <div className="absolute z-[110] w-full mt-2 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-          
-          {/* Поле поиска внутри списка */}
-          <div className="p-3 border-b border-[var(--border)] bg-[var(--surface)]/50">
-            <div className="relative">
-              <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted)] w-4 h-4" />
-              <input
-                autoFocus
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Поиск раздела..."
-                className="w-full bg-[var(--card)] border border-[var(--border)] p-2.5 pl-9 rounded-lg text-sm text-[var(--foreground)] outline-none focus:border-[var(--accent)] transition-all"
-              />
+      {/* Контент с иерархией */}
+      <div className="max-h-[280px] overflow-y-auto custom-scrollbar p-1">
+        {filteredStructure.map((group) => (
+          <div key={group.group} className="mb-1 last:mb-0">
+            {/* Заголовок группы */}
+            <div className="px-2 py-1.5 text-[9px] font-bold text-[var(--muted)] uppercase tracking-wider flex items-center gap-2 select-none opacity-70">
+              <HiFolder className="w-3 h-3" /> {group.group}
+            </div>
+            
+            {/* Подпункты */}
+            <div className="space-y-0.5">
+              {group.items.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => {
+                    onSelect(item);
+                    setIsOpen(false);
+                    setSearch('');
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-2 hover:bg-blue-500/10 rounded-md text-left transition-colors group"
+                >
+                  <span className={`text-[13px] ${selected === item ? 'text-blue-500 font-semibold' : 'text-[var(--foreground)]'}`}>
+                    {item}
+                  </span>
+                  {selected === item && <HiCheck className="text-blue-500 w-3.5 h-3.5" />}
+                </button>
+              ))}
             </div>
           </div>
+        ))}
 
-          {/* Контент с иерархией */}
-          <div className="max-h-[350px] overflow-y-auto custom-scrollbar p-1">
-            {filteredStructure.map((group) => (
-              <div key={group.group} className="mb-2 last:mb-0">
-                {/* Заголовок группы (Иерархия) */}
-                <div className="px-3 py-2 text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.15em] flex items-center gap-2 select-none">
-                  <HiFolder className="w-3 h-3 text-[var(--muted)]/50" /> {group.group}
-                </div>
-                
-                {/* Подпункты */}
-                <div className="space-y-0.5">
-                  {group.items.map((item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      onClick={() => {
-                        onSelect(item);
-                        setIsOpen(false);
-                        setSearch('');
-                      }}
-                      className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-[var(--accent)]/10 rounded-lg text-left transition-colors group"
-                    >
-                      <span className={`text-sm ${selected === item ? 'text-[var(--accent)] font-bold' : 'text-[var(--foreground)]'}`}>
-                        {item}
-                      </span>
-                      {selected === item && <HiCheck className="text-[var(--accent)] w-4 h-4" />}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
-
-            {/* Состояние "Ничего не найдено" */}
-            {filteredStructure.length === 0 && (
-              <div className="p-8 text-center text-xs text-[var(--muted)] uppercase tracking-widest font-bold">
-                Разделы не найдены
-              </div>
-            )}
+        {/* Пустое состояние */}
+        {filteredStructure.length === 0 && (
+          <div className="py-6 text-center text-[10px] text-[var(--muted)] uppercase tracking-widest font-bold">
+            Ничего не найдено
           </div>
-        </div>
-      )}
-
-      {/* Локальные стили для аккуратного скроллбара */}
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: var(--border);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: var(--muted);
-        }
-      `}</style>
+        )}
+      </div>
     </div>
+  )}
+
+  <style jsx>{`
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: var(--muted);
+    }
+  `}</style>
+</div>
   );
 }

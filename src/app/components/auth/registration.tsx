@@ -1,10 +1,18 @@
-"use client";
+'use client';
 import React, { useState } from 'react';
 import axios from 'axios';
-import styles from './auth.module.css';
 import { useAuth } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { 
+  HiOutlineUser,  
+  HiOutlineLockClosed, 
+  HiOutlineEye, 
+  HiOutlineEyeSlash, 
+  HiOutlineCheckCircle,
+  HiOutlineArrowRight 
+} from "react-icons/hi2";
+import { HiIdentification } from 'react-icons/hi';
 
 export default function Registration() {
     const [formData, setFormData] = useState({
@@ -16,6 +24,7 @@ export default function Registration() {
 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
 
@@ -31,16 +40,17 @@ export default function Registration() {
         e.preventDefault();
         setError('');
         setSuccess('');
+        setIsLoading(true);
 
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
+            setError('Пароли не совпадают');
+            setIsLoading(false);
             return;
         }
 
         try {
             const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
             
-            // 1. Регистрация
             await axios.post(
                 `${SERVER_URL}/auth/register`,
                 {
@@ -51,7 +61,6 @@ export default function Registration() {
                 { withCredentials: true }
             );
 
-            // 2. Авто-логин
             const loginRes = await axios.post(
                 `${SERVER_URL}/auth/login`,
                 { email: formData.email, password: formData.password },
@@ -64,108 +73,154 @@ export default function Registration() {
                 auth.login(data.accessToken, user);
             }
 
-            setSuccess('Успешная Регистрация!');
-            router.push('/');
+            setSuccess('Аккаунт создан!');
+            setTimeout(() => router.push('/'), 1000);
         } catch (err: any) {
-            const message = err?.response?.data?.message || err.message || 'Unexpected error';
+            const message = err?.response?.data?.message || err.message || 'Ошибка регистрации';
             setError(message);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
-        <div className={styles.container}>
-            <header className={styles.header}>
-                <h2 className={styles.heading}>Создать аккаунт</h2>
-                <p className={styles.subheading}>Присоединяйся к нам прямо сейчас!</p>
-            </header>
+        <div className="w-full flex justify-center py-6">
+            <div className="w-full max-w-[420px] bg-white dark:bg-[var(--card)] border border-[var(--border)] rounded-[2rem] shadow-xl overflow-hidden">
+                
+                <header className="pt-8 px-8 text-center space-y-1">
+                    <h2 className="text-2xl font-black text-[var(--foreground-bright)] uppercase italic tracking-tighter">
+                        Регистрация
+                    </h2>
+                    <p className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-[0.2em]">
+                        Станьте частью нашего комьюнити
+                    </p>
+                </header>
 
-            <form className={styles.form} onSubmit={handleSubmit}>
-                <div className={styles.field}>
-                    <label className={styles.label} htmlFor="username">Логин</label>
-                    <input
-                        className={styles.input}
-                        type="text"
-                        id="username"
-                        name="username"
-                        placeholder="Вася228"
-                        value={formData.username}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
+                <div className="p-8">
+                    <form className="space-y-4" onSubmit={handleSubmit}>
+                        
+                        {/* Логин */}
+                        <div className="space-y-1.5">
+                            <label className="text-[9px] font-black text-[var(--muted)] uppercase ml-1 tracking-widest" htmlFor="username">
+                                Логин
+                            </label>
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--muted)] group-focus-within:text-blue-500 transition-colors">
+                                    <HiOutlineUser className="w-4 h-4" />
+                                </div>
+                                <input
+                                    className="w-full h-11 pl-10 pr-4 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:opacity-50"
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    placeholder="Ваш никнейм"
+                                    value={formData.username}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                        </div>
 
-                <div className={styles.field}>
-                    <label className={styles.label} htmlFor="email">Email</label>
-                    <input
-                        className={styles.input}
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="steve@minecraft.net"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
+                        {/* Email */}
+                        <div className="space-y-1.5">
+                            <label className="text-[9px] font-black text-[var(--muted)] uppercase ml-1 tracking-widest" htmlFor="email">
+                                Email
+                            </label>
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--muted)] group-focus-within:text-blue-500 transition-colors">
+                                    <HiIdentification className="w-4 h-4" />
+                                </div>
+                                <input
+                                    className="w-full h-11 pl-10 pr-4 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:opacity-50"
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    placeholder="steve@minecraft.net"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                        </div>
 
-                <div className={styles.field}>
-                    <label className={styles.label} htmlFor="password">Пароль</label>
-                    <div className={styles.inputWrap}>
-                        <input
-                            className={styles.input}
-                            type={showPassword ? 'text' : 'password'}
-                            id="password"
-                            name="password"
-                            placeholder="••••••••"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                        />
-                        <button
-                            type="button"
-                            className={styles.eyeButton}
-                            onClick={() => setShowPassword(s => !s)}
+                        {/* Пароли */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                                <label className="text-[9px] font-black text-[var(--muted)] uppercase ml-1" htmlFor="password">Пароль</label>
+                                <div className="relative group">
+                                    <input
+                                        className="w-full h-11 pl-4 pr-10 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500/50 transition-all"
+                                        type={showPassword ? 'text' : 'password'}
+                                        id="password"
+                                        name="password"
+                                        placeholder="••••"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        className="absolute inset-y-0 right-0 pr-3 text-[var(--muted)]"
+                                        onClick={() => setShowPassword(s => !s)}
+                                    >
+                                        {showPassword ? <HiOutlineEyeSlash className="w-4 h-4" /> : <HiOutlineEye className="w-4 h-4" />}
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-[9px] font-black text-[var(--muted)] uppercase ml-1" htmlFor="confirmPassword">Повтор</label>
+                                <div className="relative group">
+                                    <input
+                                        className="w-full h-11 pl-4 pr-10 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500/50 transition-all"
+                                        type={showConfirm ? 'text' : 'password'}
+                                        id="confirmPassword"
+                                        name="confirmPassword"
+                                        placeholder="••••"
+                                        value={formData.confirmPassword}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        className="absolute inset-y-0 right-0 pr-3 text-[var(--muted)]"
+                                        onClick={() => setShowConfirm(s => !s)}
+                                    >
+                                        {showConfirm ? <HiOutlineEyeSlash className="w-4 h-4" /> : <HiOutlineEye className="w-4 h-4" />}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {error && <div className="bg-red-500/5 border border-red-500/20 text-red-500 text-[9px] font-bold uppercase p-2.5 rounded-lg text-center tracking-wider">{error}</div>}
+                        {success && <div className="bg-green-500/5 border border-green-500/20 text-green-500 text-[9px] font-bold uppercase p-2.5 rounded-lg text-center tracking-wider flex items-center justify-center gap-2"><HiOutlineCheckCircle className="w-4 h-4" /> {success}</div>}
+
+                        <button 
+                            className="group w-full h-11 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 disabled:opacity-50 mt-2" 
+                            type="submit"
+                            disabled={isLoading}
                         >
-                            {showPassword ? '🔒' : '👁️'}
+                            {isLoading ? "Создание..." : (
+                                <>
+                                    Продолжить
+                                    <HiOutlineArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                                </>
+                            )}
                         </button>
-                    </div>
+
+                        <footer className="mt-6 pt-5 border-t border-[var(--border)] text-center">
+                            <p className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-wider inline-block mr-2">
+                                Уже есть аккаунт?
+                            </p>
+                            <Link 
+                                href="/login" 
+                                className="text-[9px] font-black text-blue-500 uppercase hover:text-blue-600 transition-colors tracking-widest"
+                            >
+                                Войти
+                            </Link>
+                        </footer>
+                    </form>
                 </div>
-
-                <div className={styles.field}>
-                    <label className={styles.label} htmlFor="confirmPassword">Подтвердите пароль</label>
-                    <div className={styles.inputWrap}>
-                        <input
-                            className={styles.input}
-                            type={showConfirm ? 'text' : 'password'}
-                            id="confirmPassword"
-                            name="confirmPassword"
-                            placeholder="••••••••"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            required
-                        />
-                        <button
-                            type="button"
-                            className={styles.eyeButton}
-                            onClick={() => setShowConfirm(s => !s)}
-                        >
-                            {showConfirm ? '🔒' : '👁️'}
-                        </button>
-                    </div>
-                </div>
-
-                {error && <div className={styles.errorBox}>{error}</div>}
-                {success && <div className={styles.successBox}>{success}</div>}
-
-                <button className={styles.submit} type="submit">
-                   Продолжить
-                </button>
-
-                <footer className={styles.footer}>
-                    <span>Уже есть аккаунт?</span>
-                    <Link href="/login" className={styles.link}>Войти</Link>
-                </footer>
-            </form>
+            </div>
         </div>
     );
 }

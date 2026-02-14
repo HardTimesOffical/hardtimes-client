@@ -5,21 +5,12 @@ import { useAuth } from '@/context/AuthContext';
 import DescriptionEditor from '@/app/components/project/DescriptionEditor';
 import ProjectSearch from '@/app/components/forum/ProjectSearch';
 import CategorySelect from '@/app/components/forum/CategorySelect';
-
-// Heroicons 2
-import { 
-  HiPhoto, 
-  HiPencilSquare, 
-  HiLink,
-  HiArrowPath,
-  HiDocumentPlus
-} from "react-icons/hi2";
+import { HiPhoto, HiLink, HiArrowPath, HiChatBubbleLeftRight } from "react-icons/hi2";
 
 export default function CreateForumPostPage() {
   const { accessToken, user } = useAuth();
   const router = useRouter();
   
-  // Состояния формы
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [bannerUrl, setBannerUrl] = useState('');
@@ -27,10 +18,10 @@ export default function CreateForumPostPage() {
   const [loading, setLoading] = useState(false);
 
   const handleSave = async (htmlContent: string) => {
-    // Валидация
-    if (!title.trim()) return alert("Введите заголовок темы");
-    if (!category) return alert("Выберите раздел форума");
-    if (htmlContent.length < 20) return alert("Содержание темы слишком короткое");
+    if (!title.trim() || !category || htmlContent.length < 20) {
+      alert("Заполните заголовок, выберите категорию и напишите текст (минимум 20 символов).");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -49,131 +40,119 @@ export default function CreateForumPostPage() {
         })
       });
 
-      const data = await res.json();
-
       if (res.ok) {
+        const data = await res.json();
         router.push(`/forum/${data.post.slug}`);
       } else {
-        alert(data.message || "Ошибка при публикации");
+        const errData = await res.json();
+        alert(errData.message || "Ошибка при публикации");
       }
     } catch (err) {
-      console.error("Publish error:", err);
       alert("Не удалось связаться с сервером");
     } finally {
       setLoading(false);
     }
   };
 
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-[var(--muted)]">
-        <HiArrowPath className="animate-spin mb-4 w-8 h-8 text-[var(--accent)]" />
-        <p className="font-bold uppercase tracking-widest text-sm">Загрузка профиля...</p>
-      </div>
-    );
-  }
+  if (!user) return (
+    <div className="flex flex-col items-center justify-center min-h-[40vh] opacity-50">
+      <HiArrowPath className="animate-spin w-6 h-6 mb-2" />
+      <span className="text-[10px] font-bold uppercase tracking-widest">Загрузка...</span>
+    </div>
+  );
 
   return (
-    <div className="max-w-5xl mx-auto py-10 px-4 space-y-8 animate-in fade-in duration-500">
+    <div className="max-w-3xl mx-auto py-8 px-4 antialiased">
       
-      {/* СЕКЦИЯ НАСТРОЕК */}
-      <div className="bg-[var(--card)] p-6 md:p-8 rounded-3xl border border-[var(--border)] shadow-xl space-y-8 relative overflow-visible">
-        {/* Декоративный элемент фона */}
-        <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
-          <HiDocumentPlus size={120} />
+      {/* МИНИМАЛИСТИЧНЫЙ ЗАГОЛОВОК */}
+      <div className="mb-6 flex items-center gap-3">
+        <div className="p-2 bg-blue-500/10 rounded-lg">
+          <HiChatBubbleLeftRight className="w-5 h-5 text-blue-500" />
         </div>
+        <div>
+          <h1 className="text-lg font-bold text-[var(--foreground-bright)] leading-tight">Создание темы</h1>
+          <p className="text-[var(--muted)] text-xs">Новое обсуждение на форуме</p>
+        </div>
+      </div>
 
-        <div className="flex flex-col gap-1 relative z-10">
-          <h1 className="text-3xl font-black text-[var(--foreground-bright)] uppercase tracking-tighter italic">
-            Создание темы
-          </h1>
-          <p className="text-[var(--muted)] text-sm">Заполните детали публикации для форума</p>
-        </div>
+      <div className="space-y-4">
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-30"> {/* Увеличили z-index до 30 */}
-           <div className="space-y-3">
-            <label className="text-xs font-black uppercase tracking-[0.2em] text-[var(--muted)] flex items-center gap-2">
-              <HiPencilSquare className="text-[var(--accent)] w-4 h-4" /> Заголовок
-            </label>
+        {/* БЛОК ПАРАМЕТРОВ */}
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 space-y-4 shadow-sm">
+          
+          {/* Заголовок */}
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold uppercase text-[var(--muted)] tracking-wider">Название темы</label>
             <input 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-[var(--surface)] border border-[var(--border)] p-4 rounded-2xl text-[var(--foreground)] outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-all placeholder:text-[var(--muted)]/40"
-              placeholder="Как назвать вашу тему?"
+              className="w-full bg-[var(--surface)] border border-[var(--border)] px-3 py-2 rounded-lg text-sm outline-none focus:border-blue-500 transition-all"
+              placeholder="Введите краткий и понятный заголовок"
             />
           </div>
 
-          {/* КАСТОМНЫЙ СЕЛЕКТ КАТЕГОРИЙ */}
-          <div className="space-y-3 relative z-50"> {/* Контейнеру селекта даем z-50 */}
-            <CategorySelect 
-              selected={category} 
-              onSelect={(val) => setCategory(val)} 
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Категория */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold uppercase text-[var(--muted)] tracking-wider">Раздел</label>
+              <CategorySelect selected={category} onSelect={setCategory} />
+            </div>
+
+            {/* Проект */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold uppercase text-[var(--muted)] tracking-wider flex items-center gap-1.5">
+                <HiLink className="w-3 h-3" /> Проект (ID)
+              </label>
+              <ProjectSearch onSelect={setRelatedProjectId} />
+            </div>
+          </div>
+
+          {/* Баннер */}
+          <div className="pt-2 border-t border-[var(--border)]/50 space-y-1.5">
+            <label className="text-[10px] font-bold uppercase text-[var(--muted)] tracking-wider flex items-center gap-1.5">
+              <HiPhoto className="w-3 h-3" /> Обложка темы (URL)
+            </label>
+            <div className="flex gap-2">
+              <input 
+                value={bannerUrl}
+                onChange={(e) => setBannerUrl(e.target.value)}
+                className="flex-1 bg-[var(--surface)] border border-[var(--border)] px-3 py-2 rounded-lg text-sm outline-none focus:border-blue-500"
+                placeholder="https://..."
+              />
+              {bannerUrl && (
+                <div className="w-9 h-9 rounded-md border border-[var(--border)] overflow-hidden shrink-0">
+                  <img src={bannerUrl} className="w-full h-full object-cover" alt="Preview" />
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-            {/* ССЫЛКА НА БАННЕР */}
-            <div className="space-y-3">
-                <label className="text-xs font-black uppercase tracking-[0.2em] text-[var(--muted)] flex items-center gap-2">
-                    <HiPhoto className="text-[var(--accent)] w-4 h-4" /> Баннер (URL)
-                </label>
-                <input 
-                    value={bannerUrl}
-                    onChange={(e) => setBannerUrl(e.target.value)}
-                    className="w-full bg-[var(--surface)] border border-[var(--border)] p-4 rounded-2xl text-[var(--foreground)] outline-none focus:border-[var(--accent)] transition-all placeholder:text-[var(--muted)]/40"
-                    placeholder="https://imgur.com/your-image.png"
-                />
-            </div>
-
-            {/* ПОИСК ПРОЕКТОВ ДЛЯ ПРИВЯЗКИ */}
-            <div className="space-y-3">
-                <label className="text-xs font-black uppercase tracking-[0.2em] text-[var(--muted)] flex items-center gap-2">
-                    <HiLink className="text-[var(--accent)] w-4 h-4" /> Привязать проект
-                </label>
-                <ProjectSearch onSelect={(id) => setRelatedProjectId(id)} />
-            </div>
-        </div>
-
-        {/* ПРЕДПРОСМОТР ОБЛОЖКИ */}
-        {bannerUrl && (
-          <div className="mt-4 rounded-2xl overflow-hidden h-48 w-full border border-[var(--border)] bg-[var(--surface)] shadow-inner relative group">
-            <img 
-              src={bannerUrl} 
-              alt="Banner" 
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-              onError={(e) => e.currentTarget.style.display='none'} 
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--background)]/80 to-transparent flex items-end p-6">
-               <span className="text-[var(--foreground-bright)] text-[10px] font-black uppercase tracking-widest opacity-60">Предпросмотр обложки</span>
+        {/* РЕДАКТОР */}
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl overflow-hidden shadow-sm">
+          <div className="bg-[var(--surface)]/50 px-4 py-2 border-b border-[var(--border)] flex justify-between items-center">
+            <span className="text-[10px] font-bold uppercase text-[var(--muted)] tracking-widest">Текст сообщения</span>
+            <div className="flex gap-3 text-[9px] text-[var(--muted)] font-medium opacity-60 uppercase">
+              <span>Markdown</span>
+              <span>HTML</span>
             </div>
           </div>
-        )}
+          <DescriptionEditor initialContent="" onSave={handleSave} />
+        </div>
+
+        {/* ПРАВИЛА / ИНФО */}
+        <div className="flex justify-between items-center px-1 text-[10px] text-[var(--muted)] font-medium">
+          <p>Перед публикацией убедитесь, что тема соответствует разделу.</p>
+          <p>v.2.0.4</p>
+        </div>
       </div>
 
-      {/* РЕДАКТОР КОНТЕНТА */}
-      <div className="bg-[var(--card)] rounded-3xl border border-[var(--border)] overflow-hidden shadow-xl">
-        <div className="p-4 border-b border-[var(--border)] bg-[var(--surface)] flex items-center justify-between">
-            <div className="flex items-center gap-2">
-                <HiPencilSquare className="text-[var(--accent)] w-4 h-4" />
-                <span className="text-xs font-black uppercase tracking-widest text-[var(--muted)]">Содержание обсуждения</span>
-            </div>
-            <span className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider">Markdown & HTML поддерживаются</span>
-        </div>
-        
-        {/* Сюда передается функция handleSave которая срабатывает при нажатии кнопки в редакторе */}
-        <DescriptionEditor initialContent="" onSave={handleSave} />
-      </div>
-
-      {/* ЭКРАН ЗАГРУЗКИ ПРИ ОТПРАВКЕ */}
+      {/* ОВЕРЛЕЙ ЗАГРУЗКИ */}
       {loading && (
-        <div className="fixed inset-0 bg-[var(--background)]/90 backdrop-blur-xl flex flex-col items-center justify-center z-[999] animate-in fade-in duration-300">
-          <div className="relative">
-            <HiArrowPath className="animate-spin text-[var(--accent)]" size={64} />
-            <div className="absolute inset-0 blur-2xl bg-[var(--accent)]/20 rounded-full animate-pulse"></div>
-          </div>
-          <div className="mt-6 text-[var(--foreground-bright)] font-black uppercase tracking-[0.3em] text-sm animate-pulse">
-            Публикация темы...
+        <div className="fixed inset-0 bg-[var(--background)]/60 backdrop-blur-md flex items-center justify-center z-[1000]">
+          <div className="bg-[var(--card)] border border-[var(--border)] p-5 rounded-2xl shadow-2xl flex flex-col items-center gap-3">
+            <HiArrowPath className="animate-spin text-blue-500 w-6 h-6" />
+            <span className="text-xs font-bold uppercase tracking-widest text-[var(--foreground-bright)]">Сохранение...</span>
           </div>
         </div>
       )}

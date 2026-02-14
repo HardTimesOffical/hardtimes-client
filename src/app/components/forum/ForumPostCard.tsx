@@ -1,135 +1,145 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { 
-  HiChatBubbleLeft, HiEye, HiUserCircle, HiLink, HiHeart 
+  HiChatBubbleLeft, HiOutlineEye, HiUserCircle, HiLink, HiHeart 
 } from "react-icons/hi2";
+import { useAuth } from '@/context/AuthContext';// Предполагаю, что юзер и токен берутся отсюда
 
 export default function ForumPostCard({ post }: any) {
   const router = useRouter();
+  const { user, accessToken } = useAuth(); // Подключи свой хук авторизации
+  
+  // Состояние лайка напрямую из данных поста (если сервер их присылает)
+  const [isLiked, setIsLiked] = useState(post.isLiked || false);
   const [likesCount, setLikesCount] = useState<number>(post.likes?.length || 0);
-  const [isLiked, setIsLiked] = useState(false);
   const [imgError, setImgError] = useState(false);
 
-  const handleLike = (e: React.MouseEvent) => {
-    e.preventDefault(); e.stopPropagation();
-    setIsLiked(!isLiked);
-    // Исправленная ошибка TypeScript ts(7006)
-    setLikesCount((prev: number) => isLiked ? prev - 1 : prev + 1);
-  };
+  // Синхронизация, если пропсы обновятся
+  useEffect(() => {
+    setIsLiked(post.isLiked);
+    setLikesCount(post.likes?.length || 0);
+  }, [post.isLiked, post.likes]);
 
-  const goToProfile = (e: React.MouseEvent) => {
-    e.preventDefault(); e.stopPropagation();
-    router.push(`/profile/${post.author.username}`);
-  };
+  const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault(); 
+    e.stopPropagation();
 
-  const goToProject = (e: React.MouseEvent) => {
-    e.preventDefault(); e.stopPropagation();
-    if (post.relatedProject?.slug) router.push(`/content/project/${post.relatedProject.slug}`);
+    if (!user) return alert("Войдите, чтобы поставить лайк");
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/forum/posts/${post._id}/like`, {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        // Сервер должен вернуть актуальное состояние: { isLiked: boolean, likesCount: number }
+        setIsLiked(data.isLiked);
+        setLikesCount(data.likesCount);
+      }
+    } catch (error) {
+      console.error("Ошибка при лайке:", error);
+    }
   };
 
   const timeAgo = formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: ru });
   
-  // Категории с цветами
   const getCategoryColor = (cat: string) => {
     const map: Record<string, string> = {
-      "Ищу напарника": "text-blue-500 bg-blue-500/10 border-blue-500/20",
-      "Набираю команду": "text-indigo-500 bg-indigo-500/10 border-indigo-500/20",
-      "Обсуждение игр": "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
-      "Гайды и туториалы": "text-amber-500 bg-amber-500/10 border-amber-500/20",
+      "Ищу напарника": "text-blue-500 bg-blue-500/10",
+      "Набираю команду": "text-indigo-500 bg-indigo-500/10",
+      "Обсуждение игр": "text-emerald-500 bg-emerald-500/10",
+      "Гайды и туториалы": "text-amber-500 bg-amber-500/10",
     };
-    return map[cat] || "text-gray-500 bg-gray-500/10 border-gray-500/20";
+    return map[cat] || "text-gray-500 bg-gray-500/10";
   };
 
   return (
-    <div className="group bg-[var(--card)] border border-[var(--border)] rounded-xl overflow-hidden transition-all flex hover:shadow-md mb-3 max-h-[500px]">
-      
-      {/* ЛАЙКИ */}
-      <div className="flex flex-col items-center gap-0.5 p-2 bg-[var(--surface)]/20 w-12 border-r border-[var(--border)] shrink-0">
-        <button 
-          onClick={handleLike}
-          className={`p-1 rounded-full transition-all ${isLiked ? 'text-red-500' : 'text-[var(--muted)] hover:text-red-500'}`}
-        >
-          <HiHeart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
-        </button>
-        <span className="text-[11px] font-black text-[var(--foreground)]">
-          {likesCount}
-        </span>
-      </div>
-
-      <Link href={`/forum/${post.slug}`} className="flex-1 p-3 flex flex-col min-w-0">
+    <div className="group bg-[var(--card)] border border-[var(--border)] rounded-2xl transition-all hover:border-blue-500/40 mb-3 shadow-sm overflow-hidden">
+      <Link href={`/forum/${post.slug}`} className="p-5 flex flex-col gap-4">
         
-        {/* ШАПКА: АВАТАР И ИНФО */}
-        <div className="flex items-center justify-between mb-2 gap-2">
-          <div className="flex items-center gap-2 overflow-hidden">
-            <div onClick={goToProfile} className="shrink-0 cursor-pointer">
-                {/* Проверяем post.author.avatar вместо avatarUrl */}
-                {post.author?.avatar && !imgError ? (
-                    <img 
-                    src={post.author.avatar} 
-                    onError={() => setImgError(true)}
-                    className="w-9 h-9 rounded-xl object-cover border border-[var(--border)]" 
-                    alt={post.author.username} 
-                    />
-                ) : (
-                    <HiUserCircle className="w-7 h-7 text-[var(--muted)]" />
-                )}
-                </div>
-            <div className="flex flex-col overflow-hidden leading-tight">
-              <span onClick={goToProfile} className="text-xs font-bold text-[var(--foreground-bright)] hover:text-[var(--accent)] cursor-pointer truncate">
-                {post.author?.username || 'Аноним'}
-              </span>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[9px] text-[var(--muted)]">{timeAgo}</span>
-                <span className={`px-1.5 py-0.5 rounded-[4px] text-[8px] font-black uppercase border ${getCategoryColor(post.category)}`}>
-                  {post.category}
-                </span>
-              </div>
+        {/* ВЕРХ: АВТОР */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg overflow-hidden bg-[var(--surface)] border border-[var(--border)] shadow-sm">
+              {post.author?.avatar && !imgError ? (
+                <img src={post.author.avatar} onError={() => setImgError(true)} className="w-full h-full object-cover" alt="" />
+              ) : (
+                <HiUserCircle className="w-full h-full text-[var(--muted)]" />
+              )}
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[13px] font-black text-[var(--foreground-bright)] leading-none">{post.author?.username}</span>
+              <span className="text-[10px] text-[var(--muted)] opacity-60 mt-1 uppercase tracking-tighter">{timeAgo}</span>
             </div>
           </div>
+          <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-tight ${getCategoryColor(post.category)}`}>
+            {post.category}
+          </span>
+        </div>
 
-          {post.relatedProject && (
-            <button onClick={goToProject} className="flex items-center gap-1 px-2 py-1 bg-blue-500/5 hover:bg-blue-500/10 text-blue-500 rounded border border-blue-500/10 text-[9px] font-bold uppercase shrink-0">
-              <HiLink className="w-3 h-3" />
-              Проект: <span className="ml-0.5">{post.relatedProject.title}</span>
-            </button>
+        {/* СЕРЕДИНА: ТЕКСТ СЛЕВА, БОЛЬШОЕ ФОТО СПРАВА */}
+        <div className="flex gap-5 items-start">
+          <div className="flex-1 min-w-0 flex flex-col gap-2">
+            <h2 className="text-[18px] font-black text-[var(--foreground-bright)] leading-tight group-hover:text-blue-500 transition-colors line-clamp-2">
+              {post.title}
+            </h2>
+            <div 
+              className="text-[14px] text-[var(--muted)] opacity-80 line-clamp-3 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: post.content || '' }}
+            />
+          </div>
+
+          {post.bannerUrl && (
+            <div className="w-32 h-24 sm:w-44 sm:h-28 rounded-xl border border-[var(--border)] overflow-hidden bg-black shrink-0 relative shadow-inner">
+              <img src={post.bannerUrl} className="absolute inset-0 w-full h-full object-cover blur-md opacity-30" alt="" />
+              <img src={post.bannerUrl} className="relative w-full h-full object-contain p-1" alt="Banner" />
+            </div>
           )}
         </div>
 
-        {/* БАННЕР */}
-        {post.bannerUrl && (
-          <div className="mb-2 rounded-lg border border-[var(--border)] overflow-hidden bg-black relative h-[160px] w-full shrink-0">
-            <img src={post.bannerUrl} className="absolute inset-0 w-full h-full object-cover blur-md opacity-40" alt="" />
-            <img src={post.bannerUrl} className="relative w-full h-full object-contain" alt="Banner" />
+        {/* НИЗ: СТАТИСТИКА */}
+        <div className="flex items-center justify-between pt-3 border-t border-[var(--border)]/30">
+          <div className="flex items-center gap-5">
+            <div className="flex items-center gap-1.5 text-blue-500/80">
+              <HiChatBubbleLeft className="w-4 h-4" />
+              <span className="text-[12px] font-black text-[var(--foreground)]">{post.repliesCount || 0}</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-slate-400">
+              <HiOutlineEye className="w-4 h-4" />
+              <span className="text-[12px] font-black text-[var(--foreground)]">{post.views || 0}</span>
+            </div>
+            {post.relatedProject && (
+              <div className="hidden lg:flex items-center gap-1.5 px-2 py-1 bg-blue-500/5 rounded-md text-blue-400 hover:text-blue-500 transition-colors">
+                <HiLink className="w-3 h-3" />
+                <span className="text-[10px] font-black uppercase tracking-tight truncate max-w-[120px]">
+                  {post.relatedProject.title}
+                </span>
+              </div>
+            )}
           </div>
-        )}
 
-        {/* КОНТЕНТ */}
-        <div className="flex flex-col gap-1 overflow-hidden">
-          <h2 className="text-base font-black text-[var(--foreground-bright)] leading-snug group-hover:text-[var(--accent)] line-clamp-1">
-            {post.title}
-          </h2>
-          <div className="relative max-h-[60px] overflow-hidden">
-            <article 
-              className="prose prose-xs dark:prose-invert max-w-none text-[var(--muted)] text-[13px] prose-img:hidden prose-p:my-0"
-              dangerouslySetInnerHTML={{ __html: post.content?.substring(0, 250) || '' }}
-            />
-            <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-t from-[var(--card)] to-transparent" />
-          </div>
+          <button 
+            onClick={handleLike}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-xl transition-all font-black text-[12px] border ${
+              isLiked 
+                ? 'bg-rose-500 text-white border-rose-500 shadow-lg shadow-rose-500/20' 
+                : 'bg-[var(--surface)] text-[var(--muted)] border-[var(--border)] hover:border-rose-500/50 hover:text-rose-500'
+            }`}
+          >
+            <HiHeart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+            <span>{likesCount}</span>
+          </button>
         </div>
 
-        {/* ФУТЕР */}
-        <div className="flex items-center gap-4 mt-2 pt-2 border-t border-[var(--border)]/30">
-          <div className="flex items-center gap-1 text-[var(--muted)] text-[10px] font-bold">
-            <HiChatBubbleLeft className="w-3.5 h-3.5 opacity-60" /> {post.repliesCount || 0}
-          </div>
-          <div className="flex items-center gap-1 text-[var(--muted)] text-[10px] font-bold">
-            <HiEye className="w-3.5 h-3.5 opacity-60" /> {post.views || 0}
-          </div>
-        </div>
       </Link>
     </div>
   );
