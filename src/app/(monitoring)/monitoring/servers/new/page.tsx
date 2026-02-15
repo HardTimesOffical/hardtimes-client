@@ -5,6 +5,7 @@ import HeroSection from "@/app/components/header/HeroSection";
 import { Metadata } from "next";
 import PromoBanner from "@/app/components/blocks/PromoBanner";
 import ForumPosts from "@/app/components/blocks/ForumPosts";
+import { WeeklyLeaderboard } from "@/app/components/dashboard/WeeklyLeaderboard";
 
 export const metadata: Metadata = {
   title: "Новые сервера Майнкрафт — Свежие проекты",
@@ -73,9 +74,10 @@ export default async function NewServersPage({ searchParams }: { searchParams: a
             </div>
 
             {/* Правая колонка: Форум (на мобилках снизу, на десктопе сбоку, не фиксирован) */}
-            <aside className="w-full lg:w-[280px] shrink-0 order-2">
-               <ForumPosts />
-            </aside>
+              <aside className="w-full flex flex-col gap-5 lg:w-[280px] shrink-0 order-2">
+                 <ForumPosts />
+                 <WeeklyLeaderboard/>
+              </aside>
 
           </div>
         </div>

@@ -5,6 +5,8 @@ import PromoBanner from "@/app/components/blocks/PromoBanner";
 import ForumPosts from "@/app/components/blocks/ForumPosts";
 import HeroSection from "@/app/components/header/HeroSection";
 import { Metadata } from "next";
+import { WeeklyLeaderboard } from "@/app/components/dashboard/WeeklyLeaderboard";
+
 
 export const metadata: Metadata = {
   title: "Сервера Майнкрафт Бедрок (PE) — ТОП мониторинг серверов Bedrock Edition",
@@ -70,10 +72,10 @@ export default async function BedrockServersPage({ searchParams }: { searchParam
             </div>
 
             {/* САЙДБАР: Форум */}
-            <aside className="w-full lg:w-[280px] shrink-0 order-2">
-               <ForumPosts />
-            </aside>
-
+              <aside className="w-full flex flex-col gap-5 lg:w-[280px] shrink-0 order-2">
+                 <ForumPosts />
+                 <WeeklyLeaderboard/>
+              </aside>
           </div>
         </div>
       </main>

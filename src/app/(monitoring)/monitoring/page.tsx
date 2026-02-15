@@ -5,6 +5,7 @@ import ServerFilters from "@/app/components/servercard/ServerFilters";
 import HeroSection from "@/app/components/header/HeroSection";
 import PromoBanner from "@/app/components/blocks/PromoBanner";
 import ForumPosts from "@/app/components/blocks/ForumPosts";
+import { WeeklyLeaderboard } from "@/app/components/dashboard/WeeklyLeaderboard";
 
 export const metadata: Metadata = {
   title: "Мониторинг серверов Майнкрафт — Топ список Java и Bedrock",
@@ -62,8 +63,9 @@ export default async function Home({ searchParams }: { searchParams: any }) {
                 </div>
               </div>
 
-              <aside className="w-full lg:w-[280px] shrink-0 order-2">
+              <aside className="w-full flex flex-col gap-5 lg:w-[280px] shrink-0 order-2">
                  <ForumPosts />
+                 <WeeklyLeaderboard/>
               </aside>
             </div>
             

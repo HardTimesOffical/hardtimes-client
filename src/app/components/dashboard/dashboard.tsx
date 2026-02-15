@@ -11,7 +11,8 @@ import {
   HiOutlineShoppingBag, HiOutlinePlusCircle,
   HiOutlineUser, HiOutlineLogout, 
   HiOutlineCollection, HiOutlineCode,
-  HiChevronLeft
+  HiChevronLeft,
+  HiPlus
 } from 'react-icons/hi';
 import { 
   HiOutlineChatBubbleLeftRight, HiOutlinePlus, HiOutlineRss, HiOutlineMicrophone,
@@ -104,6 +105,7 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
     main: [
       { name: 'Все сервера', href: '/monitoring', icon: HiOutlineHome },
       { name: 'Новые сервера', href: '/monitoring/servers/new', icon: HiOutlineFire, color: 'text-orange-500' },
+      { name: 'Добавить', href: '/monitoring/workbench', icon: HiPlus },
     ],
     games: [
       { name: 'Java Edition', href: '/monitoring/servers/java', icon: HiOutlineCube, color: 'text-green-500' },
@@ -222,9 +224,31 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }: any) => {
           )}
 
           {/* Если мы в разделе КОНТЕНТА */}
+          {/* Если мы в разделе КОНТЕНТА */}
           {activeTab === 'content' && !isForumPage && (
             <div className="space-y-1">
-              {isSidebarOpen && <p className="px-3 text-[8px] font-black uppercase text-muted/50 tracking-widest mb-1">{contentSection.title}</p>}
+              {isSidebarOpen && (
+                <p className="px-3 text-[8px] font-black uppercase text-muted/50 tracking-widest mb-1">
+                  {contentSection.title}
+                </p>
+              )}
+
+              {/* КНОПКА СОЗДАНИЯ - ПОДСТРОЕНА ПОД ОСТАЛЬНЫЕ КНОПКИ */}
+              <button
+                onClick={() => setIsNewProjectModalOpen(true)}
+                className={`w-full flex items-center rounded-xl transition-all mb-2
+                  ${isSidebarOpen ? 'px-3 py-2' : 'justify-center py-2'} 
+                  hover:bg-foreground/[0.04] text-muted hover:text-foreground-bright group`}
+                title={!isSidebarOpen ? "Создать проект" : ""}
+              >
+                <HiPlus className="w-5 h-5 shrink-0 transition-transform group-active:scale-90" />
+                {isSidebarOpen && (
+                  <span className="ml-3 text-[11px] font-black uppercase tracking-tighter">
+                    Создать проект
+                  </span>
+                )}
+              </button>
+
               {contentSection.items.map((item) => (
                 <SidebarLink 
                   key={item.href} 

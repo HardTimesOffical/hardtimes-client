@@ -5,9 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiOutlineUsers, HiOutlineServerStack, HiOutlineBolt } from 'react-icons/hi2';
 
 const GAMES = [
-  { name: "Minecraft", color: "text-white dark:text-accent" },
-  { name: "Hytale", color: "text-purple-100 dark:text-purple-400" },
-  { name: "VoxelCore", color: "text-blue-100 dark:text-blue-400" }
+  { name: "Minecraft", color: "text-accent" },
+  { name: "Hytale", color: "text-purple-400" },
+  { name: "VoxelCore", color: "text-blue-400" }
 ];
 
 export default function HeroSection() {
@@ -37,32 +37,31 @@ export default function HeroSection() {
 
   return (
     <section 
-      className="relative w-full flex flex-col items-center pt-18 pb-7 px-8 overflow-hidden border-b border-border 
-                 bg-gradient-to-r from-orange-500 to-orange-600 dark:from-transparent dark:to-transparent dark:bg-surface 
-                 transition-all duration-300"
+      className="relative w-full flex flex-col items-center pt-12 pb-7 overflow-hidden border-b border-border bg-surface transition-all duration-300"
     >
-      {/* Сетка для темной темы */}
+      {/* Сетка фона — теперь видна всегда, но очень слабая */}
       <div 
-        className="absolute inset-0 opacity-[0.1] pointer-events-none hidden dark:block" 
+        className="absolute inset-0 opacity-[0.05] pointer-events-none" 
         style={{ 
           backgroundImage: `linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)`, 
           backgroundSize: '32px 32px' 
         }} 
       />
 
-      <div className="relative z-10 w-full max-w-[1400px] flex flex-row items-center justify-between gap-4">
+      {/* Контейнер внутри. px-4 sm:px-8 здесь не дают фону сжаться, только контенту */}
+      <div className="relative z-10 w-full px-4 sm:px-8 flex flex-row items-center justify-between gap-4 max-w-[1132px] mx-auto">
         
-        {/* ЛЕВАЯ ЧАСТЬ: Поиск (текст уменьшен на мобильных) */}
+        {/* ЛЕВАЯ ЧАСТЬ */}
         <div className="flex flex-col gap-1 items-start shrink-0">
-          <h1 className="text-white dark:text-foreground-bright text-xs md:text-2xl font-[1000] tracking-tighter uppercase flex items-center gap-x-2 md:gap-x-3 leading-none text-nowrap">
-            <span className="opacity-80 dark:opacity-30">Поиск</span>
-            <div className="relative h-[14px] md:h-[28px] overflow-hidden min-w-[70px] md:min-w-[130px]">
+          <h1 className="text-foreground-bright text-lg md:text-2xl font-[1000] tracking-tighter uppercase flex items-center gap-x-2 md:gap-x-3 leading-none text-nowrap">
+            <span className="opacity-30 italic">Search</span>
+            <div className="relative h-[20px] md:h-[28px] overflow-hidden min-w-[80px] md:min-w-[130px]">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={GAMES[index].name}
-                  initial={{ y: 10, opacity: 0 }}
+                  initial={{ y: 15, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -10, opacity: 0 }}
+                  exit={{ y: -15, opacity: 0 }}
                   transition={{ duration: 0.3 }}
                   className={`absolute inset-0 ${GAMES[index].color}`}
                 >
@@ -73,20 +72,23 @@ export default function HeroSection() {
           </h1>
         </div>
 
-        {/* ЦЕНТРАЛЬНАЯ ЧАСТЬ: Статистика */}
-        <div className="hidden lg:flex items-center gap-10 border-x border-white/20 dark:border-border px-10 py-1">
-          <StatItem label="Серверов" value={stats.servers} icon={<HiOutlineServerStack />} />
-          <StatItem label="Игроков" value={stats.players > 999 ? `${(stats.players / 1000).toFixed(1)}k` : stats.players} icon={<HiOutlineUsers />} />
-          <StatItem label="Аптайм" value="99.9%" icon={<HiOutlineBolt />} />
+        {/* ЦЕНТРАЛЬНАЯ ЧАСТЬ */}
+        <div className="hidden lg:flex items-center gap-10 border-x border-border px-10 py-1">
+          <StatItem label="Servers" value={stats.servers} icon={<HiOutlineServerStack />} />
+          <StatItem label="Online" value={stats.players > 999 ? `${(stats.players / 1000).toFixed(1)}k` : stats.players} icon={<HiOutlineUsers />} />
+          <StatItem label="Uptime" value="99.9%" icon={<HiOutlineBolt />} />
         </div>
         
-        {/* ПРАВАЯ ЧАСТЬ: Пусто для центровки статистики */}
-        <div className="hidden md:block shrink-0 min-w-[100px]" />
+        <div className="hidden md:block shrink-0 min-w-[100px] text-[8px] font-black text-muted/10 tracking-[0.5em] uppercase">
+          Core_v3
+        </div>
       </div>
 
-      {/* Подпись версии внизу */}
-      <div className="absolute bottom-2 left-8 text-white/30 dark:text-muted/20 font-mono text-[7px] tracking-[0.4em] uppercase">
-        HardMonitoring // 2026
+      {/* Подпись версии */}
+      <div className="w-full max-w-[1132px] mx-auto px-4 sm:px-8 mt-4">
+        <div className="text-muted/20 font-mono text-[7px] tracking-[0.4em] uppercase">
+          HardMonitoring // 2026
+        </div>
       </div>
     </section>
   );
@@ -95,10 +97,10 @@ export default function HeroSection() {
 function StatItem({ label, value, icon }: { label: string, value: string | number, icon: React.ReactNode }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="text-white/60 dark:text-accent w-4 h-4">{icon}</div>
+      <div className="text-accent w-4 h-4">{icon}</div>
       <div className="flex flex-col leading-none text-left">
-        <span className="text-[14px] font-black text-white dark:text-foreground-bright uppercase tracking-tighter">{value}</span>
-        <span className="text-[7px] font-bold text-white/50 dark:text-muted uppercase tracking-widest leading-tight">{label}</span>
+        <span className="text-[14px] font-black text-foreground-bright uppercase tracking-tighter">{value}</span>
+        <span className="text-[7px] font-bold text-muted uppercase tracking-widest leading-tight">{label}</span>
       </div>
     </div>
   );

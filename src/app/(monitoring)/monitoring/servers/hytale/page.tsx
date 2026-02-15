@@ -4,6 +4,7 @@ import { Metadata } from "next";
 import PromoBanner from "@/app/components/blocks/PromoBanner";
 import ForumPosts from "@/app/components/blocks/ForumPosts";
 import ServerFilters from "@/app/components/servercard/ServerFilters";
+import { WeeklyLeaderboard } from "@/app/components/dashboard/WeeklyLeaderboard";
 
 export const metadata: Metadata = {
   title: "Сервера Hytale 2026 | Мониторинг Хайтейл",
@@ -76,8 +77,9 @@ export default function HytaleServersPage() {
               </div>
 
               {/* Сайдбар: Форум (На мобилках уходит под список) */}
-              <aside className="w-full lg:w-[280px] shrink-0 order-2">
+              <aside className="w-full flex flex-col gap-5 lg:w-[280px] shrink-0 order-2">
                  <ForumPosts />
+                 <WeeklyLeaderboard/>
               </aside>
 
             </div>
