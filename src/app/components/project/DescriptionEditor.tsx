@@ -87,7 +87,7 @@ export default function DescriptionEditor({ initialContent, onSave }: EditorProp
 
   if (!editor) return null;
 
-  const isRequirementMet = chars >= 200;
+  const isRequirementMet = chars >= 80;
 
   return (
     <div className="flex flex-col w-full min-w-full space-y-6">

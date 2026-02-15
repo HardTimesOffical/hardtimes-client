@@ -1,70 +1,61 @@
 import Sidebar from "../../../components/dashboard/dashboard";
 import ServerList from "./ServersList";
+import ServerFilters from "@/app/components/servercard/ServerFilters";
+import PromoBanner from "@/app/components/blocks/PromoBanner";
+import ForumPosts from "@/app/components/blocks/ForumPosts";
+import HeroSection from "@/app/components/header/HeroSection";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Мониторинг серверов Minecraft, Hytale & VoxelCore | Поиск игровых миров",
-  description: "Единая платформа мониторинга воксельных игр. Найди лучшие сервера Minecraft (Java/Bedrock), готовься к выходу Hytale и тестируй проекты на VoxelCore. Статистика онлайна и удобный поиск.",
-  keywords: [
-    "сервера майнкрафт", 
-    "мониторинг hytale", 
-    "voxelcore сервера", 
-    "список серверов hytale", 
-    "игровой мониторинг воксельных игр"
-  ],
-  openGraph: {
-    title: "Multi-Game Server Monitoring | Minecraft, Hytale, VoxelCore",
-    description: "Рейтинг и онлайн серверов для самых популярных воксельных проектов.",
-    url: "https://hardmonitoring.ru/monitoring/servers",
-    type: "website",
-  },
+  description: "Единая платформа мониторинга воксельных игр. Найди лучшие сервера Minecraft...",
 };
 
 export default function ServersPage() {
+  const containerWidth = "max-w-[1132px]";
+
   return (
-    /* Внешний контейнер: теперь использует фоновый цвет темы */
     <div className="flex min-h-screen bg-background text-foreground transition-colors duration-200">
-      
-      {/* 1. Навигация слева */}
       <Sidebar />
 
-      {/* 2. Основная область контента с учетом ширины сайдбара */}
-      <main className="flex-1 w-full relative overflow-x-hidden md:pl-20 transition-all duration-300">
+      {/* Добавляем items-center здесь, чтобы Hero и Контент выравнивались по оси */}
+      <main className="flex-1 w-full flex flex-col items-center relative overflow-x-hidden transition-all duration-300 md:pl-16 lg:pl-20">
         
-        {/* Декоративная сетка (адаптивная) */}
-        <div 
-          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" 
-          style={{ 
-            backgroundImage: `linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)`, 
-            backgroundSize: '30px 30px' 
-          }} 
-        />
+        {/* 1. HERO SECTION — Растягиваем на весь main */}
+        <div className="w-full">
+           <HeroSection />
+        </div>
 
-        {/* Эффект свечения (акцентный оранжевый вместо синего) */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
-
-        <section className="flex flex-col items-center w-full px-4 py-12 md:py-16 relative z-10">
+        {/* 2. ОСНОВНОЙ КОНТЕНТ */}
+        <div className="flex flex-col items-center w-full px-4 py-10 relative z-10">
           
-          {/* Текстовый блок заголовка */}
-          <div className="w-full max-w-[1000px] mb-10">
-            {/* Убрали italic и перевели на яркий текст темы */}
-            <h1 className="text-3xl md:text-5xl font-black mb-4 tracking-tighter uppercase text-foreground-bright">
-              Game Server <span className="text-accent">Monitoring</span> <span className="text-muted">&</span> Analytics
-            </h1>
+          {/* ВЕРХНИЙ БЛОК: Реклама и Фильтры */}
+          <div className={`w-full ${containerWidth} flex flex-col gap-10 mb-10`}>
+            <div className="flex flex-col gap-6">
+              <PromoBanner />
+              <ServerFilters />
+            </div>
+          </div>
+
+          {/* НИЖНИЙ БЛОК: Сетка (Сервера + Форум) */}
+          <div className={`w-full ${containerWidth} flex flex-col lg:flex-row items-start gap-8`}>
             
-            <p className="text-muted max-w-2xl text-base md:text-lg font-medium leading-relaxed">
-              Explore the best servers for <span className="text-foreground-bright font-bold">Minecraft</span>, 
-              <span className="text-foreground-bright font-bold"> Hytale</span>, and <span className="text-foreground-bright font-bold">VoxelCore</span> universes. 
-              Track real-time stats and join the top communities.
-            </p>
-          </div>
+            {/* СПИСОК СЕРВЕРОВ */}
+            <div className="flex-1 w-full min-w-0 order-1">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-1 h-4 bg-accent" />
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted">Active_Nodes</h2>
+              </div>
+              <ServerList game="all" />
+            </div>
 
-          {/* Список серверов */}
-          <div className="w-full max-w-[1000px]">
-            <ServerList game="all" />
-          </div>
+            {/* САЙДБАР: Форум */}
+            <aside className="w-full lg:w-[280px] shrink-0 order-2 lg:sticky lg:top-6">
+               <ForumPosts />
+            </aside>
 
-        </section>
+          </div>
+        </div>
       </main>
     </div>
   );

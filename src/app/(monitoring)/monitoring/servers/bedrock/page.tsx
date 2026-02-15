@@ -1,79 +1,80 @@
 import Sidebar from "@/app/components/dashboard/dashboard";
 import ServerList from "../ServersList";
+import ServerFilters from "@/app/components/servercard/ServerFilters";
+import PromoBanner from "@/app/components/blocks/PromoBanner";
+import ForumPosts from "@/app/components/blocks/ForumPosts";
 import HeroSection from "@/app/components/header/HeroSection";
 import { Metadata } from "next";
-import PromoBanner from "@/app/components/blocks/PromoBanner";
-import ServerFilters from "@/app/components/servercard/ServerFilters";
 
 export const metadata: Metadata = {
   title: "Сервера Майнкрафт Бедрок (PE) — ТОП мониторинг серверов Bedrock Edition",
-  description: "Самый актуальный список серверов Minecraft Bedrock Edition (PE). Сортировка по онлайну, версиям и режимам. Найди лучший сервер для игры на телефоне или ПК!",
-  keywords: [
-    "сервера майнкрафт бедрок", 
-    "minecraft bedrock servers", 
-    "мониторинг серверов mcpe", 
-    "сервера майнкрафт пе", 
-    "рейтинг серверов бедрок"
-  ],
-  alternates: {
-    canonical: "https://hardmonitoring.ru/monitoring/servers/bedrock",
-  },
-  openGraph: {
-    title: "ТОП Серверов Minecraft Bedrock Edition",
-    description: "Реальный онлайн, лучшие режимы и честный рейтинг Bedrock серверов.",
-    url: "https://hardmonitoring.ru/monitoring/servers/bedrock",
-    type: "website",
-  },
+  description: "Самый актуальный список серверов Minecraft Bedrock Edition (PE). Сортировка по онлайну, версиям и режимам.",
 };
 
 export default async function BedrockServersPage({ searchParams }: { searchParams: any }) {
-
   const filters = await searchParams;
 
+  // Наша золотая ширина для контента
+  const containerWidth = "max-w-[1132px]";
+
   return (
-    /* Используем bg-background для адаптивности */
     <div className="flex min-h-screen bg-background text-foreground transition-colors duration-200">
-      
-      {/* 1. Навигация слева */}
       <Sidebar />
 
-      {/* 2. Основная область: md:pl-20 чтобы контент не перекрывался сайдбаром */}
-      <main className="flex-1 flex flex-col items-center min-w-0 transition-all duration-300">
+      <main className="flex-1 w-full relative overflow-x-hidden transition-all duration-300">
         
-        {/* Шапка (Hero) — теперь она на всю ширину до сайдбара */}
+        {/* 1. HERO SECTION — Первый и свободный */}
         <HeroSection />
 
-        <div className="w-full max-w-[1000px] px-4 md:px-6 py-10">
+        {/* 2. ОСНОВНОЙ КОНТЕНТ — Центрированный контейнер */}
+        <div className="flex flex-col items-center w-full px-4 py-10 relative z-10">
           
-          <header className="mb-8">
-            <div className="flex items-center gap-3 mb-3">
-              {/* Используем системный фон поверхности для иконки */}
-              <div className="p-2 bg-surface border border-border rounded-xl shadow-sm">
-                 <img className="w-6 h-6" src="/icons/bedrock.svg" alt="Bedrock Icon" />
+          {/* ВЕРХНИЙ БЛОК: Заголовок раздела, Реклама и Фильтры */}
+          <div className={`w-full ${containerWidth} flex flex-col gap-10 mb-10`}>
+            
+            {/* Специфичный заголовок для Bedrock (как в твоем примере) */}
+            <header className="flex flex-col gap-2">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-surface border border-border rounded-xl shadow-sm">
+                   <img className="w-5 h-5 md:w-6 md:h-6" src="/icons/bedrock.svg" alt="Bedrock Icon" />
+                </div>
+                <h1 className="text-xl md:text-2xl font-[1000] text-foreground-bright tracking-tighter uppercase leading-none italic">
+                  Minecraft <span className="text-accent">Bedrock</span>
+                </h1>
               </div>
-              {/* Заголовок: text-foreground-bright для максимального контраста */}
-              <h1 className="text-xl md:text-xl font-[1000] text-foreground-bright tracking-tighter uppercase leading-none">
-                Minecraft <span className="text-accent">Bedrock</span> Edition
-              </h1>
-            </div>
-            <p className="text-muted font-medium max-w-2xl leading-relaxed">
-              Лучшие сервера для мобильных устройств (iOS/Android) и Windows 10. 
-              Играй с друзьями на самых популярных портах.
-            </p>
-          </header>
+              <p className="text-xs md:text-sm text-muted font-medium max-w-2xl leading-relaxed ml-1">
+                Лучшие сервера для мобильных устройств (iOS/Android) и Windows. 
+                Играй на популярных портах в самом удобном мониторинге.
+              </p>
+            </header>
 
-          {/* Список серверов */}
-          <div className="flex flex-col gap-6">
-                      {/* Панель фильтров: убедись, что внутри неё используются bg-card и border-border */}
-                      <PromoBanner/>
-                      <ServerFilters />
-          
-                      {/* Список серверов */}
-                      <div className="w-full">
-                        <ServerList filters={filters} game="java" />
-                      </div>
+            <div className="flex flex-col gap-6">
+              <PromoBanner />
+              <ServerFilters />
+            </div>
           </div>
-          
+
+          {/* НИЖНИЙ БЛОК: Сетка (Сервера + Форум) */}
+          <div className={`w-full ${containerWidth} flex flex-col lg:flex-row items-start gap-8`}>
+            
+            {/* СПИСОК СЕРВЕРОВ */}
+            <div className="flex-1 w-full min-w-0 order-1">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-1 h-4 bg-accent" />
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted">Pocket_Edition_Nodes</h2>
+              </div>
+              
+              <div className="relative z-10">
+                <ServerList filters={filters} game="bedrock" />
+              </div>
+            </div>
+
+            {/* САЙДБАР: Форум */}
+            <aside className="w-full lg:w-[280px] shrink-0 order-2">
+               <ForumPosts />
+            </aside>
+
+          </div>
         </div>
       </main>
     </div>
