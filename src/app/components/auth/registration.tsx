@@ -5,7 +5,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
-  HiOutlineUser,  
+  HiOutlineUser,   
   HiOutlineLockClosed, 
   HiOutlineEye, 
   HiOutlineEyeSlash, 
@@ -84,14 +84,15 @@ export default function Registration() {
     };
 
     return (
-        <div className="w-full flex justify-center py-6">
-            <div className="w-full max-w-[420px] bg-white dark:bg-[var(--card)] border border-[var(--border)] rounded-[2rem] shadow-xl overflow-hidden">
+        <div className="w-full flex justify-center py-6 px-4">
+            {/* ИСПРАВЛЕНО: Заменили bg-white на bg-[var(--card)] */}
+            <div className="w-full max-w-[420px] bg-[var(--card)] border border-[var(--border)] rounded-[2rem] shadow-xl overflow-hidden transition-colors duration-300">
                 
-                <header className="pt-8 px-8 text-center space-y-1">
+                <header className="pt-10 px-8 text-center space-y-1">
                     <h2 className="text-2xl font-black text-[var(--foreground-bright)] uppercase italic tracking-tighter">
                         Регистрация
                     </h2>
-                    <p className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-[0.2em]">
+                    <p className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-[0.2em] opacity-70">
                         Станьте частью нашего комьюнити
                     </p>
                 </header>
@@ -109,7 +110,7 @@ export default function Registration() {
                                     <HiOutlineUser className="w-4 h-4" />
                                 </div>
                                 <input
-                                    className="w-full h-11 pl-10 pr-4 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:opacity-50"
+                                    className="w-full h-11 pl-10 pr-4 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-[var(--muted)] placeholder:opacity-30"
                                     type="text"
                                     id="username"
                                     name="username"
@@ -131,7 +132,7 @@ export default function Registration() {
                                     <HiIdentification className="w-4 h-4" />
                                 </div>
                                 <input
-                                    className="w-full h-11 pl-10 pr-4 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:opacity-50"
+                                    className="w-full h-11 pl-10 pr-4 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-[var(--muted)] placeholder:opacity-30"
                                     type="email"
                                     id="email"
                                     name="email"
@@ -149,7 +150,7 @@ export default function Registration() {
                                 <label className="text-[9px] font-black text-[var(--muted)] uppercase ml-1" htmlFor="password">Пароль</label>
                                 <div className="relative group">
                                     <input
-                                        className="w-full h-11 pl-4 pr-10 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500/50 transition-all"
+                                        className="w-full h-11 pl-4 pr-10 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] outline-none focus:ring-1 focus:ring-blue-500/50 transition-all placeholder:text-[var(--muted)] placeholder:opacity-30"
                                         type={showPassword ? 'text' : 'password'}
                                         id="password"
                                         name="password"
@@ -160,7 +161,7 @@ export default function Registration() {
                                     />
                                     <button
                                         type="button"
-                                        className="absolute inset-y-0 right-0 pr-3 text-[var(--muted)]"
+                                        className="absolute inset-y-0 right-0 pr-3 text-[var(--muted)] hover:text-blue-500 transition-colors"
                                         onClick={() => setShowPassword(s => !s)}
                                     >
                                         {showPassword ? <HiOutlineEyeSlash className="w-4 h-4" /> : <HiOutlineEye className="w-4 h-4" />}
@@ -171,7 +172,7 @@ export default function Registration() {
                                 <label className="text-[9px] font-black text-[var(--muted)] uppercase ml-1" htmlFor="confirmPassword">Повтор</label>
                                 <div className="relative group">
                                     <input
-                                        className="w-full h-11 pl-4 pr-10 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500/50 transition-all"
+                                        className="w-full h-11 pl-4 pr-10 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] outline-none focus:ring-1 focus:ring-blue-500/50 transition-all placeholder:text-[var(--muted)] placeholder:opacity-30"
                                         type={showConfirm ? 'text' : 'password'}
                                         id="confirmPassword"
                                         name="confirmPassword"
@@ -182,7 +183,7 @@ export default function Registration() {
                                     />
                                     <button
                                         type="button"
-                                        className="absolute inset-y-0 right-0 pr-3 text-[var(--muted)]"
+                                        className="absolute inset-y-0 right-0 pr-3 text-[var(--muted)] hover:text-blue-500 transition-colors"
                                         onClick={() => setShowConfirm(s => !s)}
                                     >
                                         {showConfirm ? <HiOutlineEyeSlash className="w-4 h-4" /> : <HiOutlineEye className="w-4 h-4" />}
@@ -191,11 +192,12 @@ export default function Registration() {
                             </div>
                         </div>
 
-                        {error && <div className="bg-red-500/5 border border-red-500/20 text-red-500 text-[9px] font-bold uppercase p-2.5 rounded-lg text-center tracking-wider">{error}</div>}
-                        {success && <div className="bg-green-500/5 border border-green-500/20 text-green-500 text-[9px] font-bold uppercase p-2.5 rounded-lg text-center tracking-wider flex items-center justify-center gap-2"><HiOutlineCheckCircle className="w-4 h-4" /> {success}</div>}
+                        {/* Статус */}
+                        {error && <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black uppercase p-3 rounded-xl text-center tracking-wider animate-shake">{error}</div>}
+                        {success && <div className="bg-green-500/10 border border-green-500/20 text-green-500 text-[10px] font-black uppercase p-3 rounded-xl text-center tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-green-500/5"><HiOutlineCheckCircle className="w-4 h-4" /> {success}</div>}
 
                         <button 
-                            className="group w-full h-11 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 disabled:opacity-50 mt-2" 
+                            className="group w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 disabled:opacity-50 mt-2 active:scale-[0.98]" 
                             type="submit"
                             disabled={isLoading}
                         >
@@ -207,13 +209,13 @@ export default function Registration() {
                             )}
                         </button>
 
-                        <footer className="mt-6 pt-5 border-t border-[var(--border)] text-center">
-                            <p className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-wider inline-block mr-2">
+                        <footer className="mt-8 pt-6 border-t border-[var(--border)] text-center">
+                            <span className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-wider">
                                 Уже есть аккаунт?
-                            </p>
+                            </span>
                             <Link 
                                 href="/login" 
-                                className="text-[9px] font-black text-blue-500 uppercase hover:text-blue-600 transition-colors tracking-widest"
+                                className="ml-2 text-[9px] font-black text-blue-500 uppercase hover:text-blue-400 transition-colors tracking-widest"
                             >
                                 Войти
                             </Link>

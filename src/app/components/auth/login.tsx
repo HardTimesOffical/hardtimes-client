@@ -43,21 +43,22 @@ export default function Login() {
   };
 
   return (
-    <div className="w-full flex justify-center py-6">
-      <div className="w-full max-w-[400px] bg-white dark:bg-[var(--card)] border border-[var(--border)] rounded-[2rem] shadow-xl overflow-hidden">
+    <div className="w-full flex justify-center py-6 px-4">
+      {/* ИСПРАВЛЕНО: Убрал bg-white, теперь фон берется только из переменной --card */}
+      <div className="w-full max-w-[400px] bg-[var(--card)] border border-[var(--border)] rounded-[2rem] shadow-xl overflow-hidden transition-colors duration-300">
         
-        {/* Хедер внутри компонента */}
-        <header className="pt-8 px-8 text-center space-y-1">
+        {/* Хедер */}
+        <header className="pt-10 px-8 text-center space-y-1">
           <h2 className="text-2xl font-black text-[var(--foreground-bright)] uppercase italic tracking-tighter">
             Вход в систему
           </h2>
-          <p className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-[0.2em]">
+          <p className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-[0.2em] opacity-70">
             Введите данные аккаунта
           </p>
         </header>
 
         <div className="p-8">
-          <form className="space-y-4" onSubmit={handleSubmit}>
+          <form className="space-y-5" onSubmit={handleSubmit}>
             
             {/* Email */}
             <div className="space-y-1.5">
@@ -66,10 +67,10 @@ export default function Login() {
               </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--muted)] group-focus-within:text-blue-500 transition-colors">
-                  <HiIdentification/>
+                  <HiIdentification className="w-4 h-4" />
                 </div>
                 <input
-                  className="w-full h-11 pl-10 pr-4 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:opacity-50"
+                  className="w-full h-11 pl-10 pr-4 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-[var(--muted)] placeholder:opacity-30"
                   type="email"
                   id="email"
                   placeholder="name@mail.com"
@@ -92,7 +93,7 @@ export default function Login() {
                   <HiOutlineLockClosed className="w-4 h-4" />
                 </div>
                 <input
-                  className="w-full h-11 pl-10 pr-11 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:opacity-50"
+                  className="w-full h-11 pl-10 pr-11 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-[var(--muted)] placeholder:opacity-30"
                   type={showPassword ? "text" : "password"}
                   id="password"
                   placeholder="••••••••"
@@ -112,14 +113,14 @@ export default function Login() {
 
             {/* Ошибка */}
             {error && (
-              <div className="bg-red-500/5 border border-red-500/20 text-red-500 text-[9px] font-bold uppercase p-2.5 rounded-lg text-center tracking-wider animate-shake">
+              <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black uppercase p-3 rounded-xl text-center tracking-wider animate-shake">
                 {error}
               </div>
             )}
 
             {/* Кнопка */}
             <button 
-              className="group w-full h-11 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 disabled:opacity-50 mt-2" 
+              className="group w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 disabled:opacity-50 active:scale-[0.98]" 
               type="submit"
               disabled={isLoading}
             >
@@ -133,15 +134,15 @@ export default function Login() {
           </form>
 
           {/* Футер */}
-          <footer className="mt-6 pt-5 border-t border-[var(--border)] text-center">
-            <p className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-wider inline-block mr-2">
+          <footer className="mt-8 pt-6 border-t border-[var(--border)] text-center">
+            <span className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-wider">
               Нет аккаунта?
-            </p>
+            </span>
             <Link 
               href="/register" 
-              className="text-[9px] font-black text-blue-500 uppercase hover:text-blue-600 transition-colors tracking-widest"
+              className="ml-2 text-[9px] font-black text-blue-500 uppercase hover:text-blue-400 transition-colors tracking-widest"
             >
-              Регистрация
+              Создать профиль
             </Link>
           </footer>
         </div>
