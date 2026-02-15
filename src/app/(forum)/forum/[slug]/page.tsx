@@ -100,7 +100,7 @@ export default function PostPage() {
           
           <div className="flex-1 min-w-0">
             <div className="mb-8">
-              <h1 className="text-3xl md:text-5xl font-black text-foreground-bright leading-[1.1] mb-6 tracking-tighter break-words">
+              <h1 className="text-2xl md:text-4xl font-black text-[var(--foreground-bright)] leading-[1.1] mb-6 tracking-tighter break-words">
                 {post.title}
               </h1>
 
@@ -108,9 +108,24 @@ export default function PostPage() {
                 <div className="flex items-center gap-3 pr-6 border-r border-border">
                   <div onClick={() => router.push(`/profile/${post.author?.username}`)} className="cursor-pointer">
                     {post.author?.avatar ? (
-                      <img src={post.author.avatar} className="w-10 h-10 rounded-xl object-cover ring-2 ring-accent/20" alt="" />
+                      <img 
+                        /* Проверяем: если ссылка начинается с http, оставляем как есть, иначе добавляем URL сервера */
+                        src={post.author.avatar.startsWith('http') 
+                          ? post.author.avatar 
+                          : `${process.env.NEXT_PUBLIC_SERVER_URL}${post.author.avatar}`
+                        } 
+                        className="w-10 h-10 rounded-xl object-cover ring-2 ring-accent/20" 
+                        alt={post.author?.username} 
+                        /* Если картинка не прогрузилась (ошибка 404), скроем её и покажем иконку */
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                          // Здесь можно принудительно вызвать рендер заглушки, если нужно
+                        }}
+                      />
                     ) : (
-                      <HiUserCircle className="w-10 h-10 text-muted" />
+                      <div className="w-10 h-10 rounded-xl bg-[var(--card)] border border-[var(--border)] flex items-center justify-center text-muted">
+                        <span className="font-black text-xs">{post.author?.username?.[0]?.toUpperCase()}</span>
+                      </div>
                     )}
                   </div>
                   <div>
@@ -135,7 +150,7 @@ export default function PostPage() {
             </div>
 
             {/* КОНТЕНТ: Замена bg-white на bg-card */}
-            <div className="bg-card border border-border rounded-[2.5rem] p-6 md:p-12 shadow-sm mb-8 relative overflow-hidden">
+            <div className="bg-card border border-border rounded-[1rem] p-6 md:p-12 shadow-sm mb-8 relative overflow-hidden">
               <article className="prose prose-slate dark:prose-invert max-w-none break-words
                                  prose-p:text-base prose-p:leading-[1.8] prose-p:text-foreground
                                  prose-headings:text-foreground-bright prose-headings:font-black
@@ -164,18 +179,45 @@ export default function PostPage() {
 
           <aside className="w-full lg:w-72 shrink-0 space-y-6">
             {/* РЕКЛАМА (оставляем темной, как в дизайне) */}
-            <Link href="https://t.me/SamuraiMFG" className="block group">
-              <div className="bg-[#1c1c1e] border border-blue-500/20 rounded-[2rem] p-6 text-white relative overflow-hidden shadow-2xl transition-all hover:border-blue-500/50 hover:translate-y-[-4px]">
-                <div className="relative z-10">
-                   <h3 className="text-xl font-extrabold leading-[1.2] text-white">Рекламный <br /> блок</h3>
-                   <div className="mt-4 inline-block bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase">Подробнее</div>
+             <Link href="https://t.me/SamuraiMFG" className="block group">
+            {/* Заменил text-white на адаптивный или принудительно светлый текст внутри темного блока */}
+            <div className="bg-[#1c1c1e] border border-blue-500/20 rounded-[1rem] p-6 text-white relative overflow-hidden shadow-2xl transition-all hover:border-blue-500/50 hover:translate-y-[-4px]">
+              
+              {/* ФОНОВЫЕ ЭЛЕМЕНТЫ */}
+              <div className="absolute inset-0 opacity-10 pointer-events-none" 
+                  style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #3b82f6 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-blue-600/20 rounded-full blur-[80px]" />
+
+              <div className="relative z-10 flex flex-col h-full">
+                {/* ИКОНКА */}
+                <div className="mb-5">
+                  <div className="bg-blue-600 w-10 h-10 flex items-center justify-center rounded-xl shadow-lg shadow-blue-600/20">
+                    <HiOutlineMegaphone className="w-5 h-5 text-white" />
+                  </div>
+                </div>
+
+                {/* ТЕКСТОВЫЙ БЛОК — теперь точно белый на темном фоне */}
+                <div className="space-y-2 flex-1">
+                  <p className="text-[11px] font-black uppercase text-blue-400 tracking-[0.1em]">Продвижение</p>
+                  <h3 className="text-xl font-extrabold leading-[1.2] tracking-tight text-white">
+                    Место для вашей <br /> 
+                    <span className="text-blue-500">рекламы</span>
+                  </h3>
+                </div>
+
+                {/* КНОПКА */}
+                <div className="mt-8 pt-5 border-t border-white/10">
+                  <div className="inline-block bg-white text-black px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all group-hover:bg-blue-600 group-hover:text-white">
+                    Узнать больше
+                  </div>
                 </div>
               </div>
-            </Link>
+            </div>
+          </Link>
 
             {/* КАТЕГОРИИ И ТОП: Замена bg-white на bg-card */}
             {/* КАТЕГОРИИ */}
-           <div className="bg-card border border-border p-5 rounded-[2rem] shadow-xl flex flex-col gap-4">
+           <div className="bg-card border border-border p-5 rounded-[1rem] shadow-xl flex flex-col gap-4">
               <CategorySelect 
                 selected={post.category} 
                 onSelect={(cat) => router.push(`/forum?category=${cat}`)} 
@@ -192,7 +234,7 @@ export default function PostPage() {
               </button>
             </div>
 
-            <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-sm">
+            <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
               <div className="p-4 border-b border-border bg-surface/50">
                 <h4 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-foreground-bright">
                   <HiOutlineUserGroup className="text-accent" /> Топ авторов
@@ -203,7 +245,7 @@ export default function PostPage() {
                   <Link 
                     href={`/profile/${author.username}`} 
                     key={author.username} 
-                    className="flex items-center justify-between p-2.5 rounded-2xl hover:bg-surface transition-all"
+                    className="flex items-center justify-between p-2.5 rounded-xl hover:bg-surface transition-all"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="w-8 h-8 rounded-xl bg-surface border border-border overflow-hidden shrink-0">

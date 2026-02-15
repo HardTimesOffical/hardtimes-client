@@ -86,35 +86,37 @@ export default function ServerCard({ server }: any) {
               </div>
             </div>
 
-            {/* Ряд 2: БАННЕР (Центрирован, строго 468x60) */}
-            <div className="relative w-full flex justify-center">
-              <div className="relative w-full max-w-[468px] h-[60px] md:w-[468px] rounded-lg overflow-hidden bg-background border border-border group/banner flex items-center justify-center">
-                {server.imageUrl ? (
-                  <img 
-                    src={server.imageUrl} 
-                    className="w-full h-full object-fill opacity-95 group-hover:opacity-100 transition-opacity" 
-                    alt={server.serverName}
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-surface via-background/50 to-surface flex items-center justify-center relative">
-                    <HiBolt className="absolute w-12 h-12 text-foreground/[0.03] rotate-12 -right-2 -bottom-2" />
-                    <div className="flex flex-col items-center gap-0.5 opacity-30">
-                      <HiOutlinePhoto className="w-4 h-4 text-muted" />
-                      <span className="text-[7px] font-[1000] uppercase tracking-[0.1em] text-muted">Нет изображения</span>
-                    </div>
-                  </div>
-                )}
+          {/* Ряд 2: БАННЕР (Центрирован, строго 468x60) */}
+<div className="relative w-full flex justify-center">
+  <div className="relative w-full max-w-[468px] h-[60px] md:w-[468px] rounded-lg overflow-hidden bg-background border border-border group/banner flex items-center justify-center">
+    {server.imageUrl ? (
+      <img 
+        src={server.imageUrl} 
+        /* object-cover: растягивает без искажения пропорций, заполняя всё место */
+        className="w-full h-full object-cover opacity-95 group-hover:opacity-100 transition-opacity" 
+        alt={server.serverName}
+      />
+    ) : (
+      <div className="w-full h-full bg-gradient-to-br from-surface via-background/50 to-surface flex items-center justify-center relative">
+        <HiBolt className="absolute w-12 h-12 text-foreground/[0.03] rotate-12 -right-2 -bottom-2" />
+        <div className="flex flex-col items-center gap-0.5 opacity-30">
+          <HiOutlinePhoto className="w-4 h-4 text-muted" />
+          <span className="text-[7px] font-[1000] uppercase tracking-[0.1em] text-muted">Нет изображения</span>
+        </div>
+      </div>
+    )}
 
-                <div 
-                  onClick={handleOpenBoost}
-                  className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center cursor-pointer backdrop-blur-[1px]"
-                >
-                  <div className="flex items-center gap-2 text-white text-[9px] font-black uppercase tracking-widest bg-accent px-4 py-1.5 rounded-full shadow-2xl scale-90 group-hover:scale-100 transition-transform">
-                    <HiBolt className="w-3 h-3" /> В ТОП
-                  </div>
-                </div>
-              </div>
-            </div>
+    {/* Оверлей при наведении */}
+    <div 
+      onClick={handleOpenBoost}
+      className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center cursor-pointer backdrop-blur-[1px]"
+    >
+      <div className="flex items-center gap-2 text-white text-[9px] font-black uppercase tracking-widest bg-accent px-4 py-1.5 rounded-full shadow-2xl scale-90 group-hover:scale-100 transition-transform">
+        <HiBolt className="w-3 h-3" /> В ТОП
+      </div>
+    </div>
+  </div>
+</div>
 
             {/* Ряд 3: Кнопки (Уменьшена высота h-9 -> h-8) */}
             <div className="flex items-center gap-2 min-w-0">
