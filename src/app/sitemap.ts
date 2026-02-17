@@ -2,10 +2,11 @@ import { MetadataRoute } from 'next';
 import { GAME_PLATFORMS } from '@/constants/project';
 import { PROJECT_TYPES_BY_GAME } from '@/constants/projectTypes';
 
-export const revalidate = 0;
+export const revalidate = 3600; // Кэшируем на час
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://hardmonitoring.ru';
+  const apiUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
   // 1. Статические страницы
   const staticPages: MetadataRoute.Sitemap = [
@@ -15,11 +16,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/monitoring/servers/hytale`, lastModified: new Date(), changeFrequency: 'hourly', priority: 0.8 },
   ];
 
-  // 2. Динамические категории КОНТЕНТА из PROJECT_TYPES_BY_GAME
+  // 2. Категории контента (Генерация из констант)
   const contentCategoryPages: MetadataRoute.Sitemap = [];
-
   GAME_PLATFORMS.forEach((game) => {
-    // Страница всей игры (напр. /content/minecraft)
     contentCategoryPages.push({
       url: `${baseUrl}/content/${game.id}`,
       lastModified: new Date(),
@@ -27,9 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     });
 
-    // Получаем типы конкретно для этой игры (mods, plugins и т.д.)
     const gameTypes = PROJECT_TYPES_BY_GAME[game.id as keyof typeof PROJECT_TYPES_BY_GAME] || [];
-    
     gameTypes.forEach((type) => {
       contentCategoryPages.push({
         url: `${baseUrl}/content/${game.id}/${type.value}`,
@@ -40,14 +37,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   });
 
-  // 3. Загрузка серверов и конкретных проектов из БД
   let dynamicPages: MetadataRoute.Sitemap = [];
 
   try {
-    // Получаем серверы
-    const serversRes = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/servers`);
+    // --- ЗАГРУЗКА СЕРВЕРОВ ---
+    const serversRes = await fetch(`${apiUrl}/servers?limit=1000`, { next: { revalidate: 3600 } });
     if (serversRes.ok) {
-      const servers = await serversRes.json();
+      const data = await serversRes.json();
+      // Твой бэкенд шлет { items: [...] }, проверяем это:
+      const servers = data.items || (Array.isArray(data) ? data : []);
+      
       const serverUrls = servers.map((s: any) => ({
         url: `${baseUrl}/monitoring/${s.slug}`,
         lastModified: s.updatedAt ? new Date(s.updatedAt) : new Date(),
@@ -57,12 +56,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       dynamicPages = [...dynamicPages, ...serverUrls];
     }
 
-    // Получаем конкретные моды/плагины (если есть эндпоинт)
-    const projectsRes = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/projects/all-slugs`);
+    // --- ЗАГРУЗКА ПРОЕКТОВ ---
+    const projectsRes = await fetch(`${apiUrl}/projects/all-slugs`, { next: { revalidate: 3600 } });
     if (projectsRes.ok) {
       const projects = await projectsRes.json();
-      const projectUrls = projects.map((p: any) => ({
-        // Используем ПРЯМОЙ путь к проекту, а не через категории
+      // Проверяем, массив это или объект с полем data
+      const projectsList = Array.isArray(projects) ? projects : (projects.data || []);
+      
+      const projectUrls = projectsList.map((p: any) => ({
         url: `${baseUrl}/content/project/${p.slug}`, 
         lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
         changeFrequency: 'weekly',
@@ -70,8 +71,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }));
       dynamicPages = [...dynamicPages, ...projectUrls];
     }
+
+    console.log(`[Sitemap] Успешно добавлено ${dynamicPages.length} динамических ссылок`);
   } catch (e) {
-    console.error("Sitemap dynamic fetch error:", e);
+    console.error("[Sitemap] Ошибка при загрузке данных:", e);
   }
 
   return [...staticPages, ...contentCategoryPages, ...dynamicPages];
