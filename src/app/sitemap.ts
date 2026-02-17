@@ -39,42 +39,50 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let dynamicPages: MetadataRoute.Sitemap = [];
 
-  try {
-    // --- ЗАГРУЗКА СЕРВЕРОВ ---
-    const serversRes = await fetch(`${apiUrl}/servers?limit=1000`, { next: { revalidate: 3600 } });
-    if (serversRes.ok) {
-      const data = await serversRes.json();
-      // Твой бэкенд шлет { items: [...] }, проверяем это:
-      const servers = data.items || (Array.isArray(data) ? data : []);
-      
-      const serverUrls = servers.map((s: any) => ({
-        url: `${baseUrl}/monitoring/${s.slug}`,
-        lastModified: s.updatedAt ? new Date(s.updatedAt) : new Date(),
-        changeFrequency: 'daily',
-        priority: 0.7,
-      }));
-      dynamicPages = [...dynamicPages, ...serverUrls];
+ try {
+    const [serversRes, projectsRes] = await Promise.all([
+      fetch(`${apiUrl}/servers?limit=1000`, { next: { revalidate: 3600 } }),
+      fetch(`${apiUrl}/projects/all-slugs`, { next: { revalidate: 3600 } })
+    ]);
+
+    if (!serversRes.ok || !projectsRes.ok) {
+        throw new Error("Backend is unreachable");
     }
 
-    // --- ЗАГРУЗКА ПРОЕКТОВ ---
-    const projectsRes = await fetch(`${apiUrl}/projects/all-slugs`, { next: { revalidate: 3600 } });
-    if (projectsRes.ok) {
-      const projects = await projectsRes.json();
-      // Проверяем, массив это или объект с полем data
-      const projectsList = Array.isArray(projects) ? projects : (projects.data || []);
-      
-      const projectUrls = projectsList.map((p: any) => ({
-        url: `${baseUrl}/content/project/${p.slug}`, 
-        lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
-        changeFrequency: 'weekly',
-        priority: 0.6,
-      }));
-      dynamicPages = [...dynamicPages, ...projectUrls];
+    const serversData = await serversRes.json();
+    const projectsData = await projectsRes.json();
+
+    const servers = serversData.items || (Array.isArray(serversData) ? serversData : []);
+    const projects = Array.isArray(projectsData) ? projectsData : (projectsData.data || []);
+
+    // ВАЖНАЯ ПРОВЕРКА: Если данных подозрительно мало или 0, а раньше было много
+    if (servers.length === 0 && projects.length === 0) {
+       console.warn("[Sitemap] Внимание: API вернуло 0 объектов. Отмена обновления.");
+       // Возвращаем статику + категории, но в идеале здесь можно бросить ошибку, 
+       // чтобы Next.js оставил старый файл (если он уже был сгенерирован)
     }
 
-    console.log(`[Sitemap] Успешно добавлено ${dynamicPages.length} динамических ссылок`);
+    const serverUrls = servers.map((s: any) => ({
+      url: `${baseUrl}/monitoring/${s.slug}`,
+      lastModified: s.updatedAt ? new Date(s.updatedAt) : new Date(),
+      changeFrequency: 'daily',
+      priority: 0.7,
+    }));
+
+    const projectUrls = projects.map((p: any) => ({
+      url: `${baseUrl}/content/project/${p.slug}`,
+      lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.6,
+    }));
+
+    dynamicPages = [...serverUrls, ...projectUrls];
+
   } catch (e) {
-    console.error("[Sitemap] Ошибка при загрузке данных:", e);
+    console.error("[Sitemap] Критическая ошибка загрузки. Сайтмап не обновлен:", e);
+    // Если произошла ошибка, можно либо вернуть только статику, 
+    // либо пробросить ошибку выше (throw e), тогда Next.js не перезапишет рабочий кэш.
+    throw e; 
   }
 
   return [...staticPages, ...contentCategoryPages, ...dynamicPages];
