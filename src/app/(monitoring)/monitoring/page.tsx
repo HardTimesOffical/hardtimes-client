@@ -8,8 +8,27 @@ import ForumPosts from "@/app/components/blocks/ForumPosts";
 import { WeeklyLeaderboard } from "@/app/components/dashboard/WeeklyLeaderboard";
 
 export const metadata: Metadata = {
-  title: "Мониторинг серверов Майнкрафт — Топ список Java и Bedrock",
-  description: "Актуальный список серверов Minecraft. Рейтинг, онлайн, версии и описание лучших проектов.",
+  title: "HardMonitoring — ТОП мониторинг серверов Майнкрафт, Хайтейл и VoxelCore",
+  description: "Рейтинг лучших серверов Minecraft (Java, Bedrock), Hytale и VoxelCore. Найди проект по версии, модам или режиму. Актуальный онлайн, честные отзывы и активное комьюнити!",
+  keywords: [
+    "мониторинг серверов майнкрафт",
+    "сервера minecraft java и bedrock",
+    "рейтинг серверов hytale",
+    "voxelcore сервера",
+    "ip адреса серверов майнкрафт",
+    "лучшие сервера minecraft 2026"
+  ],
+  alternates: {
+    canonical: 'https://hardmonitoring.ru',
+  },
+  openGraph: {
+    title: "HardMonitoring — Найди свой идеальный сервер",
+    description: "Ведущий агрегатор майнкрафт и хайтейл серверов. Проверенные IP, живой онлайн.",
+    url: 'https://hardmonitoring.ru',
+    siteName: 'HardMonitoring',
+    locale: 'ru_RU',
+    type: 'website',
+  },
 };
 
 export default async function Home({ searchParams }: { searchParams: any }) {
@@ -43,7 +62,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
                   </h1>
                 </div>
                 <p className="text-muted text-xs md:text-sm font-medium ml-4 max-w-md">
-                  Лучшие игровые площадки сообщества HardMonitoring
+                  Лучшие игровые сервера мониторинга HardMonitoring
                 </p>
               </header>
 

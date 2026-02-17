@@ -5,6 +5,7 @@ import { GoogleAnalytics } from '@next/third-parties/google';
 import ClientLayout from "./ClientLayout"; // Импорт нашей обертки
 import { ThemeProvider } from "@/context/ThemeContext";
 import Script from "next/script";
+import CookieBanner from "./components/blocks/CookieBanner";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -77,6 +78,7 @@ export default function RootLayout({
         <ThemeProvider>
           <ClientLayout>
             {children}
+            <CookieBanner/>
           </ClientLayout>
         </ThemeProvider>
         
