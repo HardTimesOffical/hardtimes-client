@@ -19,21 +19,47 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { game, slug } = await params;
   const typeValue = slug?.[0];
 
-  const gameLabel = getGameLabel(game);
+  // Словари для корректного перевода и склонения
+  const gameNamesRu: Record<string, string> = {
+    minecraft: 'Майнкрафт',
+    hytale: 'Хайтейл',
+    voxelcore: 'VoxelCore'
+  };
+
+  const projectTypesRuGenitive: Record<string, string> = {
+    'mods': 'модов',
+    'plugins': 'плагинов',
+    'server-packs': 'сборок серверов',
+    'translations': 'переводов',
+    'configs': 'конфигураций',
+    'modpacks': 'модпаков',
+    'shaders': 'шейдеров',
+    'resourcepacks': 'ресурспаков',
+    'maps': 'карт',
+    'schematics': 'схематиков',
+    'datapacks': 'датапаков',
+    'scripts': 'скриптов',
+    'models': 'моделей и ассетов',
+    'worlds': 'миров',
+    'tools': 'инструментов',
+    'libraries': 'библиотек',
+    'texture-packs': 'текстурпаков',
+    'core': 'ядер'
+  };
+
+  const gameLabel = gameNamesRu[game] || getGameLabel(game);
   const gameKey = game as keyof typeof PROJECT_TYPES_BY_GAME;
   const gameTypes = (PROJECT_TYPES_BY_GAME[gameKey] || []) as ProjectTypeEntry[];
   const currentType = gameTypes.find((t) => t.value === typeValue);
 
   const versions = "1.21, 1.20.1, 1.16.5, 1.12.2";
-  const ruNames: Record<string, string> = {
-    minecraft: 'Майнкрафт',
-    hytale: 'Хайтейл'
-  };
-  const gameNameRu = ruNames[game] || gameLabel;
 
   if (currentType) {
+    // Получаем склонение (например, "модов") или используем label, если нет в словаре
+    const typeLabelGenitive = projectTypesRuGenitive[typeValue || ''] || currentType.label.toLowerCase();
+    
     const title = `${currentType.label} для ${gameLabel} (${versions}) — Скачать актуальное`;
-    const description = `Огромный выбор ${currentType.label.toLowerCase()} для ${gameLabel}. От глобальных техно-магических проектов до легких ванильных улучшений и оптимизации ФПС. Все файлы проверены на стабильность для версий ${versions}. Обзоры механик, скриншоты и пошаговые инструкции на HardMonitoring.`;
+    const description = `Огромный выбор ${typeLabelGenitive} для ${gameLabel}. От глобальных техно-магических проектов до легких ванильных улучшений и оптимизации ФПС. Все файлы проверены на стабильность для версий ${versions}. Обзоры механик, скриншоты и пошаговые инструкции на HardMonitoring.`;
 
     return {
       title,
@@ -50,8 +76,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const title = `Все для ${gameLabel} (${gameNameRu}): моды, сборки, текстуры и шейдеры`;
-  const description = `Ежедневно обновляемый архив контента для ${gameLabel}. Скачивайте популярные сборки, оптимизированные шейдеры и полезные плагины для ${gameLabel}. Только проверенные дополнения с гарантией безопасности на HardMonitoring.`;
+  const title = `Все для ${gameLabel}: моды, сборки, текстуры и шейдеры`;
+  const description = `Ежедневно обновляемая библиотека контента для ${gameLabel}. Скачивайте популярные сборки, оптимизированные шейдеры и полезные плагины для ${gameLabel}. Только проверенные дополнения с гарантией безопасности на HardMonitoring.`;
 
   return {
     title,

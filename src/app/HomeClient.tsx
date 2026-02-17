@@ -16,8 +16,8 @@ export default function Home() {
         
         {/* Приветственный блок: Используем семантический header */}
         <header className="text-center mb-16 animate-in fade-in slide-in-from-top-4 duration-700">
-          <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase mb-4 italic">
-            Мониторинг серверов Майнкрафт и Хайтел <span className="text-orange-500">HardTimes</span>
+          <h1 className="text-4xl md:text-[28px] font-black tracking-tighter uppercase mb-4 italic">
+            Мониторинг серверов Майнкрафт <span className="text-orange-500">HardTimes</span>
           </h1>
           <p className="text-muted text-[10px] md:text-xs font-black uppercase tracking-[0.3em] max-w-2xl mx-auto opacity-60">
             Лучшие майнкрафт сервера и библиотека модов!
