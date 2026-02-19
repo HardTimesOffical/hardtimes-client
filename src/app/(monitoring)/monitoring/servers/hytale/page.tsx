@@ -5,6 +5,7 @@ import PromoBanner from "@/app/components/blocks/PromoBanner";
 import ForumPosts from "@/app/components/blocks/ForumPosts";
 import ServerFilters from "@/app/components/servercard/ServerFilters";
 import { WeeklyLeaderboard } from "@/app/components/dashboard/WeeklyLeaderboard";
+import YandexAds from "@/app/components/yandex/YandexAds";
 
 export const metadata: Metadata = {
   title: "Сервера Hytale — Мониторинг, рейтинг и дата выхода Хайтейл",
@@ -99,6 +100,7 @@ export default function HytaleServersPage() {
                  <h3 className="sr-only">Сообщество и рейтинги</h3>
                  <ForumPosts />
                  <WeeklyLeaderboard/>
+                 <YandexAds/>
               </aside>
             </div>
 

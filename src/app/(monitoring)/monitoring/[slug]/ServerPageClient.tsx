@@ -11,6 +11,7 @@ import { BoostModal } from "../../../components/payment/BoostModal";
 import api from "@/lib/api";
 // Используем HiOutlineClipboard для копирования
 import { HiOutlineArrowTopRightOnSquare, HiOutlineGlobeAlt, HiOutlineChatBubbleLeftRight, HiOutlineCog6Tooth, HiOutlineClipboard, HiOutlineCheck } from 'react-icons/hi2';
+import YandexAds from "@/app/components/yandex/YandexAds";
 
 interface IServerData {
   _id: string;
@@ -232,6 +233,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
             </div>
 
             <div className="space-y-4">
+              <YandexAds/>
               {/* Голоса с зеленым уведомлением */}
               <div className="border border-border rounded-lg bg-card p-5 flex flex-col gap-4 shadow-sm">
                 <div className="text-center">

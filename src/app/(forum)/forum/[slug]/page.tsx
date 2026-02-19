@@ -14,6 +14,7 @@ import Link from 'next/link';
 import CategorySelect from '@/app/components/forum/CategorySelect';
 import PostComments from '@/app/components/forum/PostComments';
 import { ThemeToggle } from '@/app/components/header/ThemeBtn'
+import YandexAds from '@/app/components/yandex/YandexAds';
 
 export default function PostPage() {
   const { slug } = useParams();
@@ -173,7 +174,7 @@ export default function PostPage() {
                   </button>
               </div>
             </div>
-
+            <YandexAds/>      
             <PostComments postId={post._id} user={user} accessToken={accessToken} />
           </div>
 

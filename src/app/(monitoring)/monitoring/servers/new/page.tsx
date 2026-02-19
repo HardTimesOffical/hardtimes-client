@@ -6,10 +6,11 @@ import { Metadata } from "next";
 import PromoBanner from "@/app/components/blocks/PromoBanner";
 import ForumPosts from "@/app/components/blocks/ForumPosts";
 import { WeeklyLeaderboard } from "@/app/components/dashboard/WeeklyLeaderboard";
+import YandexAds from "@/app/components/yandex/YandexAds";
 
 export const metadata: Metadata = {
-  title: "Новые сервера Майнкрафт 2026 — Открытие сегодня",
-  description: "Список только что открывшихся серверов Minecraft. Будь первым в таблице лидеров на новых проектах с модами, выживанием и SkyBlock. Обновление в реальном времени!",
+  title: "Новые сервера Майнкрафт 2026 — Список серверов Minecraft",
+  description: "Список только что открывшихся серверов Minecraft. Будь первым в таблице лидеров на новых майнкрафт серверах. Актуальный онлайн, честные отзывы модами, выживанием и SkyBlock. Обновление в реальном времени!",
   keywords: ["открытие серверов майнкрафт", "новые сервера minecraft 2026", "свежие проекты майнкрафт", "мониторинг серверов"],
   alternates: {
     canonical: 'https://hardmonitoring.ru/monitoring/new',
@@ -91,6 +92,7 @@ export default async function NewServersPage({ searchParams }: { searchParams: a
                  <h3 className="sr-only">Дополнительная информация</h3>
                  <ForumPosts />
                  <WeeklyLeaderboard/>
+                 <YandexAds/>
             </aside>
           </div>
 

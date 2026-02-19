@@ -17,12 +17,7 @@ export default function YandexAds() {
   }, []);
 
   return (
-    <div className="w-full my-6 flex flex-col items-center">
-      {/* Метка "Реклама" в стиле Hard Monitoring */}
-      <span className="text-[9px] uppercase font-black text-muted tracking-widest mb-2 opacity-50">
-        Advertisement
-      </span>
-      
+    <div className="w-full flex flex-col items-center">   
       {/* Контейнер для блока */}
       <div 
         id="yandex_rtb_R-A-18769642-1" 

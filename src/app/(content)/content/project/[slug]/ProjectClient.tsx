@@ -12,6 +12,7 @@ import { FaDiscord, FaGithub, FaTelegramPlane } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
 import Sidebar from "@/app/components/dashboard/dashboard";
 import Link from 'next/link';
+import YandexAds from '@/app/components/yandex/YandexAds';
 
 // Добавляем типизацию пропсов для принятия данных с сервера
 interface ProjectClientProps {
@@ -243,6 +244,7 @@ export default function ProjectClient({ initialData }: ProjectClientProps) {
 
             <aside className="space-y-4">
               {/* БЛОК АВТОРА */}
+              <YandexAds/>
               <div className="border border-border rounded-xl bg-card p-5 shadow-sm">
                 <h3 className="text-[10px] font-black text-muted-foreground uppercase mb-4 tracking-widest">Автор проекта</h3>
                 {project.owner ? (

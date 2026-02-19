@@ -15,6 +15,7 @@ import axios from 'axios';
 import ProjectCard from '@/app/components/project/ProjectCard';
 import { getGameLabel } from '@/constants/project';
 import { PROJECT_TYPES_BY_GAME } from '@/constants/projectTypes';
+import YandexAds from '@/app/components/yandex/YandexAds';
 
 interface Project {
   _id: string;
@@ -160,6 +161,7 @@ export default function GameContentPage({ initialProjects, initialTotal, params 
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-8 flex flex-col md:flex-row gap-8">
         {/* 2. SIDEBAR (Filters Only) */}
         <aside className="w-full md:w-60 shrink-0 space-y-6">
+          <YandexAds/>
           <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground opacity-70 px-1">
             <HiOutlineFilter /> Фильтры
           </div>

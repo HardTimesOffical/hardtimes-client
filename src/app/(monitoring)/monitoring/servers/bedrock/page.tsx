@@ -6,6 +6,7 @@ import ForumPosts from "@/app/components/blocks/ForumPosts";
 import HeroSection from "@/app/components/header/HeroSection";
 import { Metadata } from "next";
 import { WeeklyLeaderboard } from "@/app/components/dashboard/WeeklyLeaderboard";
+import YandexAds from "@/app/components/yandex/YandexAds";
 
 
 export const metadata: Metadata = {
@@ -99,6 +100,7 @@ export default async function BedrockServersPage({ searchParams }: { searchParam
                  <h3 className="sr-only">Активность сообщества</h3>
                  <ForumPosts />
                  <WeeklyLeaderboard/>
+                 <YandexAds/>
             </aside>
           </div>
 

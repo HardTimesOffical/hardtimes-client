@@ -6,10 +6,11 @@ import { Metadata } from "next";
 import PromoBanner from "@/app/components/blocks/PromoBanner";
 import ForumPosts from "@/app/components/blocks/ForumPosts";
 import { WeeklyLeaderboard } from "@/app/components/dashboard/WeeklyLeaderboard";
+import YandexAds from "@/app/components/yandex/YandexAds";
 
 export const metadata: Metadata = {
   title: "Сервера Майнкрафт Java Edition 1.21, 1.20 — IP адреса и ТОП рейтинг",
-  description: "Список лучших серверов Minecraft Java Edition (ПК). Удобный поиск по версиям (1.21.4, 1.20.1, 1.16.5 и др.), актуальный онлайн, честные отзывы и только рабочие IP адреса.",
+  description: "Список лучших серверов Minecraft Java Edition (ПК). Удобный поиск майнкрафт серверов по версиям (1.21.4, 1.20.1, 1.16.5 и др.), актуальный онлайн, честные отзывы и только рабочие IP адреса.",
   keywords: [
     "сервера майнкрафт java edition",
     "мониторинг серверов java",
@@ -99,6 +100,7 @@ export default async function JavaServersPage({ searchParams }: { searchParams: 
                  <h3 className="sr-only">Популярное на форуме</h3>
                  <ForumPosts />
                  <WeeklyLeaderboard/>
+                 <YandexAds/>
             </aside>
           </div>
           

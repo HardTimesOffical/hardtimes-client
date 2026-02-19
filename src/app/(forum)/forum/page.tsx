@@ -11,6 +11,7 @@ import {
 } from "react-icons/hi2";
 import Link from 'next/link';
 import CategorySelect from '@/app/components/forum/CategorySelect';
+import YandexAds from '@/app/components/yandex/YandexAds';
 
 export default function ForumPage() {
   const router = useRouter();
@@ -263,6 +264,7 @@ export default function ForumPage() {
       onSelect={(cat) => updateFilters({ category: cat })} 
     />
   </div>
+  <YandexAds/>
   {/* СПИСОК АВТОРОВ */}
   <div className="bg-[var(--card)] border border-[var(--border)] rounded-3xl overflow-hidden shadow-sm light:bg-slate-50/50">
     <div className="p-4 border-b border-[var(--border)] bg-[var(--surface)]/50 text-[var(--foreground-bright)]">
