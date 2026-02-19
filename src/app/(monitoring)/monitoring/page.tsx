@@ -6,6 +6,7 @@ import HeroSection from "@/app/components/header/HeroSection";
 import PromoBanner from "@/app/components/blocks/PromoBanner";
 import ForumPosts from "@/app/components/blocks/ForumPosts";
 import { WeeklyLeaderboard } from "@/app/components/dashboard/WeeklyLeaderboard";
+import YandexAds from "@/app/components/yandex/YandexAds";
 
 export const metadata: Metadata = {
   title: "HardMonitoring — ТОП мониторинг серверов Майнкрафт, Хайтейл и VoxelCore",
@@ -85,6 +86,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
               <aside className="w-full flex flex-col gap-5 lg:w-[280px] shrink-0 order-2">
                  <ForumPosts />
                  <WeeklyLeaderboard/>
+                 <YandexAds/>
               </aside>
             </div>
             

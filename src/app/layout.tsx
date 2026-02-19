@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import Script from "next/script";
 import CookieBanner from "./components/blocks/CookieBanner";
 
+
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 const nunito = Nunito({
@@ -78,6 +79,17 @@ export default function RootLayout({
         <ThemeProvider>
           <ClientLayout>
             {children}
+            <Script
+              id="yandex-ads-loader"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `window.yaContextCb = window.yaContextCb || []`
+              }}
+            />
+            <Script
+              src="https://yandex.ru/ads/system/context.js"
+              strategy="afterInteractive"
+            />
             <CookieBanner/>
           </ClientLayout>
         </ThemeProvider>
