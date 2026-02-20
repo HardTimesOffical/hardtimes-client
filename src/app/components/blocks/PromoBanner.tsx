@@ -26,7 +26,6 @@ export default function PromoBanner() {
         rel="noopener noreferrer"
         className="relative block w-full overflow-hidden rounded-xl shadow-xl bg-[#080808] group border border-white/10"
       >
-        {/* --- ВИЗУАЛЬНЫЙ ФОН --- */}
         <div className="absolute inset-0 z-0 pointer-events-none">
           <div className="absolute inset-0 opacity-[0.05]" 
                style={{ backgroundImage: 'radial-gradient(#FFD700 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }} />
@@ -39,14 +38,9 @@ export default function PromoBanner() {
             </div>
           </div>
         </div>
-
-        {/* --- КОНТЕНТ БАННЕРА (Уменьшены отступы и min-height) --- */}
         <div className="relative w-full min-h-[140px] md:min-h-[160px] p-4 md:p-6 flex flex-col md:flex-row justify-between items-center z-10 gap-4">
-          
-          {/* ТЕКСТОВАЯ ГРУППА */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <div className="relative inline-block">
-              {/* Уменьшен шрифт text-5xl/7xl -> text-4xl/5xl */}
               <h2 className="text-4xl md:text-5xl font-[1000] text-white tracking-tighter uppercase leading-none">
                 {config.title}<span className="text-[#FFD700]">.</span>
               </h2>
@@ -58,7 +52,6 @@ export default function PromoBanner() {
               </div>
             </div>
 
-            {/* СТАТИСТИКА (Уменьшены размеры) */}
             <div className="flex justify-center md:justify-start gap-6 mt-4">
               {config.stats.map((stat, i) => (
                 <div key={i} className="relative pl-3 border-l-2 border-[#FFD700]/30">
@@ -74,7 +67,6 @@ export default function PromoBanner() {
             </p>
           </div>
 
-          {/* ГРУППА ДЕЙСТВИЯ */}
           <div className="flex flex-col items-center md:items-end gap-4">
             <div className="relative group/btn">
                 <div className="absolute -inset-1 bg-[#FFD700] rounded-lg blur opacity-10 group-hover/btn:opacity-30 transition duration-500" />
@@ -91,14 +83,10 @@ export default function PromoBanner() {
             </div>
           </div>
         </div>
-
-        {/* Exp Bar внизу */}
         <div className="absolute bottom-0 left-0 w-full h-0.5 bg-white/5">
             <div className="h-full bg-[#FFD700] w-2/3 shadow-[0_0_10px_#FFD700]" />
         </div>
       </Link>
-
-      {/* КНОПКА РЕКЛАМЫ (Сделана более заметной) */}
       <div className="mt-2 flex justify-end px-1">
         <Link 
           href={config.advertiseLink}

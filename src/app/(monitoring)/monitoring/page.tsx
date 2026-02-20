@@ -10,7 +10,7 @@ import YandexAds from "@/app/components/yandex/YandexAds";
 
 export const metadata: Metadata = {
   title: "HardMonitoring — ТОП мониторинг серверов Майнкрафт, Хайтейл и VoxelCore",
-  description: "Рейтинг лучших серверов Minecraft (Java, Bedrock), Hytale и VoxelCore. Найди проект по версии, модам или режиму. Актуальный онлайн, честные отзывы и активное комьюнити!",
+  description: "Лучшие сервера Minecraft и Hytale. Найди сервер по версии, модам или режимам. Актуальный онлайн, честные отзывы и активное комьюнити!",
   keywords: [
     "мониторинг серверов майнкрафт",
     "сервера minecraft java и bedrock",

@@ -5,6 +5,8 @@ import PromoBanner from "@/app/components/blocks/PromoBanner";
 import ForumPosts from "@/app/components/blocks/ForumPosts";
 import HeroSection from "@/app/components/header/HeroSection";
 import { Metadata } from "next";
+import YandexAds from "@/app/components/yandex/YandexAds";
+import { WeeklyLeaderboard } from "@/app/components/dashboard/WeeklyLeaderboard";
 
 export const metadata: Metadata = {
   title: "Мониторинг серверов Minecraft, Hytale & VoxelCore | ТОП рейтинг 2026",
@@ -54,7 +56,7 @@ export default function ServersPage() {
       
       <Sidebar />
 
-      <main className="flex-1 w-full flex flex-col items-center relative overflow-x-hidden transition-all duration-300 md:pl-16 lg:pl-20">
+      <main className="flex-1 w-full flex flex-col items-center relative overflow-x-hidden transition-all duration-300">
         
         {/* HERO SECTION — Обязательно должен содержать H1 (если его нет внутри HeroSection, добавь тут) */}
         <section className="w-full">
@@ -90,7 +92,9 @@ export default function ServersPage() {
             <aside className="w-full lg:w-[280px] shrink-0 order-2 lg:sticky lg:top-6">
                <div className="mb-4">
                   <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted mb-4">Обсуждения</h3>
+                  <YandexAds/>
                   <ForumPosts />
+                  <WeeklyLeaderboard/>
                </div>
             </aside>
 

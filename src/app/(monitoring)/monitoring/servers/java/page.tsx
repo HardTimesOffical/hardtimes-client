@@ -9,8 +9,8 @@ import { WeeklyLeaderboard } from "@/app/components/dashboard/WeeklyLeaderboard"
 import YandexAds from "@/app/components/yandex/YandexAds";
 
 export const metadata: Metadata = {
-  title: "Сервера Майнкрафт Java Edition 1.21, 1.20 — IP адреса и ТОП рейтинг",
-  description: "Список лучших серверов Minecraft Java Edition (ПК). Удобный поиск майнкрафт серверов по версиям (1.21.4, 1.20.1, 1.16.5 и др.), актуальный онлайн, честные отзывы и только рабочие IP адреса.",
+  title: "Сервера Майнкрафт Java Edition — IP адреса серверов и ТОП рейтинг",
+  description: "Список лучших серверов Minecraft Java Edition (ПК). Удобный поиск майнкрафт серверов по версиям (1.21.11, 1.21, 1.16.5 и др.), актуальный онлайн, честные отзывы и только рабочие IP адреса.",
   keywords: [
     "сервера майнкрафт java edition",
     "мониторинг серверов java",
