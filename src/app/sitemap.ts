@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
 import { GAME_PLATFORMS } from '@/constants/project';
 import { PROJECT_TYPES_BY_GAME } from '@/constants/projectTypes';
+import { locales } from '@/middleware'; // единственный источник списка языков
 
-export const revalidate = 3600; // Кэшируем на час
+export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://hardmonitoring.ru';
@@ -16,7 +17,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/monitoring/servers/hytale`, lastModified: new Date(), changeFrequency: 'hourly', priority: 0.8 },
   ];
 
-  // 2. Категории контента (Генерация из констант)
+  // 2. Лаунчер — по одной странице на каждый язык из locales
+  const launcherPages: MetadataRoute.Sitemap = locales.map((lang) => ({
+    url: `${baseUrl}/${lang}/launcher`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.9,
+    alternates: {
+      languages: Object.fromEntries(locales.map((l) => [l, `${baseUrl}/${l}/launcher`])),
+    },
+  }));
+
+  // 3. Категории контента (генерация из констант)
   const contentCategoryPages: MetadataRoute.Sitemap = [];
   GAME_PLATFORMS.forEach((game) => {
     contentCategoryPages.push({
@@ -39,14 +51,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let dynamicPages: MetadataRoute.Sitemap = [];
 
- try {
+  try {
     const [serversRes, projectsRes] = await Promise.all([
       fetch(`${apiUrl}/servers?limit=1000`, { next: { revalidate: 3600 } }),
-      fetch(`${apiUrl}/projects/all-slugs`, { next: { revalidate: 3600 } })
+      fetch(`${apiUrl}/projects/all-slugs`, { next: { revalidate: 3600 } }),
     ]);
 
     if (!serversRes.ok || !projectsRes.ok) {
-        throw new Error("Backend is unreachable");
+      throw new Error('Backend is unreachable');
     }
 
     const serversData = await serversRes.json();
@@ -55,11 +67,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const servers = serversData.items || (Array.isArray(serversData) ? serversData : []);
     const projects = Array.isArray(projectsData) ? projectsData : (projectsData.data || []);
 
-    // ВАЖНАЯ ПРОВЕРКА: Если данных подозрительно мало или 0, а раньше было много
     if (servers.length === 0 && projects.length === 0) {
-       console.warn("[Sitemap] Внимание: API вернуло 0 объектов. Отмена обновления.");
-       // Возвращаем статику + категории, но в идеале здесь можно бросить ошибку, 
-       // чтобы Next.js оставил старый файл (если он уже был сгенерирован)
+      console.warn('[Sitemap] Внимание: API вернуло 0 объектов. Отмена обновления.');
     }
 
     const serverUrls = servers.map((s: any) => ({
@@ -77,13 +86,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
     dynamicPages = [...serverUrls, ...projectUrls];
-
   } catch (e) {
-    console.error("[Sitemap] Критическая ошибка загрузки. Сайтмап не обновлен:", e);
-    // Если произошла ошибка, можно либо вернуть только статику, 
-    // либо пробросить ошибку выше (throw e), тогда Next.js не перезапишет рабочий кэш.
-    throw e; 
+    console.error('[Sitemap] Критическая ошибка загрузки. Сайтмап не обновлен:', e);
+    throw e;
   }
 
-  return [...staticPages, ...contentCategoryPages, ...dynamicPages];
+  return [...staticPages, ...launcherPages, ...contentCategoryPages, ...dynamicPages];
 }

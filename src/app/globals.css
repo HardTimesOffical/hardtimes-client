@@ -88,3 +88,35 @@ body {
 @keyframes shimmer {
     100% { transform: translateX(300%) skew-x(-25deg); }
   }
+
+  @theme inline {
+  /* Регистрация переменных для Tailwind */
+  --font-minecraft: var(--font-minecraft-ten);
+  --font-pixel: var(--font-minecraft-seven);
+  --font-main: var(--font-nunito);
+}
+
+/* 1. ДЛЯ ГЛАВНЫХ ЗАГОЛОВКОВ (Minecraft Ten) */
+/* Используем для логотипов, названий разделов, крупных заголовков */
+.font-mc-title {
+  font-family: var(--font-minecraft-ten);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  /* Фирменная тень для объема */
+  text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.4); 
+}
+
+/* 2. ДЛЯ АКЦЕНТНОГО/ИНТЕРФЕЙСНОГО ТЕКСТА (Minecraft Seven) */
+/* Используем для версии лаунчера, статов, кнопок, коротких подсказок */
+.font-mc-pixel {
+  font-family: var(--font-minecraft-seven);
+  line-height: 1;
+}
+
+/* 3. ДЛЯ ЧИТАБЕЛЬНОГО КОНТЕНТА (Nunito) */
+/* Используем для новостей, описаний, документации, длинных текстов */
+.font-standard {
+  font-family: var(--font-nunito), sans-serif;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}

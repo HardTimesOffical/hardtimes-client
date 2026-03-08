@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Nunito } from "next/font/google";
 import "./globals.css";
+import localFont from "next/font/local";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import ClientLayout from "./ClientLayout"; // Импорт нашей обертки
 import { ThemeProvider } from "@/context/ThemeContext";
@@ -14,6 +15,17 @@ const nunito = Nunito({
   variable: "--font-nunito",
   subsets: ["latin"],
   weight: ["300", "400", "600", "700"],
+});
+
+// Minecraft Fonts (Локальные)
+const minecraftTen = localFont({
+  src: "../../public/fonts/minecraft-ten-font-cyrillic.ttf", // Попробуй сократить путь
+  variable: "--font-minecraft-ten",
+});
+
+const minecraftSeven = localFont({
+  src: "../../public/fonts/Minecraft Seven_2.ttf",
+  variable: "--font-minecraft-seven",
 });
 
 export const metadata: Metadata = {
@@ -75,7 +87,14 @@ export default function RootLayout({
     <html lang="ru">
       <head>
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} antialiased`}>
+      <body className={`
+        ${geistSans.variable} 
+        ${geistMono.variable} 
+        ${nunito.variable} 
+        ${minecraftTen.variable} 
+        ${minecraftSeven.variable} 
+        antialiased
+      `}>
         <ThemeProvider>
           <ClientLayout>
             {children}
