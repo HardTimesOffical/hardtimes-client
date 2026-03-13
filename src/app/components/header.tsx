@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { usePathname, useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
-import { NewProject } from '../project/NewProject';
-import { HeaderBalance } from './HeaderBalance';
+import { NewProject } from './project/NewProject';
+import { HeaderBalance } from './header/HeaderBalance';
 import { PROJECT_TYPES_BY_GAME } from '@/constants/projectTypes';
 
 import { HiOutlineUser, HiMoon, HiSun, HiX, HiChevronDown } from 'react-icons/hi';
