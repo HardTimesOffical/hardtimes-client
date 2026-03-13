@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import Header from "@/app/components/header/header";
+import Header from "./components/header/header";
 import GlobalChat from "./components/chat/GlobalChat";
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/context/LanguageContext";
