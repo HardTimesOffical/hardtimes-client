@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { io, Socket } from "socket.io-client";
-import { useLanguage } from "@/context/LanguageContext";
 
 interface MessageData {
   _id: string;
@@ -31,7 +30,7 @@ export default function GlobalChat() {
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
-
+//тест
   useEffect(() => {
     if (cooldown > 0) {
       const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
