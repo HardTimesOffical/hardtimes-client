@@ -10,7 +10,6 @@ import { HeaderBalance } from './HeaderBalance';
 import { PROJECT_TYPES_BY_GAME } from '@/constants/projectTypes';
 
 import { HiOutlineUser, HiMoon, HiSun, HiX, HiChevronDown } from 'react-icons/hi';
-import { HiOutlineArrowRightOnRectangle } from 'react-icons/hi2';
 
 // ─── Minecraft-зелёный для активных кнопок ────────────────────────
 // Фон: #3c8527, светлая грань сверху/слева: #5aac44, тёмная снизу/справа: #2a5e1a
