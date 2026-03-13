@@ -1,65 +1,78 @@
 'use client';
 import { useState, useEffect } from 'react';
 
+const CONSENT_KEY = 'cookie-consent';
+
 export default function CookieBanner() {
-  const [showBanner, setShowBanner] = useState(false);
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem('cookie-consent');
-    if (!consent) {
-      const timer = setTimeout(() => setShowBanner(true), 1500);
-      return () => clearTimeout(timer);
-    }
+    // Проверяем сразу при монтировании — если уже принято, не показываем вообще
+    try {
+      if (localStorage.getItem(CONSENT_KEY)) return;
+    } catch { return; }
+
+    const t = setTimeout(() => setShow(true), 1500);
+    return () => clearTimeout(t);
   }, []);
 
-  const acceptCookies = () => {
-    localStorage.setItem('cookie-consent', 'true');
-    setShowBanner(false);
+  const accept = () => {
+    try { localStorage.setItem(CONSENT_KEY, 'accepted'); } catch { /* safari private */ }
+    setShow(false);
   };
 
-  if (!showBanner) return null;
+  if (!show) return null;
 
   return (
-    // Центрирование по горизонтали и фиксация снизу
-    <div className="fixed bottom-6 left-0 w-full flex justify-center px-4 z-[9999]">
-      <div className="
-        w-full max-w-[600px] 
-        bg-card/90 backdrop-blur-md 
-        border border-border/50 
-        rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]
-        p-4 md:p-5
-        animate-in fade-in slide-in-from-bottom-8 duration-500
-      ">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          
-          {/* Левая часть: Иконка + Текст */}
-          <div className="flex items-center gap-4">
-            <span className="text-2xl drop-shadow-sm">🍪</span>
-            <div className="flex flex-col">
-              <h4 className="text-[11px] font-black uppercase tracking-widest text-foreground-bright italic leading-none mb-1">
-                Cookie Policy
-              </h4>
-              <p className="text-[10px] md:text-[11px] text-muted leading-tight font-medium max-w-[300px]">
-                Мы используем куки для улучшения работы мониторинга и сбора статистики.
+    <div className="fixed bottom-5 left-0 w-full flex justify-center px-4 z-[9999]"
+      role="dialog" aria-live="polite" aria-label="Уведомление об использовании cookies">
+      <div
+        className="w-full max-w-[560px] border border-border backdrop-blur-sm
+          shadow-[0_8px_24px_rgba(0,0,0,0.5)]
+          p-3 md:p-4
+          animate-in fade-in slide-in-from-bottom-4 duration-300"
+        style={{ background: 'rgba(18,18,18,0.96)' }}
+      >
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+
+          {/* Текст */}
+          <div className="flex items-start gap-3 min-w-0">
+            {/* Пиксельный квадрат вместо эмодзи */}
+            <div className="w-7 h-7 shrink-0 mt-0.5 flex items-center justify-center border border-border"
+              style={{ background: '#1e1e1e' }}>
+              <svg width="14" height="14" viewBox="0 0 8 8" style={{ imageRendering: 'pixelated' }} fill="none">
+                <rect width="8" height="8" fill="#3c8527"/>
+                <rect x="1" y="2" width="2" height="2" fill="#0a0a0a"/>
+                <rect x="5" y="2" width="2" height="2" fill="#0a0a0a"/>
+                <rect x="2" y="5" width="1" height="1" fill="#0a0a0a"/>
+                <rect x="5" y="5" width="1" height="1" fill="#0a0a0a"/>
+                <rect x="3" y="5" width="2" height="1" fill="#0a0a0a"/>
+                <rect x="2" y="6" width="1" height="1" fill="#0a0a0a"/>
+                <rect x="5" y="6" width="1" height="1" fill="#0a0a0a"/>
+              </svg>
+            </div>
+            <div>
+              <p className="font-mc-title text-[10px] text-foreground-bright mb-0.5">
+                Cookies
+              </p>
+              <p className="font-standard text-[12px] text-muted leading-snug max-w-[340px]">
+                Мы используем куки для улучшения работы сайта и сбора анонимной статистики.
               </p>
             </div>
           </div>
 
-          {/* Правая часть: Кнопка */}
-          <button 
-            onClick={acceptCookies}
-            className="
-              whitespace-nowrap
-              bg-accent/10 hover:bg-accent text-accent hover:text-white 
-              border border-accent/20 hover:border-accent
-              text-[10px] font-black uppercase tracking-tighter 
-              px-6 py-2.5 rounded-xl 
-              transition-all duration-300 active:scale-95
-            "
+          {/* Кнопка */}
+          <button
+            onClick={accept}
+            className="shrink-0 font-standard font-bold text-[12px] text-white
+              px-5 py-2 transition-all duration-150 hover:brightness-110 active:scale-95 whitespace-nowrap"
+            style={{
+              background: '#3c8527',
+              boxShadow: 'inset 1px 1px 0 #5aac44, inset -1px -1px 0 #2a5e1a, 0 2px 0 #2a5e1a',
+            }}
           >
             Принять
           </button>
-          
         </div>
       </div>
     </div>

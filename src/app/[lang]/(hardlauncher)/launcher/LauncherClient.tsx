@@ -82,7 +82,8 @@ function FeatureCard({
 
   const imgSrc =
     item.img ??
-    'https://cdnb.artstation.com/p/assets/images/images/042/400/679/large/mariana-salimena-birch-forest-artstation.jpg';
+    '/banner/image.png';
+
 
   return (
     <div
@@ -158,22 +159,19 @@ export default function LauncherClient({
       <nav className="fixed top-0 inset-x-0 z-50 h-14 bg-[#111]/90 backdrop-blur-sm border-b-2 border-[#222]">
         <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
           {/* Logo */}
-          <a href={localePath('/')} className="flex items-center gap-2 no-underline">
-            <div className="w-7 h-7 bg-[#4caf50] grid place-items-center text-black font-black text-sm">
-              ▪
-            </div>
+          <a href='/' className="flex items-center gap-2 no-underline">
+            <img src="/icon.png" className="w-9 h-9  place-items-center text-black font-black text-sm"/>
             <span className="font-mono font-bold text-[13px] uppercase tracking-widest">
-              Hard<span className="text-[#4caf50]">Launcher</span>
+              Hard<span className="text-blue-400">Monitoring</span>
             </span>
           </a>
 
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-0.5">
             {[
-              { label: dict.nav.home, href: localePath('/') },
-              { label: dict.nav.servers, href: localePath('/servers') },
-              { label: dict.nav.download, href: localePath('/launcher') },
-              { label: dict.nav.community, href: localePath('/community') },
+              { label: dict.nav.home, href:'/' },
+              { label: dict.nav.servers, href: '/monitoring' },
+              { label: dict.nav.community, href: '/forum' },
             ].map((item) => (
               <a
                 key={item.label}
@@ -322,7 +320,7 @@ export default function LauncherClient({
           <div className="flex flex-col items-center gap-2.5 w-full max-w-md">
             {/* Windows — primary */}
             <a
-              href="/downloads/HardLauncher.exe"
+              href="https://github.com/HardTimesOffical/HardLauncher/releases/download/v1.0.10/HardLauncher-Setup-1.0.10.exe"
               className="w-full flex items-center justify-between gap-3 px-5 py-4 bg-[#4caf50] text-black font-mono text-[12px] font-bold uppercase tracking-widest hover:bg-[#66bb6a] active:scale-[0.98] transition-all no-underline"
               style={{ boxShadow: '4px 4px 0 #2e7d32' }}
             >
@@ -334,29 +332,29 @@ export default function LauncherClient({
             </a>
 
             {/* macOS — secondary */}
-            <a
-              href="/downloads/HardLauncher.dmg"
-              className="w-full flex items-center justify-between gap-3 px-5 py-3.5 bg-transparent text-white font-mono text-[12px] uppercase tracking-widest hover:bg-[#1e1e1e] active:scale-[0.98] transition-all no-underline border-2 border-[#333] hover:border-[#4caf50]/40"
-              style={{ boxShadow: '4px 4px 0 #1a1a1a' }}
-            >
-              <span className="flex items-center gap-3">
-                <IconApple />
-                {dict.hero.downloadMac}
-              </span>
-              <span className="text-[10px] font-normal opacity-50">{dict.hero.macRequirement}</span>
-            </a>
+              {/* <a
+                href="https://github.com/HardTimesOffical/HardLauncher/releases/download/v1.0.10/HardLauncher-Setup-1.0.10.dmg"
+                className="w-full flex items-center justify-between gap-3 px-5 py-3.5 bg-transparent text-white font-mono text-[12px] uppercase tracking-widest hover:bg-[#1e1e1e] active:scale-[0.98] transition-all no-underline border-2 border-[#333] hover:border-[#4caf50]/40"
+                style={{ boxShadow: '4px 4px 0 #1a1a1a' }}
+              >
+                <span className="flex items-center gap-3">
+                  <IconApple />
+                  {dict.hero.downloadMac}
+                </span>
+                <span className="text-[10px] font-normal opacity-50">{dict.hero.macRequirement}</span>
+              </a> */}
 
-            {/* Linux — tertiary */}
-            <a
-              href="/downloads/HardLauncher.AppImage"
-              className="w-full flex items-center justify-between gap-3 px-5 py-3.5 bg-transparent text-[#666] font-mono text-[12px] uppercase tracking-widest hover:bg-[#1a1a1a] hover:text-[#aaa] active:scale-[0.98] transition-all no-underline border-2 border-[#222] hover:border-[#333]"
-            >
-              <span className="flex items-center gap-3">
-                <IconLinux />
-                {dict.hero.downloadLinux}
-              </span>
-              <span className="text-[10px] font-normal opacity-50">{dict.hero.linuxRequirement}</span>
-            </a>
+              {/* Linux — tertiary */}
+              {/* <a
+                href="/downloads/HardLauncher.AppImage"
+                className="w-full flex items-center justify-between gap-3 px-5 py-3.5 bg-transparent text-[#666] font-mono text-[12px] uppercase tracking-widest hover:bg-[#1a1a1a] hover:text-[#aaa] active:scale-[0.98] transition-all no-underline border-2 border-[#222] hover:border-[#333]"
+              >
+                <span className="flex items-center gap-3">
+                  <IconLinux />
+                  {dict.hero.downloadLinux}
+                </span>
+                <span className="text-[10px] font-normal opacity-50">{dict.hero.linuxRequirement}</span>
+              </a> */}
 
             <p className="text-[#3a3a3a] font-mono text-[11px] uppercase tracking-widest mt-1">
               {dict.hero.version} · {dict.hero.javaNote}
@@ -426,7 +424,7 @@ export default function LauncherClient({
             {dict.cta.subtitle}
           </p>
           <a
-            href="#"
+            href="https://github.com/HardTimesOffical/HardLauncher/releases/download/v1.0.10/HardLauncher-Setup-1.0.10.exe"
             className="inline-flex items-center gap-3 px-10 py-4 bg-[#4caf50] text-black font-mono text-[13px] font-bold uppercase tracking-widest hover:bg-[#66bb6a] transition-all no-underline"
             style={{ boxShadow: '6px 6px 0 #2e7d32' }}
           >

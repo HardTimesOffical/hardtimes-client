@@ -1,4 +1,3 @@
-import Sidebar from "../../../components/dashboard/dashboard";
 import ServerList from "./ServersList";
 import ServerFilters from "@/app/components/servercard/ServerFilters";
 import PromoBanner from "@/app/components/blocks/PromoBanner";
@@ -53,9 +52,6 @@ export default function ServersPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      
-      <Sidebar />
-
       <main className="flex-1 w-full flex flex-col items-center relative overflow-x-hidden transition-all duration-300">
         
         {/* HERO SECTION — Обязательно должен содержать H1 (если его нет внутри HeroSection, добавь тут) */}

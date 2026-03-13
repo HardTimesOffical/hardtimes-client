@@ -1,35 +1,57 @@
 @import "tailwindcss";
 
+/* ════════════════════════════════════════════════════════════════
+   MINECRAFT DESIGN SYSTEM
+   Вдохновлено: minecraft.net
+   Палитра: тёмный уголь + зелёный крипер + оранжевый огонь
+════════════════════════════════════════════════════════════════ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #1a1c1e;
-  --foreground-bright: #1a1c1e;
-  --card: #ffffff;
-  --surface: #f6f8fa;
-  --border: #d0d7de;
-  --muted: #657b91;
+  --background: #f0f0f0;
+  --foreground: #1a1a1a;
+  --foreground-bright: #000000;
+  --card: #e8e8e8;
+  --surface: #d8d8d8;
+  --border: #b0b0b0;
+  --muted: #6b6b6b;
   --accent: #FF6A00;
   --contrast-text: #ffffff;
+
+  /* Minecraft-специфичные токены */
+  --mc-green: #5aac44;          /* Крипер-зелёный */
+  --mc-green-dark: #3d7a2e;     /* Тень зелёного */
+  --mc-green-glow: rgba(90, 172, 68, 0.35);
+  --mc-orange: #f97316;         /* Огонь/лава */
+  --mc-orange-dark: #c2570f;
+  --mc-dirt: #8B6340;           /* Земля */
+  --mc-stone: #9a9a9a;          /* Камень */
+  --mc-obsidian: #1a0f2e;       /* Обсидиан */
+  --mc-coal: #1e1e1e;           /* Уголь */
+  --mc-pixel-border: 3px;       /* Толщина пиксельной обводки */
 }
 
 .dark {
-  --background: #0d1117;
-  --foreground: #e6edf3;
-  --foreground-bright: #ffffff;
-  --card: #161b22; 
-  --surface: #010409; 
-  --border: #30363d;
-  --muted: #8b949e;
+  --background: #111111;
+  --foreground: #d4d4d4;
+  --foreground-bright: #f5f5f5;
+  --card: #1a1a1a;
+  --surface: #0d0d0d;
+  --border: #2a2a2a;
+  --muted: #6b6b6b;
   --accent: #f97316;
-  --contrast-text: #0d1117;
+  --contrast-text: #0d0d0d;
 }
 
+/* ── Base ───────────────────────────────────────────────────── */
 body {
   background-color: var(--background);
   color: var(--foreground);
   transition: background-color 0.2s ease, color 0.2s ease;
+  /* Тонкая пиксельная текстура на фоне в тёмной теме */
+  background-image: url("data:image/svg+xml,%3Csvg width='4' height='4' viewBox='0 0 4 4' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='1' height='1' fill='rgba(255,255,255,0.012)'/%3E%3Crect x='2' y='2' width='1' height='1' fill='rgba(255,255,255,0.012)'/%3E%3C/svg%3E");
 }
 
+/* ── Tailwind theme tokens ──────────────────────────────────── */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -40,83 +62,318 @@ body {
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-contrast-text: var(--contrast-text);
-}
 
-/* Хелперы для чистого CSS (если где-то не используешь Tailwind) */
-.bg-card { background-color: var(--card); }
-.text-main { color: var(--foreground); }
-.border-main { border: 1px solid var(--border); }
+  /* MC-цвета доступны как bg-mc-green, text-mc-orange и т.д. */
+  --color-mc-green: var(--mc-green);
+  --color-mc-green-dark: var(--mc-green-dark);
+  --color-mc-orange: var(--mc-orange);
+  --color-mc-orange-dark: var(--mc-orange-dark);
+  --color-mc-dirt: var(--mc-dirt);
+  --color-mc-stone: var(--mc-stone);
+  --color-mc-obsidian: var(--mc-obsidian);
+  --color-mc-coal: var(--mc-coal);
 
-/* Для Chrome, Safari и Edge */
-::-webkit-scrollbar {
-  width: 8px;  /* Ширина вертикального скролла */
-  height: 8px; /* Высота горизонтального скролла */
-}
-
-/* Фон дорожки скролла */
-::-webkit-scrollbar-track {
-  background: var(--background);
-}
-
-/* Сам ползунок */
-::-webkit-scrollbar-thumb {
-  background: var(--border); /* Используем цвет границ для ползунка */
-  border-radius: 10px;
-  border: 2px solid var(--background); /* Отступ, чтобы ползунок казался тоньше */
-}
-
-/* Ползунок при наведении */
-::-webkit-scrollbar-thumb:hover {
-  background: var(--muted);
-}
-
-/* Для Firefox */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) var(--background);
-}
-
-/* Специфические стили для темной темы (делаем ползунок чуть заметнее) */
-.dark ::-webkit-scrollbar-thumb {
-  background: #30363d; /* GitHub Dark thumb */
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: #484f58;
-}
-
-@keyframes shimmer {
-    100% { transform: translateX(300%) skew-x(-25deg); }
-  }
-
-  @theme inline {
-  /* Регистрация переменных для Tailwind */
+  /* Шрифты */
   --font-minecraft: var(--font-minecraft-ten);
   --font-pixel: var(--font-minecraft-seven);
   --font-main: var(--font-nunito);
 }
 
-/* 1. ДЛЯ ГЛАВНЫХ ЗАГОЛОВКОВ (Minecraft Ten) */
-/* Используем для логотипов, названий разделов, крупных заголовков */
+/* ════════════════════════════════════════════════════════════════
+   ТИПОГРАФИКА
+════════════════════════════════════════════════════════════════ */
+
+/* 1. Главные заголовки — Minecraft Ten */
 .font-mc-title {
   font-family: var(--font-minecraft-ten);
   text-transform: uppercase;
-  letter-spacing: -0.01em;
-  /* Фирменная тень для объема */
-  text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.4); 
+  letter-spacing: 0.1em;
+  text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.5);
 }
 
-/* 2. ДЛЯ АКЦЕНТНОГО/ИНТЕРФЕЙСНОГО ТЕКСТА (Minecraft Seven) */
-/* Используем для версии лаунчера, статов, кнопок, коротких подсказок */
+/* 2. Пиксельный UI-текст — Minecraft Seven */
 .font-mc-pixel {
   font-family: var(--font-minecraft-seven);
   line-height: 1;
 }
 
-/* 3. ДЛЯ ЧИТАБЕЛЬНОГО КОНТЕНТА (Nunito) */
-/* Используем для новостей, описаний, документации, длинных текстов */
+/* 3. Читабельный контент — Nunito */
 .font-standard {
   font-family: var(--font-nunito), sans-serif;
   line-height: 1.6;
+  font-weight: bold;
   letter-spacing: 0.01em;
 }
+
+/* ════════════════════════════════════════════════════════════════
+   MINECRAFT КНОПКА
+   Пиксельная, с объёмной тенью снизу — как в игре
+════════════════════════════════════════════════════════════════ */
+.mc-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-family: var(--font-minecraft-ten);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #fff;
+  background: var(--mc-green);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  /* Пиксельная объёмная тень — имитация кнопки в MC */
+  box-shadow:
+    0  4px 0 var(--mc-green-dark),
+    inset 0 1px 0 rgba(255,255,255,0.25),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+  image-rendering: pixelated;
+  text-decoration: none;
+}
+
+.mc-button:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+  box-shadow:
+    0  5px 0 var(--mc-green-dark),
+    inset 0 1px 0 rgba(255,255,255,0.3),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
+}
+
+.mc-button:active {
+  transform: translateY(3px);
+  box-shadow:
+    0  1px 0 var(--mc-green-dark),
+    inset 0 1px 0 rgba(0,0,0,0.2);
+}
+
+/* Оранжевый вариант кнопки */
+.mc-button-orange {
+  background: var(--mc-orange);
+  box-shadow:
+    0  4px 0 var(--mc-orange-dark),
+    inset 0 1px 0 rgba(255,255,255,0.2),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
+}
+
+.mc-button-orange:hover {
+  box-shadow:
+    0  5px 0 var(--mc-orange-dark),
+    inset 0 1px 0 rgba(255,255,255,0.25),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
+}
+
+/* Тёмный/нейтральный вариант */
+.mc-button-dark {
+  background: #2a2a2a;
+  box-shadow:
+    0  4px 0 #111,
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -1px 0 rgba(0,0,0,0.3);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   КАРТОЧКИ / ПАНЕЛИ
+════════════════════════════════════════════════════════════════ */
+
+/* Базовая карточка в стиле MC-инвентаря */
+.mc-card {
+  background-color: var(--card);
+  border: 2px solid var(--border);
+  position: relative;
+  /* Внутренняя подсветка сверху — как у блоков в интерфейсе */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    inset 0 -1px 0 rgba(0,0,0,0.15);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mc-card:hover {
+  border-color: var(--mc-green);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    inset 0 -1px 0 rgba(0,0,0,0.15),
+    0 0 0 1px var(--mc-green),
+    0 0 16px var(--mc-green-glow);
+}
+
+/* Карточка с пиксельной рамкой (для особых блоков) */
+.mc-card-pixel {
+  background-color: var(--card);
+  border: var(--mc-pixel-border) solid var(--border);
+  outline: var(--mc-pixel-border) solid rgba(0,0,0,0.5);
+  outline-offset: -3px;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ЗНАЧКИ / БЕЙДЖИ
+════════════════════════════════════════════════════════════════ */
+.mc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  font-family: var(--font-minecraft-seven);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: var(--mc-green);
+  color: #000;
+}
+
+.mc-badge-orange {
+  background: var(--mc-orange);
+  color: #fff;
+}
+
+.mc-badge-dark {
+  background: var(--surface);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   РАЗДЕЛИТЕЛЬ — пиксельная полоса блоков
+════════════════════════════════════════════════════════════════ */
+.mc-divider {
+  height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--mc-green)       0px,
+    var(--mc-green)       16px,
+    var(--mc-green-dark)  16px,
+    var(--mc-green-dark)  32px
+  );
+  opacity: 0.7;
+}
+
+.mc-divider-subtle {
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--border)   0px,
+    var(--border)   8px,
+    transparent     8px,
+    transparent     12px
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   INPUT / SELECT
+════════════════════════════════════════════════════════════════ */
+.mc-input {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  color: var(--foreground);
+  padding: 8px 12px;
+  font-family: var(--font-nunito), sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  /* Вдавленный эффект */
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.25);
+}
+
+.mc-input:focus {
+  border-color: var(--mc-green);
+  box-shadow:
+    inset 0 2px 4px rgba(0,0,0,0.25),
+    0 0 0 1px var(--mc-green),
+    0 0 8px var(--mc-green-glow);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ЗАГОЛОВОК СЕКЦИИ с зелёной подчёркивающей линией
+════════════════════════════════════════════════════════════════ */
+.mc-section-title {
+  font-family: var(--font-minecraft-ten);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-shadow: 3px 3px 0px rgba(0,0,0,0.4);
+  position: relative;
+  display: inline-block;
+  padding-bottom: 8px;
+}
+
+.mc-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--mc-green), var(--mc-green-dark), transparent);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ХЕЛПЕРЫ (обратная совместимость)
+════════════════════════════════════════════════════════════════ */
+.bg-card    { background-color: var(--card); }
+.text-main  { color: var(--foreground); }
+.border-main { border: 1px solid var(--border); }
+
+/* ════════════════════════════════════════════════════════════════
+   СКРОЛЛБАР
+════════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar       { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--background); }
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 0; /* Пиксельный — без скруглений */
+  border: 2px solid var(--background);
+}
+
+::-webkit-scrollbar-thumb:hover { background: var(--mc-green); }
+
+.dark ::-webkit-scrollbar-thumb       { background: #2a2a2a; }
+.dark ::-webkit-scrollbar-thumb:hover { background: var(--mc-green); }
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) var(--background);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   АНИМАЦИИ
+════════════════════════════════════════════════════════════════ */
+@keyframes shimmer {
+  100% { transform: translateX(300%) skew-x(-25deg); }
+}
+
+/* Пульсирующий зелёный glow — для онлайн-индикаторов */
+@keyframes mc-pulse-green {
+  0%, 100% { box-shadow: 0 0 4px var(--mc-green-glow); }
+  50%       { box-shadow: 0 0 12px var(--mc-green-glow), 0 0 4px var(--mc-green); }
+}
+
+/* Мигание пикселя — как курсор в чате MC */
+@keyframes mc-blink {
+  0%, 49%  { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.mc-pulse  { animation: mc-pulse-green 2s ease-in-out infinite; }
+.mc-blink  { animation: mc-blink 1s step-end infinite; }
+
+/* Появление снизу — для карточек/модалок */
+@keyframes mc-slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mc-slide-up { animation: mc-slide-up 0.3s ease forwards; }
+
+/* Пиксельная тряска (при ошибке) */
+@keyframes mc-shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-4px); }
+  40%       { transform: translateX(4px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(2px); }
+}
+
+.mc-shake { animation: mc-shake 0.4s ease; }

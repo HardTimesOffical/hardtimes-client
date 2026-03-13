@@ -1,4 +1,4 @@
-import Sidebar from "@/app/components/dashboard/dashboard";
+
 import ServerList from "../ServersList";
 import { Metadata } from "next";
 import PromoBanner from "@/app/components/blocks/PromoBanner";
@@ -44,7 +44,6 @@ export default function HytaleServersPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Sidebar />
 
       <main className="flex-1 w-full relative overflow-x-hidden transition-all duration-300">
         <div className="absolute top-0 right-0 w-[500px] h-[300px] bg-indigo-500/5 blur-[100px] pointer-events-none" />

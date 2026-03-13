@@ -1,4 +1,3 @@
-import Sidebar from "@/app/components/dashboard/dashboard"; 
 import ServerList from "../ServersList";
 import ServerFilters from "@/app/components/servercard/ServerFilters";
 import HeroSection from "@/app/components/header/HeroSection";
@@ -43,7 +42,6 @@ export default async function JavaServersPage({ searchParams }: { searchParams: 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Sidebar />
       
       <main className="flex-1 flex flex-col items-center min-w-0 transition-all duration-300">
         <HeroSection />

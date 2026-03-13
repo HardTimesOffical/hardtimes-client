@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
-import Sidebar from '../components/dashboard/dashboard';
 import { HiStar, HiLightningBolt, HiCursorClick } from 'react-icons/hi';
 
 // Обновленные пакеты: 1 звезда = 1 рубль + бонусы
@@ -53,7 +52,6 @@ export default function ShopPage() {
 
   return (
     <div className="flex min-h-screen bg-[#0a0a0a]">
-      <Sidebar />
       <main className="flex-1 w-full relative overflow-hidden flex flex-col items-center pb-20">
         
         {/* Фоновые свечения */}

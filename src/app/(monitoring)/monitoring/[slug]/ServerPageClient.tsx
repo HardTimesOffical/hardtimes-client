@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import Sidebar from "@/app/components/dashboard/dashboard";
 import Link from "next/link";
 import LoadingCrystal from "../../../components/loading/LoadingCrystal";
 import { useLanguage } from "@/context/LanguageContext";
@@ -122,7 +121,6 @@ export default function ServerPageClient({ slug, initialData }: Props) {
 
   return (
  <div className="flex pt-16 min-h-screen bg-background text-foreground transition-colors duration-200">
-      <Sidebar />
 
       <main className="flex-1 w-full pb-10">
         <div className="max-w-4xl mx-auto px-4 md:px-6 space-y-4 mt-6">

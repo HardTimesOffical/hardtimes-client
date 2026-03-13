@@ -1,5 +1,4 @@
 'use client'
-import Sidebar from "../components/dashboard/dashboard";
 import Login from "../components/auth/login";
 
 export default function LoginPage() {
@@ -12,8 +11,6 @@ export default function LoginPage() {
       {/* 1. Боковое меню 
           Убедись, что Sidebar имеет фиксированную ширину или корректно сжимается 
       */}
-      <Sidebar />
-
       {/* 2. Область контента 
           Добавлен плавный скролл и центрирование. 
           pt-10 или pt-20 можно добавить, если у тебя есть верхняя панель (Navbar).

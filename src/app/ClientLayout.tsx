@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import Sidebar from "./components/dashboard/dashboard";
-import Header from "./components/header/header";
+import Header from "./components/header/Header";
 import GlobalChat from "./components/chat/GlobalChat";
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/context/LanguageContext";
@@ -37,10 +36,10 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     <AuthProvider>
       <LanguageProvider>
         <div className="flex min-h-screen">
-          <Sidebar isMobileOpen={isMobileMenuOpen} setIsMobileOpen={setIsMobileMenuOpen} />
+
           
-          <div className="flex-1 flex flex-col min-w-0 md:pl-20 transition-all duration-300">
-            <Header onMenuClick={() => setIsMobileMenuOpen(true)} />
+          <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
+            <Header/>
             <main className="flex-1">
               {children}
             </main>

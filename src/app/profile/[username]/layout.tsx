@@ -1,7 +1,5 @@
 "use client";
 
-import Sidebar from "@/app/components/dashboard/dashboard";
-
 export default function ProfileLayout({
   children,
 }: {
@@ -10,8 +8,6 @@ export default function ProfileLayout({
   return (
     <div className="flex min-h-screen bg-background text-foreground transition-colors duration-200">
       
-      {/* 1. Общее боковое меню */}
-      <Sidebar />
 
       {/* 2. Область контента */}
       <main className="flex-1 w-full overflow-x-hidden">

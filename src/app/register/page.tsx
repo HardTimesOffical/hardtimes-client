@@ -1,5 +1,4 @@
 'use client'
-import Sidebar from "../components/dashboard/dashboard";
 import Registration from "../components/auth/registration";
 
 export default function RegisterPage() {
@@ -7,8 +6,6 @@ export default function RegisterPage() {
         /* Используем системный фон для поддержки светлой и темной тем */
         <div className="flex min-h-screen bg-[var(--background)] transition-colors duration-300">
             
-            {/* 1. Боковое меню (Sidebar) */}
-            <Sidebar />
 
             {/* 2. Основная область контента */}
             <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-10 overflow-y-auto">
