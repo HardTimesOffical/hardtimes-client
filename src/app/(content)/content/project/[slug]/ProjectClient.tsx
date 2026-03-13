@@ -10,7 +10,6 @@ import {
 } from 'react-icons/hi2';
 import { FaDiscord, FaGithub, FaTelegramPlane } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
-import Sidebar from "@/app/components/dashboard/dashboard";
 import Link from 'next/link';
 import YandexAds from '@/app/components/yandex/YandexAds';
 
@@ -98,7 +97,6 @@ export default function ProjectClient({ initialData }: ProjectClientProps) {
 
   return (
     <div className="flex pt-16 min-h-screen bg-background text-foreground transition-colors duration-200">
-      <Sidebar />
 
       <main className="flex-1 w-full pb-10">
         <div className="max-w-6xl mx-auto px-4 md:px-6 space-y-4 mt-6">

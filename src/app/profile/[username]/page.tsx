@@ -1,6 +1,5 @@
-import Link from "next/link";
+
 import LogoutButton from "@/app/profile/[username]/LogoutButton";
-import { HiOutlineServer, HiOutlineCube, HiOutlineCalendar, HiOutlineMapPin } from "react-icons/hi2";
 import ProfileTabs from "@/app/profile/[username]/profileTabs";
 
 interface ProfilePageProps {
