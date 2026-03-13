@@ -86,9 +86,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
     dynamicPages = [...serverUrls, ...projectUrls];
-  } catch (e) {
-    console.error('[Sitemap] Критическая ошибка загрузки. Сайтмап не обновлен:', e);
-    throw e;
+   } catch (e) {
+    console.warn('[Sitemap] Бэкенд недоступен при билде, пропускаем динамические страницы:', e);
   }
 
   return [...staticPages, ...launcherPages, ...contentCategoryPages, ...dynamicPages];

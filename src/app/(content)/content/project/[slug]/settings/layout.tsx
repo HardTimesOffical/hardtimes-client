@@ -4,7 +4,6 @@ import { useParams } from 'next/navigation';
 import { HiCheckBadge } from 'react-icons/hi2';
 import api from '@/lib/api';
 import Checklist from '@/app/components/project/Checklist';
-import Sidebar from '@/app/components/project/Sidebar';
 import { ProjectProvider, useProject } from './ProjectContext';
 
 function WorkbenchContent({ children }: { children: React.ReactNode }) {
@@ -64,7 +63,6 @@ function WorkbenchContent({ children }: { children: React.ReactNode }) {
 
         <div className="flex flex-col md:flex-row gap-8 items-start">
           <div className="md:sticky md:top-8 w-full md:w-64 z-10">
-             <Sidebar />
           </div>
           
           <main className="flex-1 w-full bg-[var(--card)] rounded-2xl p-6 md:p-10 border border-[var(--border)] shadow-sm min-h-[70vh] transition-colors duration-300">
