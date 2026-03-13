@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import DashboardLayout from "../components/dashboard/dashboard";
 import styles from './settings.module.css';
 import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
