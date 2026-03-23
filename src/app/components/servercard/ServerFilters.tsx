@@ -18,24 +18,50 @@ export default function ServerFilters() {
     ? GAME_VERSIONS["Minecraft Bedrock"]
     : GAME_VERSIONS["Minecraft Java"];
 
-  const getActive = (key: string) => searchParams.get(key)?.split(",") || [];
-  const activeVersions   = getActive("version");
-  const activeCategories = getActive("category");
-  const totalActive      = activeVersions.length + activeCategories.length;
+  // Определяем базовый путь и текущую версию из URL
+  // /monitoring/servers/java/1-16-5 → base=/monitoring/servers/java, currentUrlVersion=1.16.5
+  const javaBase    = "/monitoring/servers/java";
+  const bedrockBase = "/monitoring/servers/bedrock";
+  const base        = isBedrockPage ? bedrockBase : javaBase;
 
-  const toggle = (key: string, value: string) => {
-    const params   = new URLSearchParams(searchParams.toString());
-    let current    = getActive(key);
-    current        = current.includes(value)
+  // Версия может быть либо в URL-сегменте, либо в query
+  const versionFromPath = pathname.startsWith(`${base}/`)
+    ? pathname.replace(`${base}/`, "").replace(/-/g, ".")
+    : null;
+  const versionFromQuery = searchParams.get("version");
+  const activeVersionFromUrl = versionFromPath || versionFromQuery || null;
+
+  const getActive = (key: string) => searchParams.get(key)?.split(",") || [];
+  const activeCategories = getActive("category");
+  const totalActive = (activeVersionFromUrl ? 1 : 0) + activeCategories.length;
+
+  // Версии — редирект на /monitoring/servers/java/1-16-5
+  const toggleVersion = (version: string) => {
+    const slug = version.replace(/\./g, "-");
+    if (activeVersionFromUrl === version) {
+      // Снять версию — перейти на базовую страницу
+      router.push(base, { scroll: false });
+    } else {
+      router.push(`${base}/${slug}`, { scroll: false });
+    }
+  };
+
+  // Категории — обычные query-параметры
+  const toggleCategory = (value: string) => {
+    const params  = new URLSearchParams(searchParams.toString());
+    let current   = getActive("category");
+    current       = current.includes(value)
       ? current.filter(i => i !== value)
       : [...current, value];
-    current.length > 0 ? params.set(key, current.join(",")) : params.delete(key);
+    current.length > 0 ? params.set("category", current.join(",")) : params.delete("category");
+    // Сохраняем pathname (с версией в URL если есть)
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   const reset = (e: React.MouseEvent) => {
     e.stopPropagation();
-    router.push(pathname);
+    // Сбросить всё — перейти на базовую страницу без версии и категорий
+    router.push(base);
   };
 
   return (
@@ -92,14 +118,14 @@ export default function ServerFilters() {
               <FilterGroup
                 label="Версия игры"
                 items={currentVersions}
-                activeItems={activeVersions}
-                onToggle={v => toggle("version", v)}
+                activeItems={activeVersionFromUrl ? [activeVersionFromUrl] : []}
+                onToggle={toggleVersion}
               />
               <FilterGroup
                 label="Режим или категория"
                 items={CATEGORIES}
                 activeItems={activeCategories}
-                onToggle={v => toggle("category", v)}
+                onToggle={toggleCategory}
               />
             </div>
           </motion.div>

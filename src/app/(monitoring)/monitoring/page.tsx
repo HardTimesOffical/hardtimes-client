@@ -6,77 +6,60 @@ import PromoBanner from "@/app/components/blocks/PromoBanner";
 import ForumPosts from "@/app/components/blocks/ForumPosts";
 import { WeeklyLeaderboard } from "@/app/components/dashboard/WeeklyLeaderboard";
 import YandexAds from "@/app/components/yandex/YandexAds";
-import Footer from "@/app/components/footer/footer";
 
 export const metadata: Metadata = {
-  // Title: главный запрос + бренд. До 60 символов — Яндекс не обрезает.
-  title: "Мониторинг серверов Майнкрафт 2026 — HardTimes",
-
-  // Description: 150–160 символов, глагол + ключи + призыв. Яндекс показывает первые ~160 симв.
-  description: "Топ серверов Майнкрафт Java и Bedrock с живым онлайном. Выбери сервер по версии, режиму или модам — актуальный рейтинг, IP-адреса и честные отзывы на HardTimes.",
-
-  // Keywords: Яндекс до сих пор учитывает тег keywords (в отличие от Google).
-  // Порядок важен — самые частотные запросы первыми.
+  title: "Мониторинг серверов Майнкрафт | Топ лучших серверов Майнкрафт",
+  description: "Мониторинг серверов Майнкрафт — актуальный рейтинг серверов Minecraft Java и Bedrock. Найди сервер по версии, модам или режиму. IP-адреса серверов с живым онлайном.",
   keywords: [
-    // Высокочастотные
-    "сервера майнкрафт",
     "мониторинг серверов майнкрафт",
-    "сервера minecraft",
+    "сервера майнкрафт",
     "топ серверов майнкрафт",
-    // Среднечастотные с хвостами
-    "сервера майнкрафт java edition",
-    "сервера майнкрафт bedrock",
-    "сервера майнкрафт с модами",
-    "сервера майнкрафт 2026",
-    "лучшие сервера майнкрафт",
     "рейтинг серверов майнкрафт",
-    // Низкочастотные / длинный хвост
+    "сервера minecraft",
+    "мониторинг minecraft серверов",
+    "сервера майнкрафт java",
+    "сервера майнкрафт bedrock",
+    "сервера майнкрафт java edition",
+    "сервера майнкрафт bedrock edition",
+    "лучшие сервера майнкрафт",
+    "сервера майнкрафт 2026",
     "ip адрес сервера майнкрафт",
-    "найти сервер майнкрафт онлайн",
+    "найти сервер майнкрафт",
+    "сервера майнкрафт онлайн",
+    "сервера майнкрафт с модами",
     "сервера майнкрафт выживание",
-    "сервера майнкрафт мини игры",
     "сервера майнкрафт анархия",
-    // Смежные игры
-    "сервера hytale",
-    "мониторинг серверов hytale",
-    "voxelcore сервера",
+    "сервера майнкрафт мини игры",
+    "добавить сервер майнкрафт в мониторинг",
   ],
-
-  // Canonical — обязателен, Яндекс строго следит за дублями
   alternates: {
     canonical: 'https://hardmonitoring.ru',
   },
-
-  // Robots — явно разрешаем индексацию
   robots: {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true },
   },
-
-  // OpenGraph — для шаринга ВКонтакте и Telegram (основные соцсети РФ)
   openGraph: {
-    title: "Мониторинг серверов Майнкрафт — HardTimes",
-    description: "Топ серверов Minecraft Java и Bedrock с живым онлайном. Актуальный рейтинг, IP-адреса, моды и режимы.",
+    title: "Мониторинг серверов Майнкрафт — топ серверов 2026",
+    description: "Актуальный мониторинг серверов Майнкрафт. Топ серверов Minecraft Java и Bedrock с живым онлайном, IP-адресами и рейтингом.",
     url: 'https://hardmonitoring.ru',
-    siteName: 'HardTimes — Мониторинг серверов Майнкрафт',
+    siteName: 'Мониторинг серверов Майнкрафт',
     locale: 'ru_RU',
     type: 'website',
     images: [
       {
-        url: 'https://hardmonitoring.ru/og-image.jpg', // заменить на реальный путь
+        url: 'https://hardmonitoring.ru/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'HardTimes — Мониторинг серверов Майнкрафт',
+        alt: 'Мониторинг серверов Майнкрафт — топ серверов',
       },
     ],
   },
-
-  // Twitter/X Card — для превью в мессенджерах
   twitter: {
     card: 'summary_large_image',
-    title: "Мониторинг серверов Майнкрафт — HardTimes",
-    description: "Топ серверов Minecraft Java и Bedrock с живым онлайном и честными отзывами.",
+    title: "Мониторинг серверов Майнкрафт",
+    description: "Топ серверов Minecraft Java и Bedrock с живым онлайном. Актуальный рейтинг и IP-адреса серверов.",
     images: ['https://hardmonitoring.ru/og-image.jpg'],
   },
 };
@@ -84,13 +67,12 @@ export const metadata: Metadata = {
 export default async function Home({ searchParams }: { searchParams: any }) {
   const filters = await searchParams;
   const containerWidth = "max-w-[1132px]";
-  
 
   return (
     <div className="flex min-h-screen text-foreground transition-colors duration-200 relative">
       {/* Fixed BG */}
-      <div className="fixed inset-0 z-0 pointer-events-none" style={{ backgroundImage: "url('https://i.pinimg.com/736x/18/d8/2a/18d82a8a38f02b7d401283a3ac0650d9.jpg')", backgroundSize: "cover", backgroundPosition: "center top", filter: "saturate(0.35) brightness(0.15)" }} />
-      <div className="fixed inset-0 z-0 pointer-events-none" style={{ background: "linear-gradient(to bottom, transparent 10%, var(--background) 100%)" }} />
+      <div className="fixed inset-0 z-0 pointer-events-none" style={{ backgroundImage: "url('https://www.minecraft.net/content/dam/games/minecraft/key-art/MC_Vanilla_PMP_Keyart_1280x720.jpg')", backgroundSize: "cover", backgroundPosition: "center top", filter: "saturate(0.35) brightness(0.15)" }} />
+      <div className="fixed inset-0 z-0 pointer-events-none" style={{ background: "linear-gradient(to bottom, transparent 0%, var(--background) 50%)" }} />
 
       <div className="relative z-10 flex-1 flex flex-col min-w-0">
 
@@ -157,40 +139,49 @@ export default async function Home({ searchParams }: { searchParams: any }) {
                 <YandexAds />
               </aside>
             </div>
-            <Footer/>
-            {/* ── SEO-текст для Яндекса (виден роботам, скрыт визуально) ── */}
-            {/*
-              sr-only скрывает от пользователей, но Яндекс индексирует.
-              Важно: текст должен быть релевантным, не спамом.
-              Яндекс ценит естественный текст с вхождениями ключевых слов.
-            */}
+
+            {/* ── SEO-текст для Яндекса ── */}
             <section className="sr-only" aria-hidden="true">
-              <h2>Мониторинг серверов Майнкрафт — рейтинг лучших серверов 2026</h2>
+              <h2>Мониторинг серверов Майнкрафт — рейтинг лучших серверов Майнкрафт</h2>
               <p>
-                HardTimes — это актуальный мониторинг серверов Майнкрафт для Java и Bedrock Edition.
-                Мы собираем IP-адреса серверов Minecraft, отслеживаем живой онлайн и публикуем честные отзывы игроков.
-                В нашем рейтинге вы найдёте сервера с выживанием, анархией, мини-играми, модами и уникальными режимами.
+                Мониторинг серверов Майнкрафт с актуальным онлайном и IP-адресами серверов Minecraft.
+                Наш рейтинг серверов Майнкрафт обновляется в реальном времени — вы всегда видите
+                живой онлайн и доступность каждого сервера Майнкрафт.
               </p>
-              <h3>Как найти хороший сервер Майнкрафт?</h3>
+
+              <h3>Топ серверов Майнкрафт Java Edition</h3>
               <p>
-                Используйте фильтры по версии игры — Java Edition или Bedrock, по типу сервера и установленным модам.
-                Каждый сервер в нашем мониторинге проходит проверку на доступность и стабильность онлайна.
-                Подключайтесь к серверам с наибольшим количеством активных игроков прямо сейчас.
+                Топ серверов Майнкрафт Java Edition — сервера с модами Forge, Fabric и NeoForge,
+                кастомными плагинами и уникальными режимами. Найдите сервер Майнкрафт Java
+                по версии от 1.8 до 1.21 в нашем мониторинге серверов.
               </p>
-              <h3>Топ серверов Minecraft Java Edition</h3>
+
+              <h3>Сервера Майнкрафт Bedrock Edition</h3>
               <p>
-                Java Edition — классика Майнкрафт для ПК. Найдите сервера с Forge, Fabric или NeoForge модами,
-                кастомными плагинами и активным сообществом игроков.
+                Сервера Майнкрафт Bedrock Edition для игры на Windows, Android, iOS, Xbox и PlayStation.
+                Мониторинг серверов Bedrock показывает актуальный онлайн и IP-адреса серверов Minecraft
+                для кроссплатформенной игры.
               </p>
-              <h3>Сервера Minecraft Bedrock Edition</h3>
+
+              <h3>Сервера Майнкрафт с модами</h3>
               <p>
-                Bedrock Edition поддерживается на Windows, Android, iOS, Xbox и PlayStation.
-                Найдите кроссплатформенные сервера для игры с друзьями на любом устройстве.
+                Мониторинг серверов Майнкрафт с модами — выживание с Forge, технические сервера
+                с Industrial Craft, магические сервера с Thaumcraft. Найди сервер Майнкрафт
+                с нужными модами через фильтры нашего мониторинга.
               </p>
-              <h3>Добавить сервер в мониторинг</h3>
+
+              <h3>Рейтинг серверов Майнкрафт по режимам</h3>
               <p>
-                Владелец сервера Майнкрафт? Добавьте свой сервер в мониторинг HardTimes бесплатно.
-                Получите трафик от тысяч игроков, ищущих новые сервера каждый день.
+                Рейтинг серверов Майнкрафт включает все популярные режимы: выживание, анархия,
+                мини-игры, SkyBlock, PvP и творческий режим. Мониторинг серверов Minecraft
+                поможет найти сервер с нужным режимом и стабильным онлайном.
+              </p>
+
+              <h3>Добавить сервер в мониторинг Майнкрафт</h3>
+              <p>
+                Владелец сервера Майнкрафт? Добавь свой сервер в мониторинг бесплатно.
+                Тысячи игроков ежедневно ищут сервера Minecraft в нашем рейтинге —
+                добавь IP-адрес сервера Майнкрафт и получи живой трафик игроков.
               </p>
             </section>
 

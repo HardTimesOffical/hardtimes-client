@@ -1,166 +1,123 @@
 "use client";
 import React from "react";
-import { FaTelegramPlane, FaEnvelope } from "react-icons/fa";
+import { FaTelegramPlane, FaEnvelope, FaDiscord } from "react-icons/fa";
 import Link from "next/link";
 
-const MC_GREEN       = '#5aac44';
-const MC_GREEN_DARK  = '#3c8527';
-const MC_ACTIVE: React.CSSProperties = {
+const MC_GREEN = '#5aac44';
+const MC_GREEN_DARK = '#3c8527';
+
+// Стиль для активных элементов в духе кнопок Minecraft
+const MC_BUTTON_STYLE: React.CSSProperties = {
   background: '#3c8527',
   boxShadow: [
-    'inset  1px  1px 0 #5aac44',
+    'inset 1px 1px 0 #5aac44',
     'inset -1px -1px 0 #2a5e1a',
-    '0  1px 0 #2a5e1a',
+    '0 2px 0 #000',
   ].join(', '),
 };
 
 const NAV_LINKS = [
-  { label: 'Мониторинг',     href: '/monitoring' },
-  { label: 'Контент',        href: '/content' },
-  { label: 'Форум',          href: '/forum' },
+  { label: 'Мониторинг', href: '/monitoring' },
+  { label: 'Контент', href: '/content' },
+  { label: 'Форум', href: '/forum' },
   { label: 'Добавить сервер', href: '/monitoring/workbench' },
-  { label: 'Магазин',        href: '/shop' },
+  { label: 'Магазин', href: '/shop' },
 ];
 
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t-2 border-border bg-card mt-auto">
+    <footer className="bg-[#121212] border-t border-white/5 mt-auto relative overflow-hidden">
+      
+      {/* ── Верхний пиксельный бордюр ── */}
+      <div className="h-[2px] w-full bg-[#1a1a1a] flex">
+        <div className="h-full w-1/3 bg-[#3c8527]/30" />
+        <div className="h-full w-1/6 bg-[#5aac44]/20" />
+        <div className="h-full w-1/2 bg-transparent" />
+      </div>
 
-      {/* ── Пиксельный разделитель сверху ── */}
-      <div className="h-[3px] w-full"
-        style={{
-          backgroundImage: `repeating-linear-gradient(90deg, #3c8527 0px, #3c8527 16px, #2a5e1a 16px, #2a5e1a 32px)`,
-        }}
-      />
+      <div className="max-w-[1400px] mx-auto px-6 py-12 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
 
-      <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-8">
-
-        {/* ── Основная сетка ── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4">
-
-          {/* Колонка 1: Бренд */}
-          <div className="flex flex-col gap-3">
-            <Link href="/" className="inline-flex items-center gap-2 no-underline w-fit">
-              <div className="w-7 h-7 flex items-center justify-center font-mc-title text-[12px]"
-                style={MC_ACTIVE}>
+          {/* Колонка 1: Бренд и Описание */}
+          <div className="col-span-1 md:col-span-1 flex flex-col gap-5">
+            <Link href="/" className="inline-flex items-center gap-3 no-underline group">
+              <div 
+                className="w-8 h-8 flex items-center justify-center font-mc-pixel text-[14px] text-white"
+                style={MC_BUTTON_STYLE}
+              >
                 H
               </div>
-              <span className="font-mc-title text-[13px] text-foreground-bright">
-                Hard<span style={{ color: MC_GREEN }}>Times</span>
+              <span className="font-mc-title text-[15px] text-white tracking-wider">
+                HARD<span style={{ color: MC_GREEN }}>TIMES</span>
               </span>
             </Link>
 
-            <p className="font-standard text-[12px] text-muted leading-relaxed max-w-[220px]">
-              Мониторинг серверов, контент и сообщество для игроков Minecraft, Hytale и VoxelCore.
+            <p className="font-standard text-[12px] text-zinc-500 leading-relaxed">
+              Сервис для игроков Minecraft. Мониторинг серверов, форум и живое сообщество.
             </p>
 
-            <p className="font-mc-pixel text-[9px] text-muted/50 uppercase tracking-widest mt-1">
-              © {year} HardTimes
-            </p>
+            <div className="flex gap-3">
+              <a href="#" className="w-8 h-8 rounded-sm bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-600 hover:text-white hover:border-[#3c8527] transition-all">
+                <FaDiscord size={14} />
+              </a>
+              <a href="https://t.me/megashield_quazar" className="w-8 h-8 rounded-sm bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-600 hover:text-white hover:border-[#3c8527] transition-all">
+                <FaTelegramPlane size={14} />
+              </a>
+            </div>
           </div>
 
           {/* Колонка 2: Навигация */}
-          <div className="flex flex-col gap-1">
-            <p className="font-mc-title text-[10px] text-foreground-bright mb-2 uppercase">
-              Навигация
-            </p>
-            {NAV_LINKS.map(link => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="font-standard font-semibold text-[13px] text-muted
-                  hover:text-foreground-bright transition-colors no-underline
-                  flex items-center gap-2 group w-fit"
-              >
-                <span className="w-1 h-1 bg-border group-hover:bg-mc-green transition-colors shrink-0" />
-                {link.label}
-              </Link>
-            ))}
+          <div className="flex flex-col gap-4">
+            <h4 className="font-mc-pixel text-[10px] text-zinc-400 uppercase tracking-[0.2em]">Меню</h4>
+            <nav className="flex flex-col gap-2.5">
+              {NAV_LINKS.map(link => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-[13px] text-zinc-500 hover:text-[#5aac44] transition-colors flex items-center gap-2 group w-fit"
+                >
+                  <span className="w-1 h-1 bg-zinc-800 group-hover:bg-[#5aac44] transition-colors" />
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
           </div>
 
           {/* Колонка 3: Контакты */}
-          <div className="flex flex-col gap-3">
-            <p className="font-mc-title text-[10px] text-foreground-bright mb-1 uppercase">
-              Контакты
-            </p>
-
-            {/* Telegram */}
-            <a
-              href="https://t.me/megashield_quazar"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 group no-underline"
-            >
-              <div
-                className="w-8 h-8 flex items-center justify-center shrink-0
-                  border border-border bg-surface text-muted
-                  transition-all duration-150
-                  group-hover:text-white group-hover:border-[#3c8527]"
-                style={{ transition: 'all 0.15s' }}
-                onMouseEnter={e => Object.assign((e.currentTarget as HTMLElement).style, MC_ACTIVE)}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLElement;
-                  el.style.background = '';
-                  el.style.boxShadow = '';
-                }}
-              >
-                <FaTelegramPlane size={14} />
-              </div>
-              <div>
-                <p className="font-mc-pixel text-[8px] text-muted uppercase tracking-wider">
-                  Поддержка TG
-                </p>
-                <span className="font-standard text-[12px] font-bold text-foreground-bright
-                  group-hover:underline transition-colors">
-                  @megashield_quazar
-                </span>
-              </div>
+          <div className="flex flex-col gap-6">
+            <h4 className="font-mc-pixel text-[10px] text-zinc-400 uppercase tracking-[0.2em]">Связь</h4>
+            
+            <a href="https://t.me/megashield_quazar" className="group block">
+               <p className="text-[9px] text-zinc-600 uppercase mb-1">Telegram Support</p>
+               <p className="text-[13px] text-zinc-300 group-hover:text-white transition-colors font-medium">@megashield_quazar</p>
             </a>
 
-            {/* Email */}
-            <a
-              href="mailto:hardtimes.offical@gmail.com"
-              className="flex items-center gap-3 group no-underline"
-            >
-              <div
-                className="w-8 h-8 flex items-center justify-center shrink-0
-                  border border-border bg-surface text-muted
-                  transition-all duration-150"
-                onMouseEnter={e => Object.assign((e.currentTarget as HTMLElement).style, MC_ACTIVE)}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLElement;
-                  el.style.background = '';
-                  el.style.boxShadow = '';
-                }}
-              >
-                <FaEnvelope size={14} />
-              </div>
-              <div>
-                <p className="font-mc-pixel text-[8px] text-muted uppercase tracking-wider">
-                  Почта проекта
-                </p>
-                <span className="font-standard text-[12px] font-bold text-foreground-bright
-                  group-hover:underline transition-colors">
-                  hardtimes.offical@gmail.com
-                </span>
-              </div>
+            <a href="mailto:hardtimes.offical@gmail.com" className="group block">
+               <p className="text-[9px] text-zinc-600 uppercase mb-1">Business Email</p>
+               <p className="text-[13px] text-zinc-300 group-hover:text-white transition-colors font-medium">hardtimes.offical@gmail.com</p>
             </a>
           </div>
+
         </div>
 
-        {/* ── Нижняя полоса ── */}
-        <div className="mt-8 pt-4 border-t border-border flex flex-col md:flex-row
-          items-center justify-between gap-2">
-          <p className="font-mc-pixel text-[9px] text-muted/40 uppercase tracking-widest">
-            NOT AN OFFICIAL MINECRAFT PRODUCT
-          </p>
-          <p className="font-mc-pixel text-[9px] text-muted/40 uppercase tracking-widest">
-            Все права защищены · {year}
+        {/* ── Нижняя подпись ── */}
+        <div className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <p className="text-[10px] text-zinc-700 uppercase tracking-[0.2em]">
+              Not an official Minecraft product.
+            </p>
+          </div>
+          
+          <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">
+            &copy; {year} HardTimes <span className="mx-2 text-zinc-800">|</span> All Rights Reserved
           </p>
         </div>
       </div>
+
+      {/* Легкий градиент снизу */}
+      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#5aac44]/10 to-transparent" />
     </footer>
   );
 }

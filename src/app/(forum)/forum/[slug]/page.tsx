@@ -1,267 +1,170 @@
-'use client';
-import { useEffect, useState, useRef } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-import { 
-  HiHeart, HiEye, HiUserCircle, HiArrowLeft, 
-  HiOutlineMegaphone, HiOutlineUserGroup,
-  HiOutlineCalendarDays, HiOutlineTag,
-  HiOutlineRocketLaunch, HiOutlineChatBubbleLeftEllipsis
-} from "react-icons/hi2";
-import { formatDistanceToNow } from 'date-fns';
-import { ru } from 'date-fns/locale';
-import Link from 'next/link';
-import CategorySelect from '@/app/components/forum/CategorySelect';
-import PostComments from '@/app/components/forum/PostComments';
-import { ThemeToggle } from '@/app/components/header/ThemeBtn'
-import YandexAds from '@/app/components/yandex/YandexAds';
+import { Metadata } from "next";
+import { Suspense } from "react";
+import PostClient from "./PostClient";
+import Footer from "@/app/components/footer/footer";
 
-export default function PostPage() {
-  const { slug } = useParams();
-  const router = useRouter();
-  const { user, accessToken } = useAuth();
-  
-  const [post, setPost] = useState<any>(null);
-  const [activeAuthors, setActiveAuthors] = useState<any[]>([]);
-  const [liked, setLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(0);
-  const hasIncremented = useRef(false);
+const API = process.env.NEXT_PUBLIC_SERVER_URL;
+const BASE = "https://hardmonitoring.ru";
 
-  useEffect(() => {
-    const fetchPostAndSidebar = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/forum/posts/${slug}`);
-        const data = await res.json();
-        setPost(data);
-        setLikesCount(data.likes?.length || 0);
-        if (user && data.likes?.includes(user.id)) setLiked(true);
-
-        const resAuth = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/forum/posts?limit=100`);
-        const dataAuth = await resAuth.json();
-        const authorsMap: any = {};
-        (dataAuth.posts || []).forEach((p: any) => {
-          const name = p.author?.username || p.authorName;
-          if (name) {
-            authorsMap[name] = {
-              username: name,
-              avatar: p.author?.avatar || p.authorAvatar,
-              count: (authorsMap[name]?.count || 0) + 1
-            };
-          }
-        });
-        setActiveAuthors(Object.values(authorsMap).sort((a: any, b: any) => b.count - a.count).slice(0, 5));
-      } catch (err) { console.error(err); }
-    };
-    fetchPostAndSidebar();
-  }, [slug, user]);
-
-  useEffect(() => {
-    if (post?._id && !hasIncremented.current) {
-      hasIncremented.current = true;
-      fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/forum/posts/${post._id}/view`, { method: 'PATCH' });
-    }
-  }, [post?._id]);
-
-  const handleLike = async () => {
-    if (!user) return alert("Войдите, чтобы поставить лайк");
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/forum/posts/${post._id}/like`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${accessToken}` }
+// ── Динамические метаданные для каждого поста ────────────────────
+export async function generateMetadata(
+  { params }: { params: { slug: string } }
+): Promise<Metadata> {
+  try {
+    const res  = await fetch(`${API}/forum/posts/${params.slug}`, {
+      next: { revalidate: 3600 },
     });
+
+    if (!res.ok) throw new Error("Post not found");
+
+    const post = await res.json();
+
+    // Чистый текст из HTML контента — для description
+    const plainText = post.content
+      ? post.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 155)
+      : '';
+
+    const title       = post.title || "Тема на форуме Майнкрафт";
+    const category    = post.category || "Форум";
+    const author      = post.author?.username || "Игрок";
+    const description = plainText
+      || `${title} — обсуждение на форуме мониторинга серверов Майнкрафт. Раздел: ${category}.`;
+
+    return {
+      title: `${title} | Форум мониторинга серверов Майнкрафт`,
+      description,
+      keywords: [
+        "форум майнкрафт",
+        "форум мониторинг серверов майнкрафт",
+        category.toLowerCase(),
+        title.toLowerCase(),
+        "обсуждение серверов minecraft",
+        "форум minecraft серверов",
+      ],
+      alternates: {
+        canonical: `${BASE}/forum/${params.slug}`,
+      },
+      robots: {
+        index: true,
+        follow: true,
+      },
+      openGraph: {
+        title: `${title} | Форум серверов Майнкрафт`,
+        description,
+        url: `${BASE}/forum/${params.slug}`,
+        siteName: "Мониторинг серверов Майнкрафт",
+        locale: "ru_RU",
+        type: "article",
+        authors: [author],
+        publishedTime: post.createdAt,
+        modifiedTime:  post.updatedAt,
+        images: post.author?.avatar
+          ? [{ url: post.author.avatar, width: 400, height: 400, alt: author }]
+          : [{ url: `${BASE}/og-forum.jpg`, width: 1200, height: 630, alt: title }],
+      },
+      twitter: {
+        card: "summary",
+        title: `${title} | Форум серверов Майнкрафт`,
+        description,
+      },
+    };
+  } catch {
+    return {
+      title: "Тема | Форум мониторинга серверов Майнкрафт",
+      description: "Обсуждение на форуме мониторинга серверов Майнкрафт.",
+    };
+  }
+}
+
+// ── JSON-LD для конкретного поста ────────────────────────────────
+async function getPostJsonLd(slug: string) {
+  try {
+    const res  = await fetch(`${API}/forum/posts/${slug}`, { next: { revalidate: 3600 } });
+    if (!res.ok) return null;
+    const post = await res.json();
+
+    return {
+      "@context": "https://schema.org",
+      "@type": "DiscussionForumPosting",
+      "headline": post.title,
+      "url": `${BASE}/forum/${slug}`,
+      "datePublished": post.createdAt,
+      "dateModified": post.updatedAt || post.createdAt,
+      "inLanguage": "ru",
+      "author": {
+        "@type": "Person",
+        "name": post.author?.username || "Аноним",
+      },
+      "interactionStatistic": [
+        {
+          "@type": "InteractionCounter",
+          "interactionType": "https://schema.org/LikeAction",
+          "userInteractionCount": post.likes?.length || 0,
+        },
+        {
+          "@type": "InteractionCounter",
+          "interactionType": "https://schema.org/ViewAction",
+          "userInteractionCount": post.views || 0,
+        },
+      ],
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Мониторинг серверов Майнкрафт",
+        "url": BASE,
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Мониторинг серверов",   "item": BASE },
+          { "@type": "ListItem", "position": 2, "name": "Форум Майнкрафт",        "item": `${BASE}/forum` },
+          { "@type": "ListItem", "position": 3, "name": post.title,               "item": `${BASE}/forum/${slug}` },
+        ],
+      },
+    };
+  } catch { return null; }
+}
+
+// ── generateStaticParams — пре-рендер популярных постов ──────────
+// Next.js отрендерит эти страницы статически при билде.
+// Остальные посты будут рендериться on-demand (ISR revalidate: 3600).
+export async function generateStaticParams() {
+  try {
+    const res  = await fetch(`${API}/forum/posts?limit=200&sort=popular`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return [];
     const data = await res.json();
-    setLiked(data.isLiked);
-    setLikesCount(data.likesCount);
-  };
+    return (data.posts || []).map((p: any) => ({ slug: p.slug }));
+  } catch { return []; }
+}
 
-  if (!post) return <div className="p-20 text-center text-[var(--muted)] font-black uppercase">Загрузка...</div>;
+// Страница рендерится заново не чаще раза в час
+export const revalidate = 3600;
 
-  const project = post?.relatedProject || post?.project;
-  
+// ── Page ─────────────────────────────────────────────────────────
+export default async function ForumPostPage(
+  { params }: { params: { slug: string } }
+) {
+  const jsonLd = await getPostJsonLd(params.slug);
+
   return (
-    // ЗАМЕНА: bg-[#f1f5f9] -> bg-background
-    <div className="min-h-screen bg-background pb-20 transition-colors duration-200">
-      
-      {/* НАВИГАЦИЯ */}
-      <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border">
-        <div className="max-w-[1300px] mx-auto px-4 h-14 flex items-center justify-between">
-          <button 
-            onClick={() => router.back()}
-            className="group flex items-center gap-2 text-[10px] font-black text-muted hover:text-accent transition-all uppercase tracking-[0.2em]"
-          >
-            <HiArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" /> Назад
-          </button>
-          
-          {/* ДОБАВЛЕНА КНОПКА ТЕМЫ */}
-          <ThemeToggle />
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <span className="font-mc-pixel text-[10px] text-muted uppercase tracking-widest animate-pulse">
+            Загрузка…
+          </span>
         </div>
-      </div>
-
-      <div className="max-w-[1300px] mx-auto px-4 mt-6">
-        <div className="flex flex-col lg:flex-row gap-8">
-          
-          <div className="flex-1 min-w-0">
-            <div className="mb-8">
-              <h1 className="text-2xl md:text-4xl font-black text-[var(--foreground-bright)] leading-[1.1] mb-6 tracking-tighter break-words">
-                {post.title}
-              </h1>
-
-              <div className="flex flex-wrap items-center gap-y-4 gap-x-6 pb-6 border-b border-border">
-                <div className="flex items-center gap-3 pr-6 border-r border-border">
-                  <div onClick={() => router.push(`/profile/${post.author?.username}`)} className="cursor-pointer">
-                    {post.author?.avatar ? (
-                      <img 
-                        /* Проверяем: если ссылка начинается с http, оставляем как есть, иначе добавляем URL сервера */
-                        src={post.author.avatar.startsWith('http') 
-                          ? post.author.avatar 
-                          : `${process.env.NEXT_PUBLIC_SERVER_URL}${post.author.avatar}`
-                        } 
-                        className="w-10 h-10 rounded-xl object-cover ring-2 ring-accent/20" 
-                        alt={post.author?.username} 
-                        /* Если картинка не прогрузилась (ошибка 404), скроем её и покажем иконку */
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = 'none';
-                          // Здесь можно принудительно вызвать рендер заглушки, если нужно
-                        }}
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-xl bg-[var(--card)] border border-[var(--border)] flex items-center justify-center text-muted">
-                        <span className="font-black text-xs">{post.author?.username?.[0]?.toUpperCase()}</span>
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <div className="text-xs font-black text-foreground-bright uppercase tracking-tight">{post.author?.username}</div>
-                    <div className="text-[10px] text-accent font-bold uppercase">Автор</div>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-5">
-                  <div className="flex items-center gap-2">
-                    <HiOutlineCalendarDays className="w-4 h-4 text-accent" />
-                    <span className="text-[11px] font-bold text-muted uppercase">
-                      {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: ru })}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <HiEye className="w-4 h-4 text-emerald-500" />
-                    <span className="text-[11px] font-bold text-muted uppercase">{post.views || 0}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* КОНТЕНТ: Замена bg-white на bg-card */}
-            <div className="bg-card border border-border rounded-[1rem] p-6 md:p-12 shadow-sm mb-8 relative overflow-hidden">
-              <article className="prose prose-slate dark:prose-invert max-w-none break-words
-                                 prose-p:text-base prose-p:leading-[1.8] prose-p:text-foreground
-                                 prose-headings:text-foreground-bright prose-headings:font-black
-                                 prose-img:rounded-3xl">
-                <div dangerouslySetInnerHTML={{ __html: post.content }} />
-              </article>
-
-              <div className="flex items-center justify-start mt-12 pt-8 border-t border-border">
-                  <button 
-                    onClick={handleLike}
-                    className={`group flex items-center gap-3 px-8 py-3 rounded-2xl font-black text-xs transition-all ${
-                      liked 
-                      ? 'bg-red-500 text-white shadow-xl shadow-red-500/30 scale-105' 
-                      : 'bg-surface text-muted hover:bg-red-500/10 hover:text-red-500 border border-border'
-                    }`}
-                  >
-                    <HiHeart className={`w-5 h-5 transition-transform group-active:scale-125 ${liked ? 'fill-current' : ''}`} />
-                    <span>{liked ? 'Понравилось' : 'Оценить'}</span>
-                    <span className="ml-2 opacity-50">{likesCount}</span>
-                  </button>
-              </div>
-            </div>
-            <YandexAds/>      
-            <PostComments postId={post._id} user={user} accessToken={accessToken} />
-          </div>
-
-          <aside className="w-full lg:w-72 shrink-0 space-y-6">
-            {/* РЕКЛАМА (оставляем темной, как в дизайне) */}
-             <Link href="https://t.me/SamuraiMFG" className="block group">
-            {/* Заменил text-white на адаптивный или принудительно светлый текст внутри темного блока */}
-            <div className="bg-[#1c1c1e] border border-blue-500/20 rounded-[1rem] p-6 text-white relative overflow-hidden shadow-2xl transition-all hover:border-blue-500/50 hover:translate-y-[-4px]">
-              
-              {/* ФОНОВЫЕ ЭЛЕМЕНТЫ */}
-              <div className="absolute inset-0 opacity-10 pointer-events-none" 
-                  style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #3b82f6 1px, transparent 0)', backgroundSize: '24px 24px' }} />
-              <div className="absolute -right-10 -top-10 w-40 h-40 bg-blue-600/20 rounded-full blur-[80px]" />
-
-              <div className="relative z-10 flex flex-col h-full">
-                {/* ИКОНКА */}
-                <div className="mb-5">
-                  <div className="bg-blue-600 w-10 h-10 flex items-center justify-center rounded-xl shadow-lg shadow-blue-600/20">
-                    <HiOutlineMegaphone className="w-5 h-5 text-white" />
-                  </div>
-                </div>
-
-                {/* ТЕКСТОВЫЙ БЛОК — теперь точно белый на темном фоне */}
-                <div className="space-y-2 flex-1">
-                  <p className="text-[11px] font-black uppercase text-blue-400 tracking-[0.1em]">Продвижение</p>
-                  <h3 className="text-xl font-extrabold leading-[1.2] tracking-tight text-white">
-                    Место для вашей <br /> 
-                    <span className="text-blue-500">рекламы</span>
-                  </h3>
-                </div>
-
-                {/* КНОПКА */}
-                <div className="mt-8 pt-5 border-t border-white/10">
-                  <div className="inline-block bg-white text-black px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all group-hover:bg-blue-600 group-hover:text-white">
-                    Узнать больше
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Link>
-
-            {/* КАТЕГОРИИ И ТОП: Замена bg-white на bg-card */}
-            {/* КАТЕГОРИИ */}
-           <div className="bg-card border border-border p-5 rounded-[1rem] shadow-xl flex flex-col gap-4">
-              <CategorySelect 
-                selected={post.category} 
-                onSelect={(cat) => router.push(`/forum?category=${cat}`)} 
-              />
-              
-              <div className="h-px bg-border w-full opacity-30" />
-
-              <button 
-                onClick={() => router.push('/forum')}
-                className="flex items-center justify-center gap-3 w-full py-2 rounded-[0.50rem] bg-surface hover:bg-blue-500/10 text-muted hover:text-blue-400 border border-border hover:border-blue-500/30 transition-all group"
-              >
-                <HiOutlineChatBubbleLeftEllipsis className="w-5 h-5 transition-transform group-hover:scale-110 group-hover:rotate-3" />
-                <span className="text-[10px] font-black uppercase tracking-[0.15em]">Все темы форума</span>
-              </button>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-              <div className="p-4 border-b border-border bg-surface/50">
-                <h4 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-foreground-bright">
-                  <HiOutlineUserGroup className="text-accent" /> Топ авторов
-                </h4>
-              </div>
-              <div className="p-2 space-y-1">
-                {activeAuthors.map((author: any) => (
-                  <Link 
-                    href={`/profile/${author.username}`} 
-                    key={author.username} 
-                    className="flex items-center justify-between p-2.5 rounded-xl hover:bg-surface transition-all"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-8 h-8 rounded-xl bg-surface border border-border overflow-hidden shrink-0">
-                        {author.avatar ? <img src={author.avatar} className="w-full h-full object-cover" /> : <HiUserCircle className="w-full h-full text-muted" />}
-                      </div>
-                      <span className="text-xs font-bold truncate text-foreground">{author.username}</span>
-                    </div>
-                    <span className="text-[10px] font-black text-accent bg-accent/10 px-2 py-1 rounded-lg">{author.count}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </aside>
-        </div>
-      </div>
-    </div>
+      }>
+        <PostClient />
+      </Suspense>
+    </>
   );
 }

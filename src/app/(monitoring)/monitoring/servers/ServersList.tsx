@@ -49,7 +49,7 @@ export default function ServerList({ game, filters, sort }: Props) {
   const [loading,    setLoading]    = useState(true);
 
   const currentPage = Number(searchParams.get("page")) || 1;
-  const pageSize    = 15;
+  const pageSize    = 25;
 
   useEffect(() => {
     (async () => {

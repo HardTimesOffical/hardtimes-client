@@ -8,12 +8,12 @@ import YandexAds from "@/app/components/yandex/YandexAds";
 import { WeeklyLeaderboard } from "@/app/components/dashboard/WeeklyLeaderboard";
 
 export const metadata: Metadata = {
-  title: "Мониторинг серверов Minecraft, Hytale & VoxelCore | ТОП рейтинг 2026",
-  description: "Единая платформа мониторинга воксельных игр. Найди лучшие сервера Minecraft, Hytale и VoxelCore с живым онлайном, модами и стабильной экономикой. Удобный поиск по версии, модам и странам.",
+  title: "Мониторинг серверов Майнкрафт | ТОП список серверов Майнкрафт",
+  description: "Единая платформа мониторинга. Найди лучшие сервера Майнкрафт с активным онлайном, модами и стабильной пингом. Удобный поиск серверов по версии, модам и странам.",
   keywords: [
     "мониторинг серверов майнкрафт", 
-    "сервера hytale", 
-    "voxelcore сервера", 
+    "сервера майнкрафт", 
+    "java сервера", 
     "ip адреса серверов minecraft", 
     "топ серверов майнкрафт", 
     "сервера с модами"
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     canonical: 'https://hardmonitoring.ru/monitoring',
   },
   openGraph: {
-    title: "HardTimes — Рейтинг лучших игровых миров",
+    title: "HardTimes — Рейтинг лучших майнкрафт серверов",
     description: "Найди свой идеальный сервер в нашем мониторинге. Реальный онлайн и честные отзывы.",
     url: 'https://hardmonitoring.ru/monitoring',
     type: 'website',
@@ -100,9 +100,9 @@ export default function ServersPage() {
           <section className={`w-full ${containerWidth} mt-20 opacity-40 hover:opacity-100 transition-opacity text-xs leading-relaxed`}>
             <h2 className="text-sm font-bold mb-4">Как выбрать лучший сервер Minecraft?</h2>
             <p>
-              Наш мониторинг серверов <strong>Minecraft</strong> и <strong>Hytale</strong> предлагает продвинутую систему фильтрации. 
+              Наш мониторинг серверов <strong>Майнкрафт</strong> предлагает продвинутую систему фильтрации. 
               Вы можете найти сервера по IP адресу, версии игры (от 1.8 до 1.21), наличию модов (Thaumcraft, Industrial Craft) 
-              или режиму игры (Survival, SkyBlock, Anarchy). Мы проверяем онлайн в реальном времени, чтобы вы всегда имели 
+              или режиму игры (Ванилла, СкайБлок, Анархия). Мы проверяем онлайн в реальном времени, чтобы вы всегда имели 
               доступ к актуальным данным.
             </p>
           </section>

@@ -4,9 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const GAMES = [
-  { name: "Minecraft", accent: "#5aac44" },
-  { name: "Hytale",    accent: "#f97316" },
-  { name: "VoxelCore", accent: "#eab308" },
+  { name: "Майнкрафт", accent: "#5aac44" },
+  { name: "Лаунчер",    accent: "#f97316" },
+  { name: "JAVA", accent: "#eab308" },
+  { name: "BEDROCK", accent: "#eab308" },
 ];
 
 // ─── Форматирование чисел ─────────────────────────────────────────
@@ -76,7 +77,7 @@ export default function HeroSection() {
             </span>
 
             {/* Анимированное название игры */}
-            <div className="relative overflow-hidden" style={{ height: '22px', minWidth: '110px' }}>
+            <div className="relative overflow-hidden" style={{ height: '22px', minWidth: '130px' }}>
               <AnimatePresence mode="wait">
                 <motion.span
                   key={game.name}
@@ -112,7 +113,7 @@ export default function HeroSection() {
             />
             <StatItem
               label="Аптайм"
-              value="99.9%"
+              value="97.6%"
               dot="#eab308"
             />
           </div>
@@ -127,7 +128,7 @@ export default function HeroSection() {
         <div className="flex md:hidden items-center gap-4 pb-3 border-t border-border pt-3">
           <MobileStatItem label="Серверов" value={fmt(stats.servers)} dot="#5aac44" />
           <MobileStatItem label="Онлайн"   value={fmt(stats.players)} dot="#f97316" />
-          <MobileStatItem label="Аптайм"   value="99.9%"              dot="#eab308" />
+          <MobileStatItem label="Аптайм"   value="97.6%"              dot="#eab308" />
         </div>
 
       </div>

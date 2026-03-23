@@ -9,12 +9,16 @@ import {
   HiOutlineLockClosed, 
   HiOutlineEye, 
   HiOutlineEyeSlash, 
-  HiOutlineCheckCircle,
   HiOutlineArrowRight 
 } from "react-icons/hi2";
 import { HiIdentification } from 'react-icons/hi';
+import { FaGoogle, FaGithub } from "react-icons/fa";
 
-export default function Registration() {
+const labelStyle = "text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-2 block ml-1";
+const inputStyle = "w-full h-12 pl-12 pr-4 bg-[#1a1a1a] border border-white/5 rounded-none text-sm text-white outline-none focus:border-[#5a6e60]/50 transition-all placeholder:text-zinc-700 placeholder:opacity-50";
+const iconStyle = "absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-600 group-focus-within:text-[#5a6e60] transition-colors";
+
+export default function RegistrationCard() {
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -23,10 +27,8 @@ export default function Registration() {
     });
 
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [showConfirm, setShowConfirm] = useState(false);
 
     const auth = useAuth();
     const router = useRouter();
@@ -39,7 +41,6 @@ export default function Registration() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-        setSuccess('');
         setIsLoading(true);
 
         if (formData.password !== formData.confirmPassword) {
@@ -68,160 +69,125 @@ export default function Registration() {
             );
 
             const data = loginRes.data;
-            if (data && data.accessToken) {
-                const user = data.user || { id: data.id, email: formData.email, username: formData.username };
-                auth.login(data.accessToken, user);
+            if (data?.accessToken) {
+                auth.login(data.accessToken, data.user);
+                router.push('/');
             }
-
-            setSuccess('Аккаунт создан!');
-            setTimeout(() => router.push('/'), 1000);
         } catch (err: any) {
-            const message = err?.response?.data?.message || err.message || 'Ошибка регистрации';
-            setError(message);
+            setError(err?.response?.data?.message || err.message || 'Ошибка регистрации');
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="w-full flex justify-center py-6 px-4">
-            {/* ИСПРАВЛЕНО: Заменили bg-white на bg-[var(--card)] */}
-            <div className="w-full max-w-[420px] bg-[var(--card)] border border-[var(--border)] rounded-[2rem] shadow-xl overflow-hidden transition-colors duration-300">
+        <div className="w-full max-w-[800px] max-h-[660px] min-h-[500px] bg-[#242424] border border-white/5 rounded-none shadow-[0_25px_70px_rgba(0,0,0,0.7)] overflow-hidden flex flex-col md:flex-row mc-slide-up">
+            
+            {/* ЛЕВАЯ ЧАСТЬ: Информация и Арт */}
+            <div className="w-full md:w-[42%] border-b md:border-b-0 md:border-r border-white/5 relative flex-shrink-0">
+                <div className="absolute inset-0 bg-[#1a1a1a]">
+                    <img 
+                        src="https://i.pinimg.com/736x/d3/f8/59/d3f859a7d1a92d0402cc8be47fdc23ba.jpg" 
+                        alt="Синегарск"
+                        className="w-full h-full object-cover opacity-30 grayscale hover:grayscale-0 transition-all duration-1000"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] via-transparent to-transparent" />
+                </div>
+
+                <div className="relative z-10 p-10 flex flex-col justify-between h-full min-h-[250px] md:min-h-full">
+                    <div>
+                        <div className="bg-[#5a6e60]/20 p-3 border border-[#5a6e60]/30 w-fit mb-6">
+                            <HiOutlineUser className="w-7 h-7 text-[#5a6e60]" />
+                        </div>
+                        <h2 className="text-3xl font-bold text-white uppercase tracking-tight leading-none">
+                            HARD<br /> <span className="text-[#5a6e60]">MONITORING</span>
+                        </h2>
+                        <p className="text-zinc-500 text-[11px] mt-4 leading-relaxed max-w-[240px] uppercase tracking-wider font-medium">
+                            Присоединяйтесь к нашему комьюнити и начните управлять своими серверами прямо сейчас.
+                        </p>
+                    </div>
+                    
+                    <div className="font-mc-pixel text-[10px] text-zinc-700 uppercase tracking-widest">
+                        HardTimes — Join Us
+                    </div>
+                </div>
+            </div>
+
+            {/* ПРАВАЯ ЧАСТЬ: Форма регистрации */}
+            <div className="w-full md:w-[58%] flex flex-col p-10 md:p-14 bg-[#242424]">
                 
-                <header className="pt-10 px-8 text-center space-y-1">
-                    <h2 className="text-2xl font-black text-[var(--foreground-bright)] uppercase italic tracking-tighter">
-                        Регистрация
-                    </h2>
-                    <p className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-[0.2em] opacity-70">
-                        Станьте частью нашего комьюнити
-                    </p>
+                <header className="mb-8 space-y-2">
+                    <h1 className="text-2xl font-bold text-white uppercase tracking-tight">Регистрация</h1>
+                    <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.25em]">Создайте свой аккаунт</p>
                 </header>
 
-                <div className="p-8">
-                    <form className="space-y-4" onSubmit={handleSubmit}>
-                        
-                        {/* Логин */}
-                        <div className="space-y-1.5">
-                            <label className="text-[9px] font-black text-[var(--muted)] uppercase ml-1 tracking-widest" htmlFor="username">
-                                Логин
-                            </label>
+                <form className="space-y-4 flex-1" onSubmit={handleSubmit}>
+                    {/* Логин */}
+                    <div className="space-y-2">
+                        <label className={labelStyle} htmlFor="username">Никнейм</label>
+                        <div className="relative group">
+                            <div className={iconStyle}><HiOutlineUser className="w-5 h-5" /></div>
+                            <input className={inputStyle} type="text" id="username" name="username" placeholder="Steve_Mine" value={formData.username} onChange={handleChange} required />
+                        </div>
+                    </div>
+
+                    {/* Email */}
+                    <div className="space-y-2">
+                        <label className={labelStyle} htmlFor="email">Email адрес</label>
+                        <div className="relative group">
+                            <div className={iconStyle}><HiIdentification className="w-5 h-5" /></div>
+                            <input className={inputStyle} type="email" id="email" name="email" placeholder="steve@sinegarsk.ru" value={formData.email} onChange={handleChange} required />
+                        </div>
+                    </div>
+
+                    {/* Пароли в ряд */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className={labelStyle}>Пароль</label>
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--muted)] group-focus-within:text-blue-500 transition-colors">
-                                    <HiOutlineUser className="w-4 h-4" />
-                                </div>
-                                <input
-                                    className="w-full h-11 pl-10 pr-4 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-[var(--muted)] placeholder:opacity-30"
-                                    type="text"
-                                    id="username"
-                                    name="username"
-                                    placeholder="Ваш никнейм"
-                                    value={formData.username}
-                                    onChange={handleChange}
-                                    required
-                                />
+                                <div className={iconStyle}><HiOutlineLockClosed className="w-4 h-4" /></div>
+                                <input className={inputStyle} type={showPassword ? "text" : "password"} name="password" placeholder="••••" value={formData.password} onChange={handleChange} required />
                             </div>
                         </div>
-
-                        {/* Email */}
-                        <div className="space-y-1.5">
-                            <label className="text-[9px] font-black text-[var(--muted)] uppercase ml-1 tracking-widest" htmlFor="email">
-                                Email
-                            </label>
+                        <div className="space-y-2">
+                            <label className={labelStyle}>Повтор</label>
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--muted)] group-focus-within:text-blue-500 transition-colors">
-                                    <HiIdentification className="w-4 h-4" />
-                                </div>
-                                <input
-                                    className="w-full h-11 pl-10 pr-4 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-[var(--muted)] placeholder:opacity-30"
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    placeholder="steve@minecraft.net"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                />
+                                <div className={iconStyle}><HiOutlineLockClosed className="w-4 h-4" /></div>
+                                <input className={inputStyle} type={showPassword ? "text" : "password"} name="confirmPassword" placeholder="••••" value={formData.confirmPassword} onChange={handleChange} required />
+                                <button type="button" className="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-700 hover:text-white" onClick={() => setShowPassword(!showPassword)}>
+                                    {showPassword ? <HiOutlineEyeSlash className="w-4 h-4" /> : <HiOutlineEye className="w-4 h-4" />}
+                                </button>
                             </div>
                         </div>
+                    </div>
 
-                        {/* Пароли */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="space-y-1.5">
-                                <label className="text-[9px] font-black text-[var(--muted)] uppercase ml-1" htmlFor="password">Пароль</label>
-                                <div className="relative group">
-                                    <input
-                                        className="w-full h-11 pl-4 pr-10 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] outline-none focus:ring-1 focus:ring-blue-500/50 transition-all placeholder:text-[var(--muted)] placeholder:opacity-30"
-                                        type={showPassword ? 'text' : 'password'}
-                                        id="password"
-                                        name="password"
-                                        placeholder="••••"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                    <button
-                                        type="button"
-                                        className="absolute inset-y-0 right-0 pr-3 text-[var(--muted)] hover:text-blue-500 transition-colors"
-                                        onClick={() => setShowPassword(s => !s)}
-                                    >
-                                        {showPassword ? <HiOutlineEyeSlash className="w-4 h-4" /> : <HiOutlineEye className="w-4 h-4" />}
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="space-y-1.5">
-                                <label className="text-[9px] font-black text-[var(--muted)] uppercase ml-1" htmlFor="confirmPassword">Повтор</label>
-                                <div className="relative group">
-                                    <input
-                                        className="w-full h-11 pl-4 pr-10 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] outline-none focus:ring-1 focus:ring-blue-500/50 transition-all placeholder:text-[var(--muted)] placeholder:opacity-30"
-                                        type={showConfirm ? 'text' : 'password'}
-                                        id="confirmPassword"
-                                        name="confirmPassword"
-                                        placeholder="••••"
-                                        value={formData.confirmPassword}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                    <button
-                                        type="button"
-                                        className="absolute inset-y-0 right-0 pr-3 text-[var(--muted)] hover:text-blue-500 transition-colors"
-                                        onClick={() => setShowConfirm(s => !s)}
-                                    >
-                                        {showConfirm ? <HiOutlineEyeSlash className="w-4 h-4" /> : <HiOutlineEye className="w-4 h-4" />}
-                                    </button>
-                                </div>
-                            </div>
+                    {error && (
+                        <div className="bg-red-500/5 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase p-4 text-center tracking-widest animate-shake">
+                            {error}
                         </div>
+                    )}
 
-                        {/* Статус */}
-                        {error && <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black uppercase p-3 rounded-xl text-center tracking-wider animate-shake">{error}</div>}
-                        {success && <div className="bg-green-500/10 border border-green-500/20 text-green-500 text-[10px] font-black uppercase p-3 rounded-xl text-center tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-green-500/5"><HiOutlineCheckCircle className="w-4 h-4" /> {success}</div>}
+                    <button className="group w-full h-14 bg-white hover:bg-zinc-200 text-[#1a1a1a] font-bold text-sm uppercase tracking-[0.15em] transition-all flex items-center justify-center gap-2 disabled:bg-zinc-800 disabled:text-zinc-600 active:scale-[0.98]" type="submit" disabled={isLoading}>
+                        {isLoading ? "Создание..." : <>Зарегистрироваться <HiOutlineArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" /></>}
+                    </button>
+                </form>
 
-                        <button 
-                            className="group w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 disabled:opacity-50 mt-2 active:scale-[0.98]" 
-                            type="submit"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? "Создание..." : (
-                                <>
-                                    Продолжить
-                                    <HiOutlineArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                                </>
-                            )}
+                {/* Соцсети */}
+                <div className="mt-6 pt-6 border-t border-white/5">
+                    <div className="grid grid-cols-2 gap-4">
+                        <button type="button" className="h-11 bg-[#1a1a1a] border border-white/5 text-zinc-500 hover:text-white text-[10px] uppercase font-bold flex items-center justify-center gap-2 transition-all opacity-50 hover:opacity-100">
+                            <FaGoogle /> Google
                         </button>
-
-                        <footer className="mt-8 pt-6 border-t border-[var(--border)] text-center">
-                            <span className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-wider">
-                                Уже есть аккаунт?
-                            </span>
-                            <Link 
-                                href="/login" 
-                                className="ml-2 text-[9px] font-black text-blue-500 uppercase hover:text-blue-400 transition-colors tracking-widest"
-                            >
-                                Войти
-                            </Link>
-                        </footer>
-                    </form>
+                        <button type="button" className="h-11 bg-[#1a1a1a] border border-white/5 text-zinc-500 hover:text-white text-[10px] uppercase font-bold flex items-center justify-center gap-2 transition-all opacity-50 hover:opacity-100">
+                            <FaGithub /> GitHub
+                        </button>
+                    </div>
                 </div>
+
+                <footer className="mt-8 pt-6 border-t border-white/5 flex justify-center md:justify-start gap-4">
+                    <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest">Уже есть аккаунт?</span>
+                    <Link href="/login" className="text-[10px] font-bold text-white uppercase hover:text-[#5a6e60] transition-colors underline underline-offset-4 tracking-wider">Войти</Link>
+                </footer>
             </div>
         </div>
     );

@@ -1,113 +1,118 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { HiOutlineChatBubbleLeftRight, HiOutlineClock, HiOutlineEye, HiOutlineHeart } from 'react-icons/hi2';
+import { HiOutlineChatBubbleLeftRight, HiOutlineEye, HiOutlineHeart, HiPlus } from 'react-icons/hi2';
 
 export default function ForumPosts() {
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts,   setPosts]   = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchLatestPosts = async () => {
+    (async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/forum/posts?limit=5&sort=new`);
+        const res  = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/forum/posts?limit=5&sort=new`);
         const data = await res.json();
         setPosts(data.posts || []);
-      } catch (err) {
-        console.error("Failed to fetch forum posts:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchLatestPosts();
+      } catch { /* silent */ }
+      finally { setLoading(false); }
+    })();
   }, []);
 
   if (!loading && posts.length === 0) return null;
 
   return (
-    <aside className="w-full">
-      <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm">
-        {/* Компактная шапка в нейтральном стиле */}
-        <div className="px-3 py-2.5 border-b border-border bg-background/40 flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <HiOutlineChatBubbleLeftRight className="w-4 h-4 text-foreground-bright" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-foreground-bright">
-              Форум
-            </span>
-          </div>
-          <Link href="/forum" className="text-[9px] font-bold text-muted hover:text-foreground-bright uppercase transition-colors">
-            Все темы
-          </Link>
+    <div className="w-full bg-card border border-border overflow-hidden">
+
+      {/* ── Шапка ── */}
+      <div className="flex items-center justify-between px-3 py-2.5 border-b border-border bg-surface">
+        <div className="flex items-center gap-2">
+          <HiOutlineChatBubbleLeftRight className="w-3.5 h-3.5 text-muted shrink-0" />
+          <span className="font-mc-pixel text-[8px] uppercase tracking-widest text-muted">
+            Форум
+          </span>
         </div>
-
-        <div className="flex flex-col">
-          {loading ? (
-            [1, 2, 3].map((i) => (
-              <div key={i} className="p-3 border-b border-border animate-pulse">
-                <div className="h-2 w-12 bg-border rounded mb-2" />
-                <div className="h-3 w-full bg-border rounded" />
-              </div>
-            ))
-          ) : (
-            posts.map((post) => (
-              <Link 
-                key={post._id} 
-                href={`/forum/${post.slug}`}
-                className="px-3 py-3 border-b border-border last:border-0 hover:bg-foreground/[0.02] transition-colors group"
-              >
-                {/* Категория */}
-                <div className="text-[8px] font-bold text-muted/60 uppercase tracking-wider mb-1">
-                  {post.category || 'Обсуждение'}
-                </div>
-
-                {/* Заголовок */}
-                <h3 className="text-[12px] font-bold text-foreground-bright leading-snug group-hover:text-foreground transition-colors line-clamp-2">
-                  {post.title}
-                </h3>
-                
-                {/* Статистика и инфо */}
-                <div className="flex flex-col gap-2 mt-2">
-                  <div className="flex items-center justify-between text-[9px] text-muted font-medium">
-                    <div className="flex items-center gap-1">
-                      <div className="w-4 h-4 rounded-full bg-border overflow-hidden">
-                         {post.author?.avatar && <img src={post.author.avatar} alt={post.author.username} className="w-full h-full object-cover" />}
-                      </div>
-                      <span className="truncate max-w-[70px]">{post.author?.username}</span>
-                    </div>
-                    
-                    {/* Просмотры и Лайки */}
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-0.5">
-                        <HiOutlineEye className="w-3 h-3" />
-                        <span>{post.views || 0}</span>
-                      </div>
-                      <div className="flex items-center gap-0.5">
-                        <HiOutlineHeart className="w-3 h-3" />
-                        <span>{post.likesCount || post.likes?.length || 0}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-1 text-[8px] text-muted/50">
-                    <HiOutlineClock className="w-2.5 h-2.5" />
-                    <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              </Link>
-            ))
-          )}
-        </div>
-
-        {/* Футер блока */}
-        <div className="p-2 bg-background/20">
-          <Link 
-            href="/forum/create"
-            className="flex items-center justify-center w-full py-1.5 border border-border rounded-lg text-[9px] font-black uppercase tracking-tighter text-muted hover:border-foreground hover:text-foreground-bright transition-all bg-surface"
-          >
-            Создать тему
-          </Link>
-        </div>
+        <Link href="/forum"
+          className="font-mc-pixel text-[7px] uppercase tracking-widest text-muted/40
+            hover:text-muted transition-colors">
+          Все темы
+        </Link>
       </div>
-    </aside>
+
+      {/* ── Список постов ── */}
+      <div className="flex flex-col">
+        {loading ? (
+          [1, 2, 3].map(i => (
+            <div key={i} className="px-3 py-3 border-b border-border animate-pulse">
+              <div className="h-2 w-10 bg-border mb-2" />
+              <div className="h-3 w-full bg-border mb-1.5" />
+              <div className="h-2 w-3/4 bg-border/60" />
+            </div>
+          ))
+        ) : posts.map((post, i) => (
+          <Link
+            key={post._id}
+            href={`/forum/${post.slug}`}
+            className="group px-3 py-3 border-b border-border last:border-0
+              hover:bg-surface transition-colors duration-100"
+          >
+            {/* Категория */}
+            <div className="flex items-center gap-1.5 mb-1.5">
+              {/* Номер */}
+              <span className="font-mc-pixel text-[7px] text-muted/30">{i + 1}</span>
+              <span className="font-mc-pixel text-[7px] uppercase tracking-widest text-muted/50">
+                {post.category || 'Обсуждение'}
+              </span>
+            </div>
+
+            {/* Заголовок */}
+            <h3 className="font-standard font-bold text-[12px] text-foreground-bright
+              leading-snug line-clamp-2 group-hover:text-[#5aac44] transition-colors duration-100">
+              {post.title}
+            </h3>
+
+            {/* Мета */}
+            <div className="flex items-center justify-between mt-2">
+              {/* Автор */}
+              <div className="flex items-center gap-1.5 min-w-0">
+                <div className="w-4 h-4 bg-surface border border-border overflow-hidden shrink-0">
+                  {post.author?.avatar
+                    ? <img src={post.author.avatar} alt="" className="w-full h-full object-cover" />
+                    : <div className="w-full h-full bg-border" />}
+                </div>
+                <span className="font-standard text-[10px] text-muted/60 truncate max-w-[70px]">
+                  {post.author?.username}
+                </span>
+              </div>
+
+              {/* Статы */}
+              <div className="flex items-center gap-2.5 shrink-0">
+                <span className="flex items-center gap-0.5 font-standard text-[10px] text-muted/50">
+                  <HiOutlineEye className="w-3 h-3" />
+                  {post.views || 0}
+                </span>
+                <span className="flex items-center gap-0.5 font-standard text-[10px] text-muted/50">
+                  <HiOutlineHeart className="w-3 h-3" />
+                  {post.likesCount || post.likes?.length || 0}
+                </span>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* ── Футер ── */}
+      <div className="p-2 border-t border-border bg-surface">
+        <Link
+          href="/forum/create-post"
+          className="flex items-center justify-center gap-1.5 w-full py-1.5
+            font-standard font-bold text-[11px] text-muted border border-border
+            hover:text-foreground-bright hover:border-foreground/20
+            transition-colors duration-100 bg-card"
+        >
+          <HiPlus className="w-3 h-3" />
+          Создать тему
+        </Link>
+      </div>
+    </div>
   );
 }

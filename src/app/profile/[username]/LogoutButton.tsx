@@ -1,48 +1,44 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import styles from "./profile.module.css";
 import Link from "next/link";
-// Предположим, у вас есть контекст или функция выхода
-// import { useAuth } from "@/context/AuthContext"; 
+import { HiOutlineCog6Tooth, HiOutlineArrowLeftOnRectangle } from "react-icons/hi2";
 
 export default function LogoutButton() {
   const router = useRouter();
 
   const handleLogout = () => {
-    // 1. Очистка данных (зависит от вашей реализации)
+    // 1. Очистка данных
     localStorage.removeItem("accessToken"); 
-    // auth.logout(); 
-
-    // 2. Редирект
+    
+    // 2. Редирект и обновление
     router.push("/login");
-    router.refresh(); // Обновить состояние страницы
+    router.refresh(); 
   };
 
+  const baseButtonStyle = "flex items-center justify-center gap-2 w-full h-10 font-bold text-[10px] uppercase tracking-[0.15em] transition-all duration-200 border";
+
   return (
-   <div className="flex flex-col gap-2 w-full mt-6">
+    <div className="flex flex-col gap-2 w-full">
+      
       {/* Кнопка Настроек */}
-      <Link href="/settings" className={styles.settingsButton}>
-        <svg 
-          width="16" 
-          height="16" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="2" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"
-        >
-          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.1a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-        Settings
+      <Link 
+        href="/settings" 
+        className={`${baseButtonStyle} bg-[#242424] border-white/5 text-zinc-400 hover:text-white hover:border-[#5a6e60]/50 hover:bg-[#2a2a2a]`}
+      >
+        <HiOutlineCog6Tooth className="w-4 h-4" />
+        Настройки
       </Link>
 
       {/* Кнопка Выхода */}
-      <button onClick={handleLogout} className={styles.logoutButton}>
-        Log Out
+      <button 
+        onClick={handleLogout} 
+        className={`${baseButtonStyle} bg-transparent border-red-900/20 text-red-900/60 hover:bg-red-900/10 hover:border-red-900/40 hover:text-red-500`}
+      >
+        <HiOutlineArrowLeftOnRectangle className="w-4 h-4" />
+        Выйти из системы
       </button>
+
     </div>
   );
 }

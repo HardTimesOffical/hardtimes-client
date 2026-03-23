@@ -15,15 +15,13 @@ export default function Pagination({
   pageSize, 
   onPageChange 
 }: PaginationProps) {
-  // Рассчитываем общее количество страниц на основе totalItems от сервера
   const totalPages = Math.ceil(totalItems / pageSize);
 
-  // Если страница всего одна, пагинацию не показываем
   if (totalPages <= 1) return null;
 
   const getVisiblePages = () => {
     const pages: (number | string)[] = [];
-    const delta = 1; // Сколько страниц показывать рядом с текущей
+    const delta = 1; 
 
     for (let i = 1; i <= totalPages; i++) {
       if (
@@ -37,7 +35,6 @@ export default function Pagination({
         i === currentPage - delta - 1 || 
         i === currentPage + delta + 1
       ) {
-        // Добавляем троеточие, только если его еще нет в массиве
         if (pages[pages.length - 1] !== '...') {
           pages.push('...');
         }
@@ -49,31 +46,32 @@ export default function Pagination({
   const visiblePages = getVisiblePages();
 
   return (
-    <div className="flex items-center justify-center gap-2 select-none" translate="no">
-      {/* Кнопка "Назад" */}
+    <div className="flex items-center justify-center gap-2 select-none py-4" translate="no">
+      {/* Кнопка "Назад" - исправлено центрирование */}
       <button 
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="flex items-center justify-center w-9 h-9 rounded-xl border border-border bg-surface text-muted transition-all hover:border-accent hover:text-accent disabled:opacity-30 disabled:hover:border-border disabled:hover:text-muted shadow-sm active:scale-90"
+        className="flex items-center justify-center w-10 h-10 bg-[#242424] border border-white/5 text-zinc-500 transition-all hover:border-[#5a6e60]/50 hover:text-white disabled:opacity-20 disabled:pointer-events-none active:scale-90"
       >
-        <HiChevronLeft className="w-4 h-4" />
+        {/* МЕСТО ДЛЯ ПИКСЕЛЬНОЙ СТРЕЛКИ ВЛЕВО */}
+        <HiChevronLeft className="w-5 h-5" />
       </button>
 
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-2">
         {visiblePages.map((page, index) => (
           <React.Fragment key={index}>
             {page === '...' ? (
-              <span className="w-8 text-center text-muted/30 font-black tracking-widest text-[10px]">
+              <span className="w-8 text-center text-zinc-700 font-bold tracking-[0.2em] text-[10px]">
                 ...
               </span>
             ) : (
               <button
                 onClick={() => onPageChange(page as number)}
                 className={`
-                  min-w-[36px] h-9 px-2 rounded-xl text-[11px] font-black transition-all border uppercase
+                  min-w-[40px] h-10 px-3 text-[11px] font-bold transition-all border uppercase flex items-center justify-center
                   ${currentPage === page 
-                    ? 'bg-accent border-accent text-contrast-text shadow-md shadow-accent/20' 
-                    : 'bg-surface border-border text-muted hover:border-accent/50 hover:text-foreground shadow-sm'
+                    ? 'bg-white border-white text-[#1a1a1a] shadow-lg' 
+                    : 'bg-[#242424] border-white/5 text-zinc-400 hover:border-zinc-600 hover:text-white'
                   }
                 `}
               >
@@ -84,13 +82,14 @@ export default function Pagination({
         ))}
       </div>
 
-      {/* Кнопка "Вперед" */}
+      {/* Кнопка "Вперед" - исправлено центрирование */}
       <button 
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="flex items-center justify-center w-9 h-9 rounded-xl border border-border bg-surface text-muted transition-all hover:border-accent hover:text-accent disabled:opacity-30 disabled:hover:border-border disabled:hover:text-muted shadow-sm active:scale-90"
+        className="flex items-center justify-center w-10 h-10 bg-[#242424] border border-white/5 text-zinc-500 transition-all hover:border-[#5a6e60]/50 hover:text-white disabled:opacity-20 disabled:pointer-events-none active:scale-90"
       >
-        <HiChevronRight className="w-4 h-4" />
+        {/* МЕСТО ДЛЯ ПИКСЕЛЬНОЙ СТРЕЛКИ ВПРАВО */}
+        <HiChevronRight className="w-5 h-5" />
       </button>
     </div>
   );

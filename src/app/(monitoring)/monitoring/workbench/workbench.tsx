@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect, ChangeEvent, FormEvent } from "react";
+import React, { useState, useRef, useEffect, FormEvent } from "react";
 import { GAME_TYPES } from "@/constants/gameTypes";
 import { GAME_VERSIONS } from "@/constants/gameVersions";
 import { CATEGORIES } from "@/constants/categories";
@@ -8,9 +8,12 @@ import { TAGS } from "@/constants/tags";
 import { LANGUAGES } from "@/constants/languages";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import InfoBlock from "../../../components/blocks/InfoBlock";
+import { HiServer, HiGlobeAlt, HiCollection, HiPlus, HiPhotograph, HiCheckCircle } from "react-icons/hi";
 
-// Вспомогательный компонент CustomSelect (тот же дизайн)
+// --- Стилизация под Синегарск ---
+const labelStyle = "text-[10px] font-bold text-zinc-500 uppercase tracking-[0.15em] mb-2 block";
+const inputStyle = "w-full px-4 py-3 bg-[#1a1a1a] border border-white/5 text-white focus:border-[#5a6e60]/50 outline-none transition-all text-sm placeholder:text-zinc-700 rounded-none";
+
 const CustomSelect: React.FC<any> = ({ options, selected, multiple = false, onChange, placeholder }) => {
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
@@ -36,23 +39,27 @@ const CustomSelect: React.FC<any> = ({ options, selected, multiple = false, onCh
   const displayValue = multiple ? (Array.isArray(selected) ? selected.join(", ") : "") : (selected as string || "");
 
   return (
-    <div className="relative w-full text-sm font-sans" ref={selectRef}>
+    <div className="relative w-full" ref={selectRef}>
       <div 
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full px-3 py-2 bg-card border border-border rounded-md cursor-pointer text-foreground hover:border-accent transition-colors shadow-sm"
+        className={`flex items-center justify-between w-full px-4 py-3 bg-[#1a1a1a] border transition-colors cursor-pointer rounded-none ${isOpen ? 'border-[#5a6e60]' : 'border-white/5'}`}
       >
-        <span className="truncate">{displayValue || placeholder || "Выбрать..."}</span>
-        <span className="text-[10px] opacity-50">{isOpen ? "▲" : "▼"}</span>
+        <span className="truncate text-sm text-zinc-300">{displayValue || placeholder || "Выбрать..."}</span>
+        <span className={`text-[10px] transition-transform ${isOpen ? "rotate-180" : ""}`}>▼</span>
       </div>
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-md shadow-xl max-h-60 overflow-y-auto scrollbar-thin">
+        <div className="absolute z-50 w-full mt-1 bg-[#242424] border border-white/10 shadow-2xl max-h-60 overflow-y-auto scrollbar-hide">
           {options.map((option: string) => (
             <div
               key={option}
               onClick={() => toggleOption(option)}
-              className="flex items-center gap-2 px-3 py-2 hover:bg-surface cursor-pointer text-foreground border-b border-border/30 last:border-0"
+              className="flex items-center gap-3 px-4 py-3 hover:bg-[#5a6e60]/10 cursor-pointer text-sm text-zinc-400 hover:text-white border-b border-white/5 last:border-0 transition-colors"
             >
-              {multiple && <input type="checkbox" readOnly checked={Array.isArray(selected) && selected.includes(option)} className="accent-accent" />}
+              {multiple && (
+                <div className={`w-3.5 h-3.5 border flex items-center justify-center ${Array.isArray(selected) && selected.includes(option) ? 'bg-[#5a6e60] border-[#5a6e60]' : 'border-zinc-700'}`}>
+                   {Array.isArray(selected) && selected.includes(option) && <HiCheckCircle className="text-white w-3 h-3" />}
+                </div>
+              )}
               <span>{option}</span>
             </div>
           ))}
@@ -86,9 +93,6 @@ export default function Workbench() {
   const availableVersions = gameType === "JAVA & BEDROCK" 
     ? (GAME_VERSIONS["Minecraft Java"] || []) 
     : (GAME_VERSIONS[gameType] || []);
-
-  const labelStyle = "text-[10px] font-bold text-muted uppercase tracking-widest mb-1.5 block";
-  const inputStyle = "w-full px-3 py-2 bg-card border border-border rounded-md text-foreground focus:border-accent outline-none transition-all text-sm shadow-sm placeholder:text-muted/50";
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -138,19 +142,32 @@ export default function Workbench() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto flex flex-col gap-6 font-sans">
-      <InfoBlock title="Мастерская" text="Дополнительная ифнормация доступна в редакторе проекта!" />
+    <div className="w-full max-w-5xl mx-auto flex flex-col gap-8 py-10 px-4 animate-in fade-in duration-500">
+      
+      {/* Заголовок страницы в стиле плашки */}
+      <div className="bg-[#242424] p-6 border border-white/5 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-1.5 h-full bg-[#5a6e60]"></div>
+        <div className="flex items-center gap-5">
+           <div className="bg-[#5a6e60]/10 p-3 border border-[#5a6e60]/30 flex items-center justify-center">
+              <HiPlus className="w-6 h-6 text-[#5a6e60]" />
+           </div>
+           <div>
+              <h1 className="text-2xl font-bold text-white uppercase tracking-tighter">Мастерская</h1>
+              <p className="text-zinc-500 text-[11px] font-mc-pixel uppercase mt-1">Добавление нового сервера в систему мониторинга</p>
+           </div>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-6">
+      <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-8">
         {/* ЛЕВАЯ КОЛОНКА */}
-        <div className="flex-1 flex flex-col gap-4">
-          <div className="bg-card border border-border rounded-md p-5 shadow-sm space-y-4">
+        <div className="flex-1 flex flex-col gap-6">
+          <div className="bg-[#242424] border border-white/5 p-7 space-y-6 shadow-2xl">
             <div>
               <label className={labelStyle}>Название сервера</label>
-              <input className={inputStyle} value={serverName} onChange={e => setServerName(e.target.value)} placeholder="Например: Survival World" required />
+              <input className={inputStyle} value={serverName} onChange={e => setServerName(e.target.value)} placeholder="Например: Синегарск RolePlay" required />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className={labelStyle}>Тип игры</label>
                 <CustomSelect options={[...GAME_TYPES, "JAVA & BEDROCK"]} selected={gameType} onChange={(v:any) => { setGameType(v); setGameVersion(""); }} />
@@ -161,17 +178,17 @@ export default function Workbench() {
               </div>
             </div>
 
-            <div className="space-y-3 bg-surface p-3 rounded-md border border-border/50">
+            <div className="space-y-4 bg-black/20 p-5 border border-white/5">
               {(gameType.includes("Java") || gameType === "JAVA & BEDROCK") && (
                 <div>
-                  <label className={labelStyle}>Java IP</label>
-                  <input className={inputStyle} value={ips.java} onChange={e => setIps({...ips, java: e.target.value})} placeholder="mc.server.com" />
+                  <label className={labelStyle}>Java IP адрес</label>
+                  <input className={inputStyle} value={ips.java} onChange={e => setIps({...ips, java: e.target.value})} placeholder="play.server.ru" />
                 </div>
               )}
               {(gameType.includes("Bedrock") || gameType === "JAVA & BEDROCK") && (
                 <div>
-                  <label className={labelStyle}>Bedrock IP</label>
-                  <input className={inputStyle} value={ips.bedrock} onChange={e => setIps({...ips, bedrock: e.target.value})} placeholder="pe.server.com:19132" />
+                  <label className={labelStyle}>Bedrock IP адрес</label>
+                  <input className={inputStyle} value={ips.bedrock} onChange={e => setIps({...ips, bedrock: e.target.value})} placeholder="pe.server.ru:19132" />
                 </div>
               )}
               {gameType === "Hytale" && (
@@ -183,41 +200,50 @@ export default function Workbench() {
             </div>
 
             <div>
-              <label className={labelStyle}>Категории</label>
-              <CustomSelect options={CATEGORIES} selected={categories} multiple onChange={(v:any) => setCategories(v)} placeholder="Выберите жанры" />
+              <label className={labelStyle}>Категории сервера</label>
+              <div className="flex items-start gap-3">
+                <div className="bg-[#5a6e60]/20 p-3 border border-[#5a6e60]/20 hidden sm:block">
+                  <HiCollection className="w-5 h-5 text-[#5a6e60]" />
+                </div>
+                <CustomSelect options={CATEGORIES} selected={categories} multiple onChange={(v:any) => setCategories(v)} placeholder="Выберите жанры" />
+              </div>
             </div>
           </div>
         </div>
 
         {/* ПРАВАЯ КОЛОНКА */}
-        <div className="w-full md:w-[360px] flex flex-col gap-4">
-          <div className="bg-card border border-border rounded-md p-5 shadow-sm space-y-4">
+        <div className="w-full lg:w-[380px] flex flex-col gap-6">
+          <div className="bg-[#242424] border border-white/5 p-7 space-y-6">
             <div>
-              <label className={labelStyle}>Дополнительно</label>
-              <div className="flex flex-col gap-3">
-                <CustomSelect options={TAGS} selected={tags} multiple onChange={(v:any) => setTags(v)} placeholder="Теги" />
-                <CustomSelect options={LANGUAGES} selected={languages} multiple onChange={(v:any) => setLanguages(v)} placeholder="Языки" />
+              <label className={labelStyle}>Социальные сети и теги</label>
+              <div className="flex flex-col gap-4">
+                <CustomSelect options={TAGS} selected={tags} multiple onChange={(v:any) => setTags(v)} placeholder="Выберите теги" />
+                <CustomSelect options={LANGUAGES} selected={languages} multiple onChange={(v:any) => setLanguages(v)} placeholder="Языки проекта" />
               </div>
             </div>
             
             <div className="space-y-3 pt-2">
-              <input className={inputStyle} placeholder="Discord (ссылка)" value={discord} onChange={e => setDiscord(e.target.value)} />
-              <input className={inputStyle} placeholder="Сайт (https://...)" value={website} onChange={e => setWebsite(e.target.value)} />
+              <div className="relative">
+                <input className={inputStyle} placeholder="Discord (ссылка)" value={discord} onChange={e => setDiscord(e.target.value)} />
+              </div>
+              <div className="relative">
+                <input className={inputStyle} placeholder="Сайт (https://...)" value={website} onChange={e => setWebsite(e.target.value)} />
+              </div>
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-md p-4 shadow-sm">
-            <label className={labelStyle}>Баннер сервера</label>
+          <div className="bg-[#242424] border border-white/5 p-6">
+            <label className={labelStyle}>Баннер сервера (468x60)</label>
             <div 
-              className="aspect-video bg-surface rounded-md border border-dashed border-border flex items-center justify-center overflow-hidden cursor-pointer group relative transition-all hover:border-accent"
+              className="aspect-video bg-[#1a1a1a] border border-white/5 flex flex-col items-center justify-center overflow-hidden cursor-pointer group relative transition-colors hover:border-[#5a6e60]/50 shadow-inner"
               onClick={() => document.getElementById('img-input-create')?.click()}
             >
               {imagePreview ? (
                 <img src={imagePreview} className="w-full h-full object-cover" />
               ) : (
-                <div className="text-center p-4">
-                  <div className="text-xl mb-1 text-muted">+</div>
-                  <div className="text-[10px] font-bold text-muted uppercase">Загрузить 468x60</div>
+                <div className="flex flex-col items-center gap-2">
+                  <HiPhotograph className="w-8 h-8 text-zinc-700 group-hover:text-[#5a6e60] transition-colors" />
+                  <div className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Выбрать файл</div>
                 </div>
               )}
               <input id="img-input-create" type="file" accept="image/*" className="hidden" onChange={e => {
@@ -230,12 +256,26 @@ export default function Workbench() {
           <button 
             type="submit" 
             disabled={isSubmitting} 
-            className="w-full py-3 bg-accent text-contrast-text font-bold rounded-md hover:opacity-90 disabled:opacity-50 transition-all shadow-md mt-2"
+            className="w-full py-5 bg-white text-[#1a1a1a] font-bold uppercase text-sm tracking-widest hover:bg-zinc-200 disabled:bg-zinc-800 disabled:text-zinc-600 transition-all active:scale-[0.98] shadow-[0_10px_30px_rgba(0,0,0,0.3)]"
           >
-            {isSubmitting ? "Публикация..." : "Опубликовать сервер"}
+            {isSubmitting ? (
+              <div className="flex items-center justify-center gap-3">
+                <div className="w-4 h-4 border-2 border-zinc-400 border-t-[#1a1a1a] rounded-full animate-spin" />
+                <span>Публикация...</span>
+              </div>
+            ) : "Опубликовать проект"}
           </button>
+          
+          <p className="text-[9px] text-zinc-600 uppercase text-center tracking-tighter">
+            Нажимая кнопку, вы соглашаетесь с правилами размещения проектов
+          </p>
         </div>
       </form>
+
+      <style jsx>{`
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
     </div>
   );
 }

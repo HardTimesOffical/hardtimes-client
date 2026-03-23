@@ -29,14 +29,12 @@ const MC_ACTIVE_HOVER_CLASS = 'brightness-110';
 // ─── Константы ────────────────────────────────────────────────────
 const GAME_PLATFORMS = [
   { id: 'minecraft', label: 'Minecraft' },
-  { id: 'hytale',    label: 'Hytale'    },
   { id: 'voxelcore', label: 'VoxelCore' },
 ];
 
 const MC_PLATFORMS = [
   { id: 'java',    label: 'Java Edition'    },
-  { id: 'bedrock', label: 'Bedrock Edition' },
-  { id: 'hytale',  label: 'Hytale'         },
+  { id: 'bedrock', label: 'Bedrock Edition' }
 ];
 
 // ─── Утилита: клик вне элемента ───────────────────────────────────
