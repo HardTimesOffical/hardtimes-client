@@ -109,7 +109,6 @@ export default function ForumPage() {
         }>
           <ForumClient />
         </Suspense>
-      <Footer />
 
       {/* SEO-текст для Яндекса */}
       <section className="sr-only" aria-hidden="true">
