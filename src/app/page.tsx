@@ -3,7 +3,7 @@ import HomeClient from "./HomeClient"
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://hardmonitoring.ru'),
+  metadataBase: new URL('https://minecraftmonitoring-mc.ru'),
   title: {
     default: "Актуальный Мониторинг серверов Майнкрафт | Список майнкрафт серверов",
     template: "%s" 
@@ -27,9 +27,9 @@ export const metadata: Metadata = {
   // Настройки для соцсетей (OpenGraph) - как сайт будет выглядеть в Discord/Telegram/VK
   openGraph: {
     title: "Найди свой идеальный сервер среди множества игр!",
-    description: "Рейтинг серверов Minecraft и Hytale с большим и активным онлайном и реальными отзывами.",
+    description: "Рейтинг серверов Майнкрафт с большим и активным онлайном, ищите лучшие майнкрафт сервера на нашем проекте.",
     url: 'https://hardmonitoring.ru',
-    siteName: 'HardTimes Monitoring',
+    siteName: 'Мониторинг серверов Майнкрафт | Список майнкрафт серверов ',
     images: [
       {
         url: '/og-image.png', // Создай картинку 1200x630 в public/

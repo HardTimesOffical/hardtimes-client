@@ -64,11 +64,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title,
       description,
-      alternates: { canonical: `https://hardmonitoring.ru/content/${game}/${typeValue}` },
+      alternates: { canonical: `https://minecraftmonitoring-mc.ru/content/${game}/${typeValue}` },
       openGraph: {
         title,
         description,
-        url: `https://hardmonitoring.ru/content/${game}/${typeValue}`,
+        url: `https://minecraftmonitoring-mc.ru/content/${game}/${typeValue}`,
         siteName: 'HardMonitoring',
         locale: 'ru_RU',
         type: 'website',
@@ -82,7 +82,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical: `https://hardmonitoring.ru/content/${game}` },
+    alternates: { canonical: `https://minecraftmonitoring-mc.ru/content/${game}` },
   };
 }
 
@@ -125,7 +125,7 @@ export default async function Page({ params, searchParams }: Props) {
       "itemListElement": initialData.projects.map((p: { slug: string }, i: number) => ({
         "@type": "ListItem",
         "position": i + 1,
-        "url": `https://hardmonitoring.ru/content/${game}/${currentType}/${p.slug}`
+        "url": `https://minecraftmonitoring-mc.ru/content/${game}/${currentType}/${p.slug}`
       }))
     }
   };

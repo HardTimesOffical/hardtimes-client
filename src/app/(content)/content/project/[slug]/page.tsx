@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title,
       description: plainDesc || `Скачать проект ${project.title} на HardMonitoring`,
-      alternates: { canonical: `https://hardmonitoring.ru/content/project/${slug}` },
+      alternates: { canonical: `https://minecraftmonitoring-mc.ru/content/project/${slug}` },
       openGraph: {
         title,
         description: plainDesc,

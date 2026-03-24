@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     "топ серверов майнкрафт bedrock",
   ],
   alternates: {
-    canonical: 'https://hardmonitoring.ru/monitoring/servers/bedrock',
+    canonical: 'https://minecraftmonitoring-mc.ru/monitoring/servers/bedrock',
   },
   robots: {
     index: true,
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Сервера Майнкрафт Bedrock Edition — рейтинг серверов Minecraft",
     description: "Мониторинг серверов Майнкрафт Bedrock Edition. Актуальный рейтинг серверов Minecraft PE с IP-адресами и живым онлайном для Android, iOS и Windows.",
-    url: 'https://hardmonitoring.ru/monitoring/servers/bedrock',
+    url: 'https://minecraftmonitoring-mc.ru/monitoring/servers/bedrock',
     siteName: 'Мониторинг серверов Майнкрафт',
     locale: 'ru_RU',
     type: 'website',

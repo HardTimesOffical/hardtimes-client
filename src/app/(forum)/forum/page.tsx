@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     "ищу напарника на сервер майнкрафт",
   ],
   alternates: {
-    canonical: "https://hardmonitoring.ru/forum",
+    canonical: "https://minecraftmonitoring-mc.ru/forum",
   },
   robots: {
     index: true,
@@ -36,13 +36,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Форум мониторинга серверов Майнкрафт",
     description: "Форум сообщества серверов Minecraft. Обсуждения, гайды по серверам, поиск напарника и бесплатная реклама серверов Майнкрафт.",
-    url: "https://hardmonitoring.ru/forum",
+    url: "https://minecraftmonitoring-mc.ru/forum",
     siteName: "Мониторинг серверов Майнкрафт",
     locale: "ru_RU",
     type: "website",
     images: [
       {
-        url: "https://hardmonitoring.ru/og-forum.jpg",
+        url: "https://minecraftmonitoring-mc.ru/og-forum.jpg",
         width: 1200,
         height: 630,
         alt: "Форум мониторинга серверов Майнкрафт",
@@ -63,7 +63,7 @@ const jsonLd = [
     "@type": "DiscussionForumPosting",
     "name": "Форум мониторинга серверов Майнкрафт",
     "description": "Форум сообщества мониторинга серверов Minecraft. Гайды по серверам майнкрафт, поиск напарника на сервер, обсуждение модов и бесплатная реклама серверов.",
-    "url": "https://hardmonitoring.ru/forum",
+    "url": "https://minecraftmonitoring-mc.ru/forum",
     "inLanguage": "ru",
     "about": {
       "@type": "Thing",
@@ -78,13 +78,13 @@ const jsonLd = [
         "@type": "ListItem",
         "position": 1,
         "name": "Мониторинг серверов Майнкрафт",
-        "item": "https://hardmonitoring.ru",
+        "item": "https://minecraftmonitoring-mc.ru",
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Форум Майнкрафт",
-        "item": "https://hardmonitoring.ru/forum",
+        "item": "https://minecraftmonitoring-mc.ru/forum",
       },
     ],
   },

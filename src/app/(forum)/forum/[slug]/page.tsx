@@ -4,7 +4,7 @@ import PostClient from "./PostClient";
 import Footer from "@/app/components/footer/footer";
 
 const API = process.env.NEXT_PUBLIC_SERVER_URL;
-const BASE = "https://hardmonitoring.ru";
+const BASE = "https://minecraftmonitoring-mc.ru";
 
 // ── Динамические метаданные для каждого поста ────────────────────
 export async function generateMetadata(
