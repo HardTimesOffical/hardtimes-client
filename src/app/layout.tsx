@@ -115,7 +115,7 @@ export default function RootLayout({
         
         <GoogleAnalytics gaId="G-04ESSL6306" />
 
-        {/* Yandex.Metrika counter */}
+      {/* Combined Yandex.Metrika counters */}
         <Script id="yandex-metrika" strategy="afterInteractive">
           {`
             (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
@@ -124,6 +124,7 @@ export default function RootLayout({
             k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
             (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
+            // Инициализация старого счетчика
             ym(106883591, "init", {
               clickmap:true,
               trackLinks:true,
@@ -131,8 +132,19 @@ export default function RootLayout({
               webvisor:true,
               ecommerce:"dataLayer"
             });
+
+            // Инициализация НОВОГО счетчика (108209116)
+            ym(108209116, "init", {
+              clickmap:true,
+              trackLinks:true,
+              accurateTrackBounce:true,
+              webvisor:true,
+              ecommerce:"dataLayer",
+              ssr: true
+            });
           `}
         </Script>
+        
         <noscript>
           <div>
             <img 
