@@ -40,8 +40,8 @@ export async function generateMetadata({
   return {
     title:
       lang === 'ru'
-        ? 'HardLauncher — Лаунчер Minecraft для анархи-серверов'
-        : 'HardLauncher — Minecraft Launcher for Anarchy Servers',
+        ? 'Hlauncher - Бесплатный и современный майнкрафт лаунчер '
+        : 'HLauncher — Free and modern Minecraft Launcher ',
     description: dict.hero.subtitle,
     alternates: {
       // hreflang links — tells Google which page is for which language
