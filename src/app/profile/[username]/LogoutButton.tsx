@@ -3,42 +3,45 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { HiOutlineCog6Tooth, HiOutlineArrowLeftOnRectangle } from "react-icons/hi2";
+import { useAuth } from "@/context/AuthContext"; // Импортируем твой контекст
 
 export default function LogoutButton() {
-  const router = useRouter();
+  const { logout } = useAuth(); // Используем метод из контекста
 
-  const handleLogout = () => {
-    // 1. Очистка данных
-    localStorage.removeItem("accessToken"); 
-    
-    // 2. Редирект и обновление
-    router.push("/login");
-    router.refresh(); 
+  const handleLogout = async () => {
+    await logout(); // Это очистит localStorage, Cookies и сделает редирект
   };
 
-  const baseButtonStyle = "flex items-center justify-center gap-2 w-full h-10 font-bold text-[10px] uppercase tracking-[0.15em] transition-all duration-200 border";
+  // Базовый стиль Синегорск: строгие углы, мелкий шрифт, широкий трекинг
+  const baseButtonStyle = `
+    flex items-center justify-center gap-2 w-full h-9 
+    text-[9px] uppercase tracking-[0.25em] font-medium
+    transition-all duration-300 border relative overflow-hidden group
+  `;
 
   return (
-    <div className="flex flex-col gap-2 w-full">
+    <div className="flex flex-col gap-2 w-full mt-2">
       
-      {/* Кнопка Настроек */}
+      {/* Кнопка Настроек (Оливковая тема) */}
       <Link 
         href="/settings" 
-        className={`${baseButtonStyle} bg-[#242424] border-white/5 text-zinc-400 hover:text-white hover:border-[#5a6e60]/50 hover:bg-[#2a2a2a]`}
+        className={`${baseButtonStyle} bg-[#1a1a1a] border-white/5 text-[#8da081]/70 hover:text-white hover:border-[#8da081]/40`}
       >
-        <HiOutlineCog6Tooth className="w-4 h-4" />
+        {/* Декоративный элемент в углу */}
+        <div className="absolute top-0 left-0 w-1 h-1 border-t border-l border-[#8da081] opacity-0 group-hover:opacity-100 transition-opacity" />
+        
+        <HiOutlineCog6Tooth className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 transition-opacity" />
         Настройки
       </Link>
 
-      {/* Кнопка Выхода */}
+      {/* Кнопка Выхода (Приглушенная серая тема) */}
       <button 
         onClick={handleLogout} 
-        className={`${baseButtonStyle} bg-transparent border-red-900/20 text-red-900/60 hover:bg-red-900/10 hover:border-red-900/40 hover:text-red-500`}
+        className={`${baseButtonStyle} bg-transparent border-white/5 text-white/30 hover:bg-white/[0.02] hover:border-white/20 hover:text-white/80`}
       >
-        <HiOutlineArrowLeftOnRectangle className="w-4 h-4" />
-        Выйти из системы
+        <HiOutlineArrowLeftOnRectangle className="w-3.5 h-3.5" />
+        Выйти
       </button>
-
     </div>
   );
 }

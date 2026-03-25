@@ -1,142 +1,129 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HiOutlineServer, HiOutlineEye, HiOutlineCube, HiOutlineArrowDownTray } from "react-icons/hi2";
 import Link from "next/link";
 
 export default function ProfileTabs({ user, isOwner }: { user: any; isOwner: boolean }) {
   const [activeTab, setActiveTab] = useState<"servers" | "projects">("servers");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, [activeTab]);
 
   const renderIP = (ip: any) => {
-    if (!ip) return "IP не указан";
+    if (!ip) return "0.0.0.0";
     if (typeof ip === "string") return ip;
-    if (typeof ip === "object") {
-      const address = ip.address || ip.ip || "unknown";
-      const port = ip.port ? `:${ip.port}` : "";
-      return `${address}${port}`;
-    }
-    return String(ip);
+    return ip.address || ip.ip || "0.0.0.0";
   };
 
   const tabButtonStyle = (isActive: boolean) => `
-    pb-4 text-[11px] font-bold uppercase tracking-[0.2em] transition-all relative flex items-center gap-3
-    ${isActive ? "text-white" : "text-zinc-600 hover:text-zinc-400"}
+    pb-3 text-[11px] font-bold uppercase tracking-wider transition-all relative flex items-center gap-2
+    ${isActive ? "text-[#8da081]" : "text-zinc-500 hover:text-zinc-300"}
   `;
 
+  const SkeletonCard = () => (
+    <div className="w-full h-20 bg-white/[0.02] border border-white/5 flex items-center p-4 gap-4 animate-pulse">
+      <div className="w-12 h-12 bg-white/5" />
+      <div className="flex-1 space-y-2">
+        <div className="h-3 w-1/4 bg-white/5" />
+        <div className="h-2 w-1/3 bg-white/5" />
+      </div>
+    </div>
+  );
+
   return (
-    <div className="w-full p-6 lg:p-10">
-      {/* Навигация вкладок */}
-      <div className="flex items-center gap-10 border-b border-white/5 mb-8">
+    <div className="w-full p-4 lg:p-6">
+      {/* Вкладки */}
+      <div className="flex items-center gap-8 border-b border-white/5 mb-6">
         <button onClick={() => setActiveTab("servers")} className={tabButtonStyle(activeTab === "servers")}>
-          <HiOutlineServer size={16} className={activeTab === "servers" ? "text-[#5a6e60]" : ""} />
+          <HiOutlineServer size={16} />
           Серверы
-          <span className="text-[9px] opacity-40">[{user.servers?.length || 0}]</span>
-          {activeTab === "servers" && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-[#5a6e60]" />}
+          <span className="opacity-40 text-[9px]">({user.servers?.length || 0})</span>
+          {activeTab === "servers" && <div className="absolute bottom-[-1px] left-0 w-full h-[2px] bg-[#8da081]" />}
         </button>
 
         <button onClick={() => setActiveTab("projects")} className={tabButtonStyle(activeTab === "projects")}>
-          <HiOutlineCube size={16} className={activeTab === "projects" ? "text-[#5a6e60]" : ""} />
+          <HiOutlineCube size={16} />
           Проекты
-          <span className="text-[9px] opacity-40">[{user.projects?.length || 0}]</span>
-          {activeTab === "projects" && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-[#5a6e60]" />}
+          <span className="opacity-40 text-[9px]">({user.projects?.length || 0})</span>
+          {activeTab === "projects" && <div className="absolute bottom-[-1px] left-0 w-full h-[2px] bg-[#8da081]" />}
         </button>
       </div>
 
-      {/* Контент Серверов */}
-      {activeTab === "servers" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {user.servers?.map((server: any) => (
-            <div key={server._id} className="bg-[#1a1a1a] border border-white/5 group flex flex-col h-full hover:border-[#5a6e60]/50 transition-all duration-300 shadow-lg">
-              {/* Увеличенная высота баннера h-36 вместо h-28 и убрано затемнение (opacity-100) */}
-              <div className="h-36 w-full bg-[#141414] relative overflow-hidden shrink-0 border-b border-white/5">
-                {server.imageUrl ? (
-                  <img 
-                    src={server.imageUrl} 
-                    className="w-full h-full object-cover opacity-100 group-hover:scale-105 transition-all duration-700 grayscale-[0.2] group-hover:grayscale-0" 
-                    alt="" 
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-[10px] text-zinc-700 font-bold uppercase tracking-widest bg-[#181818]">
-                    No Banner
-                  </div>
-                )}
-                {/* Версия сервера */}
-                <div className="absolute top-3 right-3 px-2.5 py-1 bg-[#1a1a1a]/90 backdrop-blur-md border border-white/10 text-[10px] font-bold text-white uppercase tracking-tighter">
-                   {server.version || '1.20.1'}
+      <div className="flex flex-col gap-2">
+        {loading ? (
+          <><SkeletonCard /><SkeletonCard /></>
+        ) : (
+          <>
+            {/* Список Серверов */}
+            {activeTab === "servers" && user.servers?.map((server: any) => (
+              <div key={server._id} className="flex items-center bg-[#111] border border-white/5 p-3 gap-4 hover:bg-[#141414] transition-colors">
+                <div className="w-14 h-14 bg-black border border-white/10 shrink-0 overflow-hidden">
+                  {server.imageUrl ? (
+                    <img src={server.imageUrl} className="w-full h-full object-cover" alt="" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-[8px] text-zinc-600 uppercase">Нет фото</div>
+                  )}
                 </div>
-              </div>
 
-              <div className="p-5 flex-1 flex flex-col gap-5">
-                <div className="min-w-0">
-                  <Link href={`/monitoring/${server.slug}`} className="font-bold text-base text-white uppercase tracking-tight hover:text-[#5a6e60] transition-colors block truncate">
-                    {server.serverName}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-[13px] text-white uppercase truncate">{server.serverName}</h3>
+                    <span className="text-[9px] text-white/30 font-mono border border-white/5 px-1">{server.version || '1.20.1'}</span>
+                  </div>
+                  <code className="text-[10px] text-zinc-500 block mt-1">{renderIP(server.ipAddress)}</code>
+                </div>
+
+                <div className="flex flex-col items-end gap-2">
+                  <div className="text-[10px] font-bold text-[#8da081]">
+                    {server.status?.online ? `${server.status.players}/${server.status.maxPlayers}` : 'Оффлайн'}
+                  </div>
+                  <Link 
+                    href={`/monitoring/${server.slug}`}
+                    className="px-4 py-1.5 bg-[#1a1a1a] border border-white/10 text-[9px] font-bold uppercase text-white hover:bg-[#8da081] hover:text-black transition-all"
+                  >
+                    Открыть
                   </Link>
-                  <div className="mt-2.5 flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#5a6e60] rotate-45" />
-                    <code className="text-[11px] font-mono text-zinc-400 bg-black/20 px-2 py-0.5 border border-white/5 truncate" title={renderIP(server.ipAddress)}>
-                      {renderIP(server.ipAddress)}
-                    </code>
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between mt-auto pt-5 border-t border-white/5">
-                  <div className="flex items-center gap-2.5">
-                    <div className={`w-2 h-2 rounded-full ${server.status?.online ? 'bg-[#5a6e60] shadow-[0_0_10px_#5a6e60]' : 'bg-red-600'}`} />
-                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-tight">
-                      {server.status?.online ? `${server.status.players} / ${server.status.maxPlayers}` : 'Offline'}
-                    </span>
-                  </div>
-                  <button className="text-[10px] font-bold text-[#5a6e60] uppercase hover:text-white transition-colors tracking-widest">
-                    Подробнее
-                  </button>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
 
-      {/* Контент Проектов */}
-      {activeTab === "projects" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {user.projects?.map((project: any) => (
-            <div key={project._id} className="bg-[#1a1a1a] border border-white/5 p-6 flex flex-col gap-5 relative hover:border-[#5a6e60]/50 transition-all duration-300">
-                <div className="flex items-start gap-5">
-                  {/* Увеличенная иконка проекта */}
-                  <div className="w-20 h-20 bg-[#242424] border border-white/5 shrink-0 flex items-center justify-center relative group-hover:border-[#5a6e60]/30 shadow-inner">
-                    {project.iconUrl ? (
-                        <img src={project.iconUrl} className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all opacity-100" alt={project.title} />
-                    ) : (
-                        <HiOutlineCube size={28} className="text-zinc-700" />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                      <Link href={`/content/project/${project.slug}`} className="text-base font-bold text-white uppercase tracking-tight hover:text-[#5a6e60] truncate block">
-                        {project.title}
-                      </Link>
-                      <p className="text-[12px] text-zinc-500 line-clamp-3 mt-1.5 leading-relaxed italic opacity-80">
-                        {project.summary}
-                      </p>
+            {/* Список Проектов */}
+            {activeTab === "projects" && user.projects?.map((project: any) => (
+              <div key={project._id} className="flex items-center bg-[#111] border border-white/5 p-3 gap-4 hover:bg-[#141414] transition-colors">
+                <div className="w-14 h-14 bg-[#1a1a1a] border border-white/10 shrink-0 overflow-hidden flex items-center justify-center">
+                  {project.iconUrl ? (
+                    <img src={project.iconUrl} className="w-full h-full object-cover" alt="" />
+                  ) : (
+                    <HiOutlineCube size={20} className="text-zinc-700" />
+                  )}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-[13px] text-white uppercase">{project.title}</h3>
+                  <div className="flex gap-3 mt-1 opacity-50">
+                    <div className="flex items-center gap-1 text-[9px]"><HiOutlineEye size={10} /> {project.analytics?.views || 0}</div>
+                    <div className="flex items-center gap-1 text-[9px]"><HiOutlineArrowDownTray size={10} /> {project.analytics?.downloads || 0}</div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-6 mt-auto pt-5 border-t border-white/5">
-                  <div className="flex items-center gap-2 text-zinc-500" title="Просмотры">
-                      <HiOutlineEye size={14} />
-                      <span className="text-[11px] font-bold">{project.analytics?.views || 0}</span> 
-                  </div>
-                  <div className="flex items-center gap-2 text-zinc-500" title="Загрузки">
-                      <HiOutlineArrowDownTray size={14} />
-                      <span className="text-[11px] font-bold">{project.analytics?.downloads || 0}</span>
-                  </div>
-                  
-                  <div className="ml-auto px-3 py-1 bg-[#5a6e60]/10 border border-[#5a6e60]/30 text-[#5a6e60] text-[10px] font-bold uppercase tracking-[0.2em]">
-                      {project.projectType}
-                  </div>
-                </div>
-            </div>
-          ))}
-        </div>
+                <Link 
+                  href={`/content/project/${project.slug}`}
+                  className="px-4 py-1.5 bg-[#1a1a1a] border border-white/10 text-[9px] font-bold uppercase text-white hover:bg-[#8da081] hover:text-black transition-all"
+                >
+                  Открыть
+                </Link>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+
+      {!loading && ((activeTab === "servers" && !user.servers?.length) || (activeTab === "projects" && !user.projects?.length)) && (
+        <div className="py-20 text-center text-[10px] text-zinc-600 uppercase tracking-widest">Список пуст</div>
       )}
     </div>
   );
