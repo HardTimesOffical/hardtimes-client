@@ -9,6 +9,7 @@ import { LANGUAGES } from "@/constants/languages";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { HiServer, HiGlobeAlt, HiCollection, HiPlus, HiPhotograph, HiCheckCircle } from "react-icons/hi";
+import { Turnstile } from '@marsidev/react-turnstile';
 
 // --- Стилизация под Синегарск ---
 const labelStyle = "text-[10px] font-bold text-zinc-500 uppercase tracking-[0.15em] mb-2 block";
@@ -86,6 +87,8 @@ export default function Workbench() {
   const [imagePreview, setImagePreview] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+
   useEffect(() => {
     if (!user && !accessToken) router.push("/login");
   }, [user, accessToken, router]);
@@ -97,6 +100,10 @@ export default function Workbench() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
+    
+    if (!captchaToken) {
+      return alert("Пожалуйста, подтвердите, что вы не робот.");
+    }
 
     let finalIp = "";
     if (gameType === "JAVA & BEDROCK") {
@@ -114,6 +121,7 @@ export default function Workbench() {
     setIsSubmitting(true);
     try {
       const formData = new FormData();
+      formData.append("cf-turnstile-response", captchaToken);
       formData.append("ipAddress", finalIp);
       formData.append("serverName", serverName.trim());
       formData.append("gameType", gameType);
@@ -132,7 +140,10 @@ export default function Workbench() {
       });
 
       const result = await res.json();
-      if (!res.ok) throw new Error(result.message || "Ошибка при сохранении");
+      if (!res.ok) {
+        setIsSubmitting(false);
+        throw new Error(result.message || "Ошибка при сохранении")
+      };
       
       router.push(`/monitoring/${result.server?.slug || ""}`);
     } catch (error: any) {
@@ -251,6 +262,20 @@ export default function Workbench() {
                 if (file) { setImageFile(file); setImagePreview(URL.createObjectURL(file)); }
               }} />
             </div>
+          </div>
+
+          <div className="bg-[#242424] w-fit border border-white/5 flex justify-center overflow-hidden">
+            <Turnstile 
+              // Используем переменную окружения
+              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""} 
+              onSuccess={(token) => setCaptchaToken(token)}
+              onExpire={() => setCaptchaToken(null)}
+              options={{
+                theme: 'dark',
+                size: 'normal',
+                language: 'ru', // Можно сразу добавить русский язык
+              }}
+            />  
           </div>
 
           <button 

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.5",
+    "@marsidev/react-turnstile": "^1.4.2",
     "@next/third-parties": "^16.1.1",
     "@tiptap/extension-code-block": "^3.18.0",
     "@tiptap/extension-image": "^3.18.0",
