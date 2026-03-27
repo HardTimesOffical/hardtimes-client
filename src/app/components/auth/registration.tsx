@@ -13,6 +13,8 @@ import {
 } from "react-icons/hi2";
 import { HiIdentification } from 'react-icons/hi';
 import { FaGoogle, FaGithub } from "react-icons/fa";
+// 1. Импорт капчи
+import { Turnstile } from "@marsidev/react-turnstile";
 
 const labelStyle = "text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-2 block ml-1";
 const inputStyle = "w-full h-12 pl-12 pr-4 bg-[#1a1a1a] border border-white/5 rounded-none text-sm text-white outline-none focus:border-[#5a6e60]/50 transition-all placeholder:text-zinc-700 placeholder:opacity-50";
@@ -29,6 +31,8 @@ export default function RegistrationCard() {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    // 2. Стейт для токена
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
     const auth = useAuth();
     const router = useRouter();
@@ -40,6 +44,13 @@ export default function RegistrationCard() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Валидация капчи перед отправкой
+        if (!captchaToken) {
+            setError('ПОДТВЕРДИТЕ, ЧТО ВЫ НЕ РОБОТ');
+            return;
+        }
+
         setError('');
         setIsLoading(true);
 
@@ -52,12 +63,14 @@ export default function RegistrationCard() {
         try {
             const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
             
+            // 3. Передаем токен в запрос регистрации
             await axios.post(
                 `${SERVER_URL}/auth/register`,
                 {
                     username: formData.username,
                     email: formData.email,
                     password: formData.password,
+                    "cf-turnstile-response": captchaToken // Добавляем токен
                 },
                 { withCredentials: true }
             );
@@ -75,15 +88,16 @@ export default function RegistrationCard() {
             }
         } catch (err: any) {
             setError(err?.response?.data?.message || err.message || 'Ошибка регистрации');
+            setCaptchaToken(null); // Сбрасываем при ошибке
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="w-full max-w-[800px] max-h-[660px] min-h-[500px] bg-[#242424] border border-white/5 rounded-none shadow-[0_25px_70px_rgba(0,0,0,0.7)] overflow-hidden flex flex-col md:flex-row mc-slide-up">
+        <div className="w-full max-w-[800px] max-h-[750px] min-h-[500px] bg-[#242424] border border-white/5 rounded-none shadow-[0_25px_70px_rgba(0,0,0,0.7)] overflow-hidden flex flex-col md:flex-row mc-slide-up">
             
-            {/* ЛЕВАЯ ЧАСТЬ: Информация и Арт */}
+            {/* ЛЕВАЯ ЧАСТЬ (без изменений) */}
             <div className="w-full md:w-[42%] border-b md:border-b-0 md:border-r border-white/5 relative flex-shrink-0">
                 <div className="absolute inset-0 bg-[#1a1a1a]">
                     <img 
@@ -103,7 +117,7 @@ export default function RegistrationCard() {
                             HARD<br /> <span className="text-[#5a6e60]">MONITORING</span>
                         </h2>
                         <p className="text-zinc-500 text-[11px] mt-4 leading-relaxed max-w-[240px] uppercase tracking-wider font-medium">
-                            Присоединяйтесь к нашему комьюнити и начните управлять своими серверами прямо сейчас.
+                            Присоединяйтесь к нашему комьюнити и начните управлять своими проектами прямо сейчас.
                         </p>
                     </div>
                     
@@ -113,16 +127,14 @@ export default function RegistrationCard() {
                 </div>
             </div>
 
-            {/* ПРАВАЯ ЧАСТЬ: Форма регистрации */}
+            {/* ПРАВАЯ ЧАСТЬ */}
             <div className="w-full md:w-[58%] flex flex-col p-10 md:p-14 bg-[#242424]">
-                
                 <header className="mb-8 space-y-2">
                     <h1 className="text-2xl font-bold text-white uppercase tracking-tight">Регистрация</h1>
                     <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.25em]">Создайте свой аккаунт</p>
                 </header>
 
                 <form className="space-y-4 flex-1" onSubmit={handleSubmit}>
-                    {/* Логин */}
                     <div className="space-y-2">
                         <label className={labelStyle} htmlFor="username">Никнейм</label>
                         <div className="relative group">
@@ -131,7 +143,6 @@ export default function RegistrationCard() {
                         </div>
                     </div>
 
-                    {/* Email */}
                     <div className="space-y-2">
                         <label className={labelStyle} htmlFor="email">Email адрес</label>
                         <div className="relative group">
@@ -140,7 +151,6 @@ export default function RegistrationCard() {
                         </div>
                     </div>
 
-                    {/* Пароли в ряд */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label className={labelStyle}>Пароль</label>
@@ -161,18 +171,35 @@ export default function RegistrationCard() {
                         </div>
                     </div>
 
+                    {/* 4. Виджет Turnstile */}
+                    <div className="flex justify-center py-2 scale-90 sm:scale-100">
+                        <Turnstile 
+                            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+                            onSuccess={(token) => setCaptchaToken(token)}
+                            onExpire={() => setCaptchaToken(null)}
+                            options={{
+                                theme: 'dark',
+                                size: 'normal',
+                            }}
+                        />
+                    </div>
+
                     {error && (
                         <div className="bg-red-500/5 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase p-4 text-center tracking-widest animate-shake">
                             {error}
                         </div>
                     )}
 
-                    <button className="group w-full h-14 bg-white hover:bg-zinc-200 text-[#1a1a1a] font-bold text-sm uppercase tracking-[0.15em] transition-all flex items-center justify-center gap-2 disabled:bg-zinc-800 disabled:text-zinc-600 active:scale-[0.98]" type="submit" disabled={isLoading}>
+                    <button 
+                        className="group w-full h-14 bg-white hover:bg-zinc-200 text-[#1a1a1a] font-bold text-sm uppercase tracking-[0.15em] transition-all flex items-center justify-center gap-2 disabled:bg-zinc-800 disabled:text-zinc-600 active:scale-[0.98]" 
+                        type="submit" 
+                        disabled={isLoading || !captchaToken} // Блокируем до прохождения капчи
+                    >
                         {isLoading ? "Создание..." : <>Зарегистрироваться <HiOutlineArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" /></>}
                     </button>
                 </form>
 
-                {/* Соцсети */}
+                {/* Соцсети и Футер (без изменений) */}
                 <div className="mt-6 pt-6 border-t border-white/5">
                     <div className="grid grid-cols-2 gap-4">
                         <button type="button" className="h-11 bg-[#1a1a1a] border border-white/5 text-zinc-500 hover:text-white text-[10px] uppercase font-bold flex items-center justify-center gap-2 transition-all opacity-50 hover:opacity-100">

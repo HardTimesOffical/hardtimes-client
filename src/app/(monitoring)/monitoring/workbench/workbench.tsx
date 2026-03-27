@@ -163,8 +163,8 @@ export default function Workbench() {
               <HiPlus className="w-6 h-6 text-[#5a6e60]" />
            </div>
            <div>
-              <h1 className="text-2xl font-bold text-white uppercase tracking-tighter">Мастерская</h1>
-              <p className="text-zinc-500 text-[11px] font-mc-pixel uppercase mt-1">Добавление нового сервера в систему мониторинга</p>
+              <h1 className="text-2xl font-bold text-white uppercase tracking-tighter">Новый Сервер</h1>
+              <p className="text-zinc-500 text-[11px] font-mc-pixel uppercase mt-1">Добавление нового сервера в мониторинг</p>
            </div>
         </div>
       </div>
