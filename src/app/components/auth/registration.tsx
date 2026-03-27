@@ -33,6 +33,7 @@ export default function RegistrationCard() {
     const [showPassword, setShowPassword] = useState(false);
     // 2. Стейт для токена
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+    const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
     const auth = useAuth();
     const router = useRouter();
@@ -170,18 +171,20 @@ export default function RegistrationCard() {
                             </div>
                         </div>
                     </div>
-
-                    {/* 4. Виджет Turnstile */}
-                    <div className="flex justify-center py-2 scale-90 sm:scale-100">
-                        <Turnstile 
-                            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+                    <div className="flex justify-center py-2">
+                        {/* Рендерим капчу только если ключ существует */}
+                        {SITE_KEY ? (
+                            <Turnstile 
+                            siteKey={SITE_KEY}
                             onSuccess={(token) => setCaptchaToken(token)}
                             onExpire={() => setCaptchaToken(null)}
-                            options={{
-                                theme: 'dark',
-                                size: 'normal',
-                            }}
-                        />
+                            options={{ theme: 'dark', size: 'normal' }}
+                            />
+                        ) : (
+                            <div className="text-[9px] text-zinc-600 uppercase border border-white/5 p-2">
+                            Загрузка системы CAPTHA...
+                            </div>
+                        )}
                     </div>
 
                     {error && (

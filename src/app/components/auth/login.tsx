@@ -22,6 +22,7 @@ export default function LoginCard() {
   const [isLoading, setIsLoading] = useState(false);
   // 2. Стейт для токена
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   const auth = useAuth();
   const router = useRouter();
@@ -116,16 +117,20 @@ export default function LoginCard() {
           </div>
 
           {/* 4. Виджет Turnstile */}
-          <div className="flex justify-center py-2">
-            <Turnstile 
-              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
-              onSuccess={(token) => setCaptchaToken(token)}
-              onExpire={() => setCaptchaToken(null)}
-              options={{
-                theme: 'dark',
-                size: 'normal',
-              }}
-            />
+         <div className="flex justify-center py-2">
+            {/* Рендерим капчу только если ключ существует */}
+            {SITE_KEY ? (
+              <Turnstile 
+                siteKey={SITE_KEY}
+                onSuccess={(token) => setCaptchaToken(token)}
+                onExpire={() => setCaptchaToken(null)}
+                options={{ theme: 'dark', size: 'normal' }}
+              />
+            ) : (
+              <div className="text-[9px] text-zinc-600 uppercase border border-white/5 p-2">
+                Загрузка CAPTHA...
+              </div>
+            )}
           </div>
 
           {error && (

@@ -88,6 +88,7 @@ export default function Workbench() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   useEffect(() => {
     if (!user && !accessToken) router.push("/login");
@@ -265,17 +266,18 @@ export default function Workbench() {
           </div>
 
           <div className="bg-[#242424] w-fit border border-white/5 flex justify-center overflow-hidden">
-            <Turnstile 
-              // Используем переменную окружения
-              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""} 
-              onSuccess={(token) => setCaptchaToken(token)}
-              onExpire={() => setCaptchaToken(null)}
-              options={{
-                theme: 'dark',
-                size: 'normal',
-                language: 'ru', // Можно сразу добавить русский язык
-              }}
-            />  
+            {SITE_KEY ? (
+              <Turnstile 
+                siteKey={SITE_KEY}
+                onSuccess={(token) => setCaptchaToken(token)}
+                onExpire={() => setCaptchaToken(null)}
+                options={{ theme: 'dark', size: 'normal' }}
+              />
+            ) : (
+              <div className="text-[9px] text-zinc-600 uppercase border border-white/5 p-2">
+                Загрузка CAPTHA...
+              </div>
+            )}
           </div>
 
           <button 
