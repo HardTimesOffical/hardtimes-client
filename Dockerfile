@@ -2,6 +2,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 ENV NEXT_PUBLIC_SERVER_URL=https://hardtimes-server-1.onrender.com
+ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAACw6KVQKrgKMnry_
 
 COPY package.json package-lock.json* ./
 RUN npm install
@@ -11,6 +12,7 @@ RUN npm run build
 FROM node:20-alpine AS runner
 WORKDIR /app
 
+ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAACw6KVQKrgKMnry_
 ENV NEXT_PUBLIC_SERVER_URL=https://hardtimes-server-1.onrender.com
 ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0

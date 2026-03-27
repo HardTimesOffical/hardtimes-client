@@ -89,7 +89,6 @@ export default function Workbench() {
 
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-  console.log("DEBUG: Turnstile Key is:", process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
 
   useEffect(() => {
     if (!user && !accessToken) router.push("/login");
