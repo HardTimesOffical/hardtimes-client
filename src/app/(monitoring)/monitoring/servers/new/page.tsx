@@ -9,7 +9,7 @@ import YandexAds from "@/app/components/yandex/YandexAds";
 import Footer from "@/app/components/footer/footer";
 
 export const metadata: Metadata = {
-  title: "Новые сервера Майнкрафт. Рейтинг лучших серверов Майнкрафт и IP",
+  title: "Новые сервера Майнкрафт. Мониторинг лучших серверов Майнкрафт и IP",
   description: "Новые сервера Майнкрафт — список новых серверов Minecraft с актуальным онлайном. Мониторинг новых серверов Майнкрафт: IP-адреса, версии, режимы. Будь первым на новом сервере.",
   keywords: [
     "новые сервера майнкрафт",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true },
   },
   openGraph: {
-    title: "Новые сервера Майнкрафт — рейтинг серверов Minecraft",
+    title: "Новые сервера Майнкрафт.  рейтинг серверов Minecraft c IP",
     description: "Мониторинг новых серверов Майнкрафт. Свежие сервера Minecraft с актуальным онлайном и IP-адресами.",
     url: 'https://minecraftmonitoring-mc.ru/monitoring/servers/new',
     siteName: 'Мониторинг серверов Майнкрафт',

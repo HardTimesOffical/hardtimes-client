@@ -8,7 +8,7 @@ import { WeeklyLeaderboard } from "@/app/components/dashboard/WeeklyLeaderboard"
 import YandexAds from "@/app/components/yandex/YandexAds";
 
 export const metadata: Metadata = {
-  title: "Мониторинг серверов Майнкрафт | Топ лучших серверов Майнкрафт",
+  title: "Сервера майнкрафт. Топ лучших серверов Майнкрафт с IP мониторинг",
   description: "Мониторинг серверов Майнкрафт — актуальный рейтинг серверов Minecraft Java и Bedrock. Найди сервер по версии, модам или режиму. IP-адреса серверов с живым онлайном.",
   keywords: [
     "мониторинг серверов майнкрафт",
