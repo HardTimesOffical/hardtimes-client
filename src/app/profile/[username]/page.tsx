@@ -6,13 +6,6 @@ import LogoutButton from "@/app/profile/[username]/LogoutButton";
 import ProfileTabs from "@/app/profile/[username]/profileTabs";
 import api from "@/lib/api";
 
-// ── Press Start 2P + VT323 ────────────────────────────────────────
-// Add to your global CSS or layout.tsx:
-// @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
-// Then in tailwind.config.ts extend fontFamily:
-// 'pixel': ['"Press Start 2P"', 'monospace'],
-// 'vt':    ['"VT323"', 'monospace'],
-
 // ── Types ─────────────────────────────────────────────────────────
 interface ProfileUser {
   username: string;
@@ -28,273 +21,143 @@ interface ProfileUser {
   balance: number;
 }
 
-// ── Pixel border utility (inline style helper) ────────────────────
-const pxBorder = {
-  border: "2px solid",
-  borderColor: "#555 #222 #222 #555",
-  boxShadow: "inset 2px 2px 0 rgba(255,255,255,0.10), inset -2px -2px 0 rgba(0,0,0,0.55)",
-} as React.CSSProperties;
-
-const pxBorderGreen = {
-  border: "2px solid",
-  borderColor: "#5d7a40 #3a4f28 #3a4f28 #5d7a40",
-  boxShadow: "inset 2px 2px 0 rgba(255,255,255,0.08), inset -2px -2px 0 rgba(0,0,0,0.5)",
-} as React.CSSProperties;
-
-const pxShadow = { boxShadow: "4px 4px 0 #000" } as React.CSSProperties;
-const pxShadowSm = { boxShadow: "3px 3px 0 #000" } as React.CSSProperties;
-const slotInset = {
-  border: "2px solid",
-  borderColor: "#111 #555 #555 #111",
-  boxShadow: "inset 2px 2px 0 rgba(0,0,0,0.8)",
-} as React.CSSProperties;
-
 // ── XP Bar ────────────────────────────────────────────────────────
-function XPBar({ pct, level, xp, xpNext }: { pct: number; level: number; xp: number; xpNext: number }) {
+function XPBar({ pct, level, xp, xpNext }: {
+  pct: number; level: number; xp: number; xpNext: number;
+}) {
   const [width, setWidth] = useState(0);
   useEffect(() => {
-    const t = setTimeout(() => setWidth(pct), 250);
+    const t = setTimeout(() => setWidth(pct), 200);
     return () => clearTimeout(t);
   }, [pct]);
 
   return (
-    <div className="bg-[#0e0c09] p-3" style={{ ...pxBorder, ...pxShadowSm }}>
-      <div className="flex justify-between items-baseline mb-2">
-        <span
-          className="text-[#c8a830] uppercase tracking-wider"
-          style={{ fontFamily: '"Press Start 2P", monospace', fontSize: 7, textShadow: "1px 1px 0 #3d2800" }}
-        >
-          LVL {level}
+    <div className="space-y-2">
+      <div className="flex justify-between items-center">
+        <span className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em]">
+          Уровень {level}
         </span>
-        <span className="text-[#a09880]" style={{ fontFamily: '"VT323", monospace', fontSize: 16 }}>
-          {xp} XP
+        <span className="text-[11px] font-bold text-[#8da081] tracking-wide">
+          {xp} / {xp + xpNext} XP
         </span>
       </div>
-
-      {/* Track */}
-      <div
-        className="h-3 bg-black relative overflow-hidden"
-        style={{ border: "2px solid", borderColor: "#111 #555 #555 #111" }}
-      >
-        {/* Fill */}
+      <div className="h-1.5 w-full bg-white/[0.06] overflow-hidden">
         <div
-          className="h-full relative transition-all duration-1000 ease-out"
+          className="h-full transition-all duration-1000 ease-out"
           style={{
             width: `${width}%`,
-            background: "linear-gradient(to right, #4a5e3a, #7aa050)",
+            background: "linear-gradient(to right, #5a6e60, #8da081)",
           }}
-        >
-          {/* Shine */}
-          <div className="absolute top-0 left-0 right-0 h-[4px] bg-white/20" />
-          {/* Pixel notches */}
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: "repeating-linear-gradient(90deg, transparent, transparent 7px, rgba(0,0,0,0.3) 7px, rgba(0,0,0,0.3) 8px)",
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="flex justify-end mt-1">
-        <span className="text-[#706860]" style={{ fontFamily: '"VT323", monospace', fontSize: 13 }}>
-          +{xpNext} до след. уровня
-        </span>
+        />
       </div>
     </div>
   );
 }
 
-// ── Stat Slot (inventory-style) ───────────────────────────────────
-function StatSlot({ icon, value, label }: { icon: string; value: number | string; label: string }) {
+// ── Stat Card ─────────────────────────────────────────────────────
+function StatCard({ icon, value, label }: { icon: string; value: number | string; label: string }) {
   return (
-    <div className="bg-[#080705] p-2 flex flex-col gap-0.5" style={slotInset}>
-      <span className="text-xl leading-none" style={{ filter: "drop-shadow(1px 1px 0 #000)" }}>{icon}</span>
-      <span
-        className="text-[#c8a830]"
-        style={{ fontFamily: '"Press Start 2P", monospace', fontSize: 8, textShadow: "1px 1px 0 #3d2800" }}
-      >
-        {value}
-      </span>
-      <span className="text-[#706860] uppercase" style={{ fontFamily: '"VT323", monospace', fontSize: 13 }}>
-        {label}
-      </span>
+    <div className="bg-white/[0.03] border border-white/[0.06] p-4 flex flex-col gap-1 hover:bg-white/[0.05] transition-colors">
+      <span className="text-xl">{icon}</span>
+      <span className="text-xl font-bold text-white leading-none">{value}</span>
+      <span className="text-[11px] text-white/40 uppercase tracking-[0.15em] font-medium">{label}</span>
     </div>
-  );
-}
-
-// ── MC Button ─────────────────────────────────────────────────────
-function MCButton({
-  children,
-  onClick,
-  variant = "stone",
-  className = "",
-}: {
-  children: React.ReactNode;
-  onClick?: () => void;
-  variant?: "stone" | "red" | "green";
-  className?: string;
-}) {
-  const variants = {
-    stone: {
-      background: "linear-gradient(to bottom, #6b6b6b, #4a4a4a)",
-      borderColor: "#888 #222 #222 #888",
-    },
-    red: {
-      background: "linear-gradient(to bottom, #c0392b, #7b241c)",
-      borderColor: "#e74c3c #4a1010 #4a1010 #e74c3c",
-    },
-    green: {
-      background: "linear-gradient(to bottom, #5d7a40, #3a4f28)",
-      borderColor: "#7aa050 #1e2e14 #1e2e14 #7aa050",
-    },
-  };
-
-  return (
-    <button
-      onClick={onClick}
-      className={`w-full text-white uppercase tracking-wider cursor-pointer transition-all duration-75 active:translate-x-0.5 active:translate-y-0.5 ${className}`}
-      style={{
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: 7,
-        padding: "9px 12px",
-        border: "2px solid",
-        borderColor: variants[variant].borderColor,
-        background: variants[variant].background,
-        boxShadow: "3px 3px 0 #000, inset 0 1px 0 rgba(255,255,255,0.12)",
-      }}
-    >
-      {children}
-    </button>
   );
 }
 
 // ── Tab Button ────────────────────────────────────────────────────
-function TabButton({
-  active,
-  onClick,
-  children,
-  dot,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-  dot?: boolean;
+function TabBtn({ active, onClick, children }: {
+  active: boolean; onClick: () => void; children: React.ReactNode;
 }) {
   return (
     <button
       onClick={onClick}
-      className="relative uppercase tracking-wider cursor-pointer transition-all"
-      style={{
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: 6,
-        padding: "7px 10px",
-        border: "2px solid",
-        borderBottom: "none",
-        borderColor: active ? "#5d7a40 #111 transparent #5d7a40" : "#555 #111 #111 #555",
-        background: active ? "#0e0c09" : "#1a1510",
-        color: active ? "#7aa050" : "#706860",
-        top: 2,
-        zIndex: active ? 1 : 0,
-      }}
+      className={`
+        px-4 py-3 text-[11px] font-bold uppercase tracking-[0.15em] transition-all border-b-2
+        ${active
+          ? "text-white border-[#8da081]"
+          : "text-white/30 border-transparent hover:text-white/60 hover:border-white/20"
+        }
+      `}
     >
       {children}
-      {dot && (
-        <span
-          className="inline-block w-1.5 h-1.5 bg-[#7aa050] ml-1"
-          style={{ animation: "blink 1s step-start infinite" }}
-        />
-      )}
     </button>
   );
 }
 
-// ── Section Heading ───────────────────────────────────────────────
-function SectionHeading({ children }: { children: React.ReactNode }) {
+// ── Role Badge ────────────────────────────────────────────────────
+function RoleBadge({ role }: { role: string }) {
   return (
-    <div className="flex items-center gap-2 mb-3">
-      <span
-        className="text-[#7aa050] uppercase tracking-widest whitespace-nowrap"
-        style={{ fontFamily: '"Press Start 2P", monospace', fontSize: 7 }}
-      >
-        {children}
-      </span>
-      <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, #3a4f28, transparent)" }} />
-    </div>
-  );
-}
-
-// ── Profile Tab Content ───────────────────────────────────────────
-function ProfileTabContent({ user }: { user: ProfileUser }) {
-  return (
-    <div style={{ animation: "fadeInUp 0.25s ease forwards" }}>
-      {/* Bio */}
-      <div
-        className="mt-3 mb-5 p-3"
-        style={{ background: "rgba(0,0,0,0.4)", border: "2px solid", borderColor: "#111 #444 #444 #111" }}
-      >
-        <div
-          className="text-[#706860] uppercase tracking-widest mb-2"
-          style={{ fontFamily: '"Press Start 2P", monospace', fontSize: 6 }}
-        >
-          // О себе
-        </div>
-        <p
-          className={user.bio ? "text-[#e8e0c8]" : "text-[#4a4540] italic"}
-          style={{ fontFamily: '"VT323", monospace', fontSize: 20, lineHeight: 1.4 }}
-        >
-          {user.bio || "Описание не добавлено..."}
-        </p>
-      </div>
-
-      <SectionHeading>Статистика</SectionHeading>
-      <div className="grid grid-cols-2 gap-1">
-        <StatSlot icon="⚔️" value={user.votesTotal}  label="Голоса всего" />
-        <StatSlot icon="🗓️" value={user.votesWeekly} label="Эта неделя"   />
-        <StatSlot icon="💰" value={user.balance}      label="Баланс"       />
-        <StatSlot icon="⭐" value={user.xp}           label="Опыт"         />
-      </div>
-    </div>
+    <span className="inline-flex items-center px-2.5 py-1 bg-[#5a6e60]/15 border border-[#5a6e60]/30 text-[#8da081] text-[10px] font-bold uppercase tracking-[0.2em]">
+      {role}
+    </span>
   );
 }
 
 // ── Avatar ────────────────────────────────────────────────────────
-function PixelAvatar({ src, username }: { src?: string; username: string }) {
+function Avatar({ src, username }: { src?: string; username: string }) {
   const [err, setErr] = useState(false);
   const imgSrc = src && !err ? src : "/default-steve.png";
-
   return (
-    <div
-      className="relative bg-[#0d0b08] p-1.5 w-32 md:w-36"
-      style={{
-        border: "2px solid",
-        borderColor: "#666 #111 #111 #666",
-        boxShadow: "5px 5px 0 #000, inset 2px 2px 0 rgba(255,255,255,0.08), inset -2px -2px 0 rgba(0,0,0,0.6)",
-      }}
-    >
-      {/* Grass top */}
-      <div
-        className="absolute -top-1.5 -left-0.5 -right-0.5 h-1.5"
-        style={{ background: "linear-gradient(to bottom, #7aa050, #5d7a40)", borderTop: "2px solid #7aa050" }}
-      />
+    <div className="relative w-24 h-24 bg-[#1a1a1a] border border-white/10 overflow-hidden flex-shrink-0">
       <img
         src={imgSrc}
         alt={username}
         onError={() => setErr(true)}
-        className="w-full block"
+        className="w-full h-full object-cover"
         style={{ imageRendering: "pixelated" }}
       />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-[#8da081]/50" />
     </div>
   );
 }
 
-// ── Main Component ────────────────────────────────────────────────
+// ── Profile content ───────────────────────────────────────────────
+function ProfileContent({ user }: { user: ProfileUser }) {
+  return (
+    <div className="space-y-8" style={{ animation: "fadeIn 0.2s ease" }}>
+      <div>
+        <p className="text-[11px] font-bold text-white/30 uppercase tracking-[0.2em] mb-3">О себе</p>
+        <p className={`text-[15px] leading-relaxed ${user.bio ? "text-white/75" : "text-white/20 italic"}`}>
+          {user.bio || "Описание не добавлено."}
+        </p>
+      </div>
+
+      <div className="h-px bg-white/[0.06]" />
+
+      <div>
+        <p className="text-[11px] font-bold text-white/30 uppercase tracking-[0.2em] mb-3">Статистика</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <StatCard icon="⚔️" value={user.votesTotal}  label="Голоса всего" />
+          <StatCard icon="📅" value={user.votesWeekly} label="Эта неделя"   />
+          <StatCard icon="💰" value={user.balance}      label="Баланс"       />
+          <StatCard icon="⭐" value={user.xp}           label="Опыт"         />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Skeleton ──────────────────────────────────────────────────────
+function Skeleton() {
+  return (
+    <div className="min-h-screen bg-[#161616] pt-20 px-4 pb-16 animate-pulse">
+      <div className="max-w-[960px] mx-auto space-y-0">
+        <div className="h-36 bg-white/[0.04] border border-white/[0.06] border-b-0" />
+        <div className="h-32 bg-white/[0.03] border border-white/[0.06] border-b-0" />
+        <div className="h-96 bg-white/[0.02] border border-white/[0.06]" />
+      </div>
+    </div>
+  );
+}
+
+// ── Main ──────────────────────────────────────────────────────────
 export default function ProfilePage({ params }: { params: { username: string } }) {
   const { username } = React.use(params as any) as any;
   const { user: currentUser } = useAuth();
   const [profileUser, setProfileUser] = useState<ProfileUser | null>(null);
-  const [loading, setLoading]         = useState(true);
-  const [tab, setTab]                 = useState<"profile" | "servers" | "settings">("profile");
+  const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<"profile" | "servers" | "settings">("profile");
 
   const isOwner = currentUser?.username === username;
 
@@ -305,157 +168,111 @@ export default function ProfilePage({ params }: { params: { username: string } }
       .finally(() => setLoading(false));
   }, [username]);
 
-  // ── Skeleton ──────────────────────────────────────────────────
-  if (loading) return (
-    <div className="min-h-screen bg-[#0d0b08] pt-24 px-4">
-      <style>{keyframes}</style>
-      <div className="max-w-[960px] mx-auto flex flex-col md:flex-row gap-8">
-        <div className="w-36 h-36 bg-[#1a1510] animate-pulse" style={pxShadow} />
-        <div className="flex-1 flex flex-col gap-3">
-          {[180, 72, 120].map((h, i) => (
-            <div key={i} className="bg-[#1a1510] animate-pulse" style={{ height: h, ...pxShadowSm }} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+  if (loading) return <Skeleton />;
 
   if (!profileUser) return (
-    <div className="min-h-screen bg-[#0d0b08] pt-24 flex items-center justify-center">
-      <span className="text-[#4a4540]" style={{ fontFamily: '"Press Start 2P", monospace', fontSize: 10 }}>
-        USER_NOT_FOUND
-      </span>
+    <div className="min-h-screen bg-[#161616] flex items-center justify-center">
+      <p className="text-white/20 text-sm font-bold uppercase tracking-widest">USER_NOT_FOUND</p>
     </div>
   );
 
   return (
-    <div
-      className="min-h-screen pt-24 pb-16 px-4"
-      style={{
-        background: "#0d0b08",
-        backgroundImage: `
-          repeating-linear-gradient(0deg,  transparent, transparent 31px, rgba(255,255,255,0.012) 32px),
-          repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(255,255,255,0.012) 32px)
-        `,
-        backgroundSize: "32px 32px",
-      }}
-    >
-      <style>{keyframes}</style>
+    <div className="min-h-screen bg-[#161616] pt-20 pb-16 px-4">
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(4px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
 
-      {/* Scanlines */}
-      <div
-        className="pointer-events-none fixed inset-0 z-50"
-        style={{
-          background: "repeating-linear-gradient(0deg, rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 1px, transparent 1px, transparent 3px)",
-        }}
-      />
+      <div className="max-w-[960px] mx-auto">
 
-      <div className="max-w-[960px] mx-auto flex flex-col md:flex-row gap-8 items-start">
+        {/* ── Banner ────────────────────────────────────────── */}
+        <div className="relative h-36 bg-[#1e1e1e] border border-white/[0.06] border-b-0 overflow-hidden">
+          {/* MC grid pattern */}
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `
+                repeating-linear-gradient(0deg,  transparent, transparent 31px, rgba(255,255,255,0.025) 32px),
+                repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(255,255,255,0.025) 32px)
+              `,
+              backgroundSize: "32px 32px",
+            }}
+          />
+          {/* Olive vignette */}
+          <div
+            className="absolute inset-0"
+            style={{ background: "radial-gradient(ellipse at 20% 50%, rgba(90,110,96,0.12) 0%, transparent 60%)" }}
+          />
+        </div>
 
-        {/* ── Sidebar ────────────────────────────────────────── */}
-        <aside className="w-full md:w-48 shrink-0 flex flex-col gap-3">
-          <PixelAvatar src={profileUser.avatar} username={profileUser.username} />
-
-          {/* Name plate */}
-          <div className="bg-[#0e0c09] px-3 py-2" style={{ ...pxBorder, ...pxShadowSm }}>
-            <div
-              className="text-[#e8e0c8] uppercase leading-snug break-all"
-              style={{ fontFamily: '"Press Start 2P", monospace', fontSize: 8 }}
-            >
-              {profileUser.username}
+        {/* ── Profile strip ─────────────────────────────────── */}
+        <div className="bg-[#1a1a1a] border border-white/[0.06] border-t-0 border-b-0 px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end gap-5 -translate-y-10 mb-0">
+            {/* Avatar over banner */}
+            <div className="border-[3px] border-[#1a1a1a] flex-shrink-0 w-fit">
+              <Avatar src={profileUser.avatar} username={profileUser.username} />
             </div>
-            <span
-              className="inline-block mt-1.5 px-1.5 py-0.5 bg-[#3a4f28] text-[#7aa050] uppercase tracking-widest"
-              style={{ fontFamily: '"VT323", monospace', fontSize: 14, border: "1px solid #5d7a40" }}
-            >
-              {profileUser.role || "Игрок"}
-            </span>
+
+            {/* Name block */}
+            <div className="flex-1 min-w-0 pb-4 sm:pb-3">
+              <div className="flex flex-wrap items-center gap-2.5 mb-3">
+                <h1 className="text-[22px] font-bold text-white uppercase tracking-tight leading-none">
+                  {profileUser.username}
+                </h1>
+                <RoleBadge role={profileUser.role || "Игрок"} />
+              </div>
+              <XPBar
+                pct={profileUser.progressPercentage}
+                level={profileUser.level}
+                xp={profileUser.xp}
+                xpNext={profileUser.xpRequiredForNext}
+              />
+            </div>
+
+            {/* Actions */}
+            {isOwner && (
+              <div className="pb-3 flex-shrink-0">
+                <LogoutButton />
+              </div>
+            )}
           </div>
 
-          <XPBar
-            pct={profileUser.progressPercentage}
-            level={profileUser.level}
-            xp={profileUser.xp}
-            xpNext={profileUser.xpRequiredForNext}
-          />
+          {/* Tabs */}
+          <div className="flex gap-0 border-t border-white/[0.06] -mx-8 px-6 -mb-px">
+            <TabBtn active={tab === "profile"}  onClick={() => setTab("profile")}>Профиль</TabBtn>
+            <TabBtn active={tab === "servers"}  onClick={() => setTab("servers")}>Серверы</TabBtn>
+            {isOwner && (
+              <TabBtn active={tab === "settings"} onClick={() => setTab("settings")}>Настройки</TabBtn>
+            )}
+          </div>
+        </div>
 
-          {isOwner && (
-            <div className="pt-1">
-              <LogoutButton />
+        {/* ── Content area ──────────────────────────────────── */}
+        <div className="bg-[#181818] border border-white/[0.06] p-8 min-h-[360px]">
+          {tab === "profile" && <ProfileContent user={profileUser} />}
+
+          {tab === "servers" && (
+            <div style={{ animation: "fadeIn 0.2s ease" }}>
+              <ProfileTabs user={profileUser} isOwner={isOwner} />
             </div>
           )}
-        </aside>
 
-        {/* ── Main ───────────────────────────────────────────── */}
-        <main className="flex-1 min-w-0 flex flex-col">
-          {/* Tab bar */}
-          <div className="flex gap-0.5">
-            <TabButton active={tab === "profile"} onClick={() => setTab("profile")}>
-              Профиль
-            </TabButton>
-            <TabButton active={tab === "servers"} onClick={() => setTab("servers")} dot>
-              Серверы
-            </TabButton>
-            {isOwner && (
-              <TabButton active={tab === "settings"} onClick={() => setTab("settings")}>
-                Настройки
-              </TabButton>
-            )}
-          </div>
-
-          {/* Content panel */}
-          <div
-            className="flex-1 min-h-[400px] p-5 relative overflow-hidden"
-            style={{
-              background: "#0e0c09",
-              border: "2px solid",
-              borderColor: "#5d7a40 #111 #111 #5d7a40",
-              boxShadow: "5px 5px 0 #000",
-            }}
-          >
-            {/* Green pixel stripe top */}
+          {tab === "settings" && isOwner && (
             <div
-              className="absolute top-0 left-0 right-0 h-0.5 opacity-60"
-              style={{
-                backgroundImage: "repeating-linear-gradient(90deg, #7aa050 0px, #7aa050 8px, #5d7a40 8px, #5d7a40 16px, #3a4f28 16px, #3a4f28 24px)",
-              }}
-            />
+              className="flex flex-col items-center justify-center h-48 gap-3"
+              style={{ animation: "fadeIn 0.2s ease" }}
+            >
+              <span className="text-4xl opacity-20">🔧</span>
+              <p className="text-[11px] font-bold text-white/20 uppercase tracking-[0.2em]">
+                Раздел в разработке
+              </p>
+            </div>
+          )}
+        </div>
 
-            {tab === "profile" && <ProfileTabContent user={profileUser} />}
-
-            {tab === "servers" && (
-              <div style={{ animation: "fadeInUp 0.25s ease forwards" }}>
-                <div className="mt-3">
-                  <ProfileTabs user={profileUser} isOwner={isOwner} />
-                </div>
-              </div>
-            )}
-
-            {tab === "settings" && isOwner && (
-              <div className="flex flex-col items-center justify-center h-48 gap-4" style={{ animation: "fadeInUp 0.25s ease forwards" }}>
-                <span className="text-4xl" style={{ filter: "grayscale(1)" }}>🔧</span>
-                <p
-                  className="text-[#3a3830] uppercase"
-                  style={{ fontFamily: '"Press Start 2P", monospace', fontSize: 7, lineHeight: 2 }}
-                >
-                  Раздел в разработке
-                </p>
-              </div>
-            )}
-          </div>
-        </main>
       </div>
     </div>
   );
 }
-
-// ── Keyframes (injected once) ─────────────────────────────────────
-const keyframes = `
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(5px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes blink {
-    50% { opacity: 0; }
-  }
-`;

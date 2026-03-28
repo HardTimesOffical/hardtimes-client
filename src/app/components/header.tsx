@@ -14,9 +14,9 @@ import { HiOutlineUser, HiMoon, HiSun, HiX, HiChevronDown } from 'react-icons/hi
 // ─── Minecraft-зелёный для активных кнопок ────────────────────────
 // Фон: #3c8527, светлая грань сверху/слева: #5aac44, тёмная снизу/справа: #2a5e1a
 const MC_ACTIVE_STYLE: React.CSSProperties = {
-  background: '#3c8527',
+  background: '#69ad69',
   boxShadow: [
-    'inset  1px  1px 0 #5aac44',   // светлая грань сверху-слева
+    'inset  1px  1px 0 #4b833c',   // светлая грань сверху-слева
     'inset -1px -1px 0 #2a5e1a',   // тёмная грань снизу-справа
     ' 0  1px 0 #2a5e1a',           // внешняя тень снизу
     ' 0 -1px 0 #4a9a30',           // внешняя подсветка сверху
@@ -309,7 +309,7 @@ const Header = () => {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-[100]
-        bg-card/80 backdrop-blur-md border-b border-border/60 h-13 flex items-stretch">
+        bg-card/80 backdrop-blur-md border-b border-border/60 h-10 flex items-stretch">
 
         {/* ── Лого ────────────────────────────────────────────── */}
          <a href='/' className="flex items-center px-4 gap-2 no-underline">
@@ -410,7 +410,7 @@ const Header = () => {
             </>
           ) : (
             <Link href="/login"
-              className="flex items-center px-4 font-mc-title text-[10px] transition-all hover:brightness-110"
+              className="flex items-center px-4 font-mc-pixel text-[10px] transition-all hover:brightness-110"
               style={MC_ACTIVE_STYLE}>
               Войти
             </Link>
