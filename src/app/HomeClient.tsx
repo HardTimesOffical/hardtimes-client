@@ -134,7 +134,7 @@ export default function Home() {
 
             <p className="font-standard text-[14px] md:text-[15px] mb-7 leading-relaxed"
               style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '400px' }}>
-              Мониторинг серверов, моды и живое сообщество для игроков Minecraft, Hytale и VoxelCore.
+              Мониторинг серверов, моды и живое сообщество для игроков Minecraft.
             </p>
 
             <div className="flex flex-wrap gap-2">

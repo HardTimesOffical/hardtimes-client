@@ -2,6 +2,12 @@
 module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: 'class',
+  extend: {
+    fontFamily: {
+      pixel: ['"Press Start 2P"', 'monospace'],
+      vt:    ['"VT323"', 'monospace'],
+    }
+  },
   theme: {
     extend: {
       // Можно настроить цвета prose под оранжевый стиль

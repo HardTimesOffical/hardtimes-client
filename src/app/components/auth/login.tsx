@@ -80,10 +80,6 @@ export default function LoginCard() {
                Авторизуйтесь для управления своими проектами и доступа к инструментам мониторинга.
             </p>
           </div>
-          
-          <div className="font-mc-pixel text-[10px] text-zinc-700 uppercase tracking-widest">
-            Protocol: 1.20.1 — Auth
-          </div>
         </div>
       </div>
 
