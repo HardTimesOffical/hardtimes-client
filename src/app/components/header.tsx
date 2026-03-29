@@ -356,6 +356,10 @@ const Header = () => {
     { id: 'new',     label: 'Новые',       href: '/monitoring/servers/new' },
     ...MC_PLATFORMS.map(p => ({ id: p.id, label: p.label, href: `/monitoring/servers/${p.id}` })),
   ];
+   const uslugiDropdownItems: DropdownItem[] = [
+    { id: 'all',     label: 'Магазин', href: '/shop' },
+    { id: 'new',     label: 'Реклама',       href: '/minecraft-ads' },
+  ];
 
   const contentDropdownItems: DropdownItem[] = useMemo(() => {
     if (!isInsideGame) {
@@ -416,7 +420,16 @@ const Header = () => {
             label="Добавить сервер"
             isActive={pathname === '/monitoring/workbench'}
           />
-          <NavLink href="/ru/launcher" label="Майнкрафт Лаунчер" isActive={isLauncherPage} />
+          <NavLink
+            href="/ru/launcher"
+            label="Майнкрафт лаунчер"
+            isActive={pathname === '/ru/launcher'}
+          />
+          <NavLink
+            href="/minecraft-ads"
+            label="Реклама"
+            isActive={pathname === '/minecraft-ads'}
+          />
         </nav>
 
         <div className="flex-1" />
