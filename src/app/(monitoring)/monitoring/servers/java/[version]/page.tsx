@@ -90,56 +90,101 @@ export default async function JavaVersionPage({
       "url": `https://minecraftmonitoring-mc.ru/monitoring/servers/java/${versionSlug}`,
     },
   ];
+const COLORS = {
+    brand: "#84a98c",
+    border: "rgba(255, 255, 255, 0.08)",
+    bgElevated: "rgba(22, 24, 23, 0.6)",
+  };
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground transition-colors duration-200">
+    <div className="flex min-h-screen text-foreground relative" style={{ backgroundColor: '#0a0b0b' }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <main className="flex-1 flex flex-col items-center min-w-0">
+
+      {/* ── Fixed BG ── */}
+      <div className="fixed inset-0 z-0 pointer-events-none" 
+        style={{ 
+          backgroundImage: "url('https://i.pinimg.com/1200x/1c/86/12/1c86122cdfc9fac2b55523ee09b14ccb.jpg')", 
+          backgroundSize: "cover", 
+          backgroundPosition: "center", 
+          filter: "saturate(0.5) brightness(0.65)" 
+        }} 
+      />
+      <div className="fixed inset-0 z-0 pointer-events-none" 
+        style={{ background: "linear-gradient(to bottom, transparent 0%, #0a0b0b 69%, #0a0b0b 100%)" }} 
+      />
+
+      <div className="relative z-10 flex-1 flex flex-col min-w-0">
         <HeroSection />
-        <div className={`w-full ${containerWidth} px-4 sm:px-6 lg:px-8 pt-8 pb-10 mx-auto`}>
 
-          <div className="flex flex-col gap-1 mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-[3px] h-6 shrink-0"
-                style={{ background: 'linear-gradient(to bottom, #5aac44, #2a5e1a)' }} />
-              <h1 className="font-mc-title text-foreground-bright"
-                style={{ fontSize: 'clamp(14px, 2vw, 19px)', textShadow: '2px 2px 0 rgba(0,0,0,0.3)' }}>
-                Сервера Майнкрафт <span style={{ color: '#5aac44' }}>{version}</span>
-              </h1>
-            </div>
-            <p className="font-standard text-[12px] text-muted ml-[18px]">
-              Мониторинг серверов Minecraft Java {version} — актуальный рейтинг и IP-адреса
-            </p>
-          </div>
+        <main className="w-full flex flex-col items-center relative z-20">
+          <div className={`w-full ${containerWidth} px-4 sm:px-6 lg:px-8 pt-10 pb-20 mx-auto`}>
 
-          <div className="flex flex-col lg:flex-row items-start gap-6">
-            <div className="w-full lg:flex-1 min-w-0 flex flex-col gap-4">
-              <div className="border border-border overflow-hidden"><PromoBanner /></div>
-              <div className="border-t border-border pt-3">
-                <ServerFilters />
+            {/* ── Заголовок ── */}
+            <div className="flex flex-col gap-1 mb-8">
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-[3px] h-6 shrink-0"
+                  style={{ background: `linear-gradient(to bottom, ${COLORS.brand}, #3c8527)` }}
+                />
+                <h1 className="font-mc-pixel text-[#f2f2f2] uppercase tracking-widest"
+                  style={{ fontSize: 'clamp(14px, 2vw, 17px)' }}>
+                  Сервера Майнкрафт <span style={{ color: COLORS.brand }}>{version}</span>
+                </h1>
               </div>
-              <ServerList
-                filters={{ ...filters, version }}
-                game="java"
-                sort={filters.sort || "rating"}
-              />
+              <p className="font-mc-pixel text-[9px] text-[#7d8581] uppercase tracking-wide ml-[18px]">
+                Мониторинг серверов Minecraft Java {version} — рейтинг и IP-адреса
+              </p>
             </div>
-            <aside className="w-full lg:w-[268px] shrink-0 flex flex-col gap-4">
-              <div className="flex items-center gap-2 pb-2 border-b border-border">
-                <div className="w-[3px] h-4 shrink-0"
-                  style={{ background: 'linear-gradient(to bottom, #5aac44, #2a5e1a)' }} />
-                <span className="font-mc-title text-[10px] text-muted uppercase tracking-wider">Активность</span>
-              </div>
-              <ForumPosts />
-              <WeeklyLeaderboard />
-              <YandexAds />
-            </aside>
-          </div>
 
-          <Footer />
+            {/* ── ОБЩИЙ ВИЗУАЛЬНЫЙ БЛОК ── */}
+            <div className="relative border backdrop-blur-md p-1 shadow-2xl"
+                 style={{ 
+                   borderColor: COLORS.border, 
+                   backgroundColor: COLORS.bgElevated 
+                 }}>
+              
+              {/* Декоративные зеленые углы */}
+              <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 opacity-80" style={{ borderColor: COLORS.brand }} />
+              <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 opacity-80" style={{ borderColor: COLORS.brand }} />
+              <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 opacity-80" style={{ borderColor: COLORS.brand }} />
+              <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 opacity-80" style={{ borderColor: COLORS.brand }} />
+
+              <div className="flex flex-col lg:flex-row items-start gap-0 lg:divide-x lg:divide-white/5">
+
+                {/* Левая колонка */}
+                <div className="w-full lg:flex-1 min-w-0 flex flex-col p-4 gap-6">
+                  <div className="overflow-hidden border border-white/5 bg-white/[0.02] p-1">
+                    <PromoBanner />
+                  </div>
+                  <div className="border-t pt-5" style={{ borderColor: COLORS.border }}>
+                    <ServerFilters />
+                  </div>
+                  <ServerList
+                    filters={{ ...filters, version }}
+                    game="java"
+                    sort={filters.sort || "rating"}
+                  />
+                </div>
+
+                {/* Правая колонка */}
+                <aside className="w-full lg:w-[300px] shrink-0 flex flex-col gap-6 p-4">
+                  <div className="flex items-center gap-2 pb-2 border-b" style={{ borderColor: COLORS.border }}>
+                    <div className="w-[2px] h-4 shrink-0" style={{ background: COLORS.brand }} />
+                    <span className="font-mc-pixel text-[9px] text-[#7d8581] uppercase tracking-[0.2em]">
+                      Активность
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-5">
+                    <ForumPosts />
+                    <WeeklyLeaderboard />
+                    <YandexAds />
+                  </div>
+                </aside>
+              </div>
+            </div>
 
           <section className="sr-only" aria-hidden="true">
             <h2>Мониторинг серверов Майнкрафт {version} — рейтинг серверов Minecraft {version}</h2>
@@ -161,6 +206,7 @@ export default async function JavaVersionPage({
           </section>
         </div>
       </main>
+    </div>
     </div>
   );
 }

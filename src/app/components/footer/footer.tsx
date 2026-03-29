@@ -1,123 +1,100 @@
 "use client";
-import React from "react";
-import { FaTelegramPlane, FaEnvelope, FaDiscord } from "react-icons/fa";
-import Link from "next/link";
 
-const MC_GREEN = '#5aac44';
-const MC_GREEN_DARK = '#3c8527';
-
-// Стиль для активных элементов в духе кнопок Minecraft
-const MC_BUTTON_STYLE: React.CSSProperties = {
-  background: '#3c8527',
-  boxShadow: [
-    'inset 1px 1px 0 #5aac44',
-    'inset -1px -1px 0 #2a5e1a',
-    '0 2px 0 #000',
-  ].join(', '),
-};
-
-const NAV_LINKS = [
-  { label: 'Мониторинг', href: '/monitoring' },
-  { label: 'Контент', href: '/content' },
-  { label: 'Форум', href: '/forum' },
-  { label: 'Добавить сервер', href: '/monitoring/workbench' },
-  { label: 'Магазин', href: '/shop' },
-];
+import React from 'react';
+import Link from 'next/link';
 
 export default function Footer() {
-  const year = new Date().getFullYear();
+  const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#121212] border-t border-white/5 mt-auto relative overflow-hidden">
+    <footer className="w-full border-t border-white/5 backdrop-blur-md mt-auto"
+      style={{ backgroundColor: 'rgba(10, 11, 11, 0.8)' }}>
       
-      {/* ── Верхний пиксельный бордюр ── */}
-      <div className="h-[2px] w-full bg-[#1a1a1a] flex">
-        <div className="h-full w-1/3 bg-[#3c8527]/30" />
-        <div className="h-full w-1/6 bg-[#5aac44]/20" />
-        <div className="h-full w-1/2 bg-transparent" />
-      </div>
-
-      <div className="max-w-[1400px] mx-auto px-6 py-12 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-
-          {/* Колонка 1: Бренд и Описание */}
-          <div className="col-span-1 md:col-span-1 flex flex-col gap-5">
-            <Link href="/" className="inline-flex items-center gap-3 no-underline group">
-              <div 
-                className="w-8 h-8 flex items-center justify-center font-mc-pixel text-[14px] text-white"
-                style={MC_BUTTON_STYLE}
-              >
-                H
-              </div>
-              <span className="font-mc-title text-[15px] text-white tracking-wider">
-                HARD<span style={{ color: MC_GREEN }}>TIMES</span>
+      <div className="max-w-[1132px] mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+          
+          {/* Секция 1: О проекте */}
+          <div className="flex flex-col gap-5">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-[#84a98c] shadow-[0_0_8px_#84a98c]" />
+              <span className="font-mc-pixel text-[13px] text-[#f2f2f2] uppercase tracking-widest">
+                HardMonitoring
               </span>
-            </Link>
-
-            <p className="font-standard text-[12px] text-zinc-500 leading-relaxed">
-              Сервис для игроков Minecraft. Мониторинг серверов, форум и живое сообщество.
+            </div>
+            
+            {/* Добавлен leading-[1.6] чтобы строки не клеились */}
+            <p className="font-mc-pixel text-[9px] text-[#7d8581] leading-[1.6] uppercase opacity-80">
+              Лучший инструмент для поиска серверов и продвижения ваших проектов.
             </p>
 
-            <div className="flex gap-3">
-              <a href="#" className="w-8 h-8 rounded-sm bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-600 hover:text-white hover:border-[#3c8527] transition-all">
-                <FaDiscord size={14} />
-              </a>
-              <a href="https://t.me/megashield_quazar" className="w-8 h-8 rounded-sm bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-600 hover:text-white hover:border-[#3c8527] transition-all">
-                <FaTelegramPlane size={14} />
-              </a>
+            {/* Юридический дисклеймер */}
+            <p className="font-mc-pixel text-[7px] text-[#7d8581]/50 leading-[1.4] uppercase">
+              NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.
+            </p>
+            
+            <div className="flex flex-col gap-2 mt-2">
+              <Link href="/ru/launcher" className="flex items-center justify-center h-9 bg-[#84a98c]/10 border border-[#84a98c]/30 hover:bg-[#84a98c]/20 transition-all">
+                <span className="font-mc-pixel text-[9px] text-[#84a98c] uppercase tracking-tighter">Установить лаунчер</span>
+              </Link>
+              <Link href="https://vk.com/hardlauncher" target="_blank" className="flex items-center justify-center h-9 bg-[#4c75a3]/10 border border-[#4c75a3]/30 hover:bg-[#4c75a3]/20 transition-all">
+                <span className="font-mc-pixel text-[9px] text-[#4c75a3] uppercase tracking-tighter">ВКонтакте</span>
+              </Link>
             </div>
           </div>
 
-          {/* Колонка 2: Навигация */}
-          <div className="flex flex-col gap-4">
-            <h4 className="font-mc-pixel text-[10px] text-zinc-400 uppercase tracking-[0.2em]">Меню</h4>
-            <nav className="flex flex-col gap-2.5">
-              {NAV_LINKS.map(link => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-[13px] text-zinc-500 hover:text-[#5aac44] transition-colors flex items-center gap-2 group w-fit"
-                >
-                  <span className="w-1 h-1 bg-zinc-800 group-hover:bg-[#5aac44] transition-colors" />
-                  {link.label}
-                </Link>
-              ))}
+          {/* Секция 2: Ссылки */}
+          <div className="flex flex-col gap-5">
+            <span className="font-mc-pixel text-[10px] text-[#f2f2f2] uppercase opacity-40 tracking-wider">Навигация</span>
+            <nav className="flex flex-col gap-3">
+              <FooterLink href="/workbench">Добавить сервер</FooterLink>
+              <FooterLink href="https://t.me/SakuraMFS">Реклама</FooterLink>
+              <FooterLink href="/monitoring">Топ серверов</FooterLink>
+              <FooterLink href="/monitoring/new">Новые проекты</FooterLink>
             </nav>
           </div>
 
-          {/* Колонка 3: Контакты */}
-          <div className="flex flex-col gap-6">
-            <h4 className="font-mc-pixel text-[10px] text-zinc-400 uppercase tracking-[0.2em]">Связь</h4>
-            
-            <a href="https://t.me/megashield_quazar" className="group block">
-               <p className="text-[9px] text-zinc-600 uppercase mb-1">Telegram Support</p>
-               <p className="text-[13px] text-zinc-300 group-hover:text-white transition-colors font-medium">@megashield_quazar</p>
-            </a>
-
-            <a href="mailto:hardtimes.offical@gmail.com" className="group block">
-               <p className="text-[9px] text-zinc-600 uppercase mb-1">Business Email</p>
-               <p className="text-[13px] text-zinc-300 group-hover:text-white transition-colors font-medium">hardtimes.offical@gmail.com</p>
-            </a>
+          {/* Секция 3: Помощь & Контакты */}
+          <div className="flex flex-col gap-5">
+            <span className="font-mc-pixel text-[10px] text-[#f2f2f2] uppercase opacity-40 tracking-wider">Связь с нами</span>
+            <nav className="flex flex-col gap-3">
+              {/* Ссылки на Телеграм */}
+              <FooterLink href="https://t.me/megashield_quazar">
+                <span className="flex items-center gap-2 text-[#0088cc]">
+                  <span className="w-1 h-1 bg-[#0088cc] rounded-full" />
+                  Telegram Админ
+                </span>
+              </FooterLink>
+              <FooterLink href="https://t.me/HardTimeMonitoring">
+                <span className="flex items-center gap-2 text-[#0088cc]">
+                  <span className="w-1 h-1 bg-[#0088cc] rounded-full" />
+                  Наш канал
+                </span>
+              </FooterLink>
+            </nav>
           </div>
 
-        </div>
-
-        {/* ── Нижняя подпись ── */}
-        <div className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex flex-col gap-1">
-            <p className="text-[10px] text-zinc-700 uppercase tracking-[0.2em]">
-              Not an official Minecraft product.
-            </p>
+          {/* Секция 4: Копирайт */}
+          <div className="flex flex-col justify-between items-end">
+            <div className="font-mc-pixel text-[20px] text-white/[0.03] select-none tracking-tighter">HARDMON</div>
+            <div className="flex flex-col gap-1 items-end">
+              <span className="font-mc-pixel text-[8px] text-[#7d8581] uppercase text-right leading-tight">
+                © {currentYear} HDM TEAM
+              </span>
+              <span className="font-mc-pixel text-[7px] text-[#7d8581]/40 uppercase text-right tracking-tighter">
+                v3.0.2 // build_0326
+              </span>
+            </div>
           </div>
-          
-          <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">
-            &copy; {year} HardTimes <span className="mx-2 text-zinc-800">|</span> All Rights Reserved
-          </p>
         </div>
       </div>
-
-      {/* Легкий градиент снизу */}
-      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#5aac44]/10 to-transparent" />
     </footer>
+  );
+}
+
+function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link href={href} className="font-mc-pixel text-[10px] text-[#7d8581] hover:text-[#84a98c] uppercase transition-colors">
+      {children}
+    </Link>
   );
 }
