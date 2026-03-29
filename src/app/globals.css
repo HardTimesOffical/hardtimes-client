@@ -6,41 +6,39 @@
 ════════════════════════════════════════════════════════════════ */
 
 :root {
-  --background: #111111;
-  --foreground: #d4d4d4;
-  --foreground-bright: #f5f5f5;
+  /* Базовые фоны (Глубокий темный сланец + Уголь) */
+  --background: #0a0b0b; 
+  --color-bg-elevated: #161817; 
+  --color-bg-subtle: #1e211f; 
+  --color-bg-overlay: rgba(0, 0, 0, 0.85);
   --card: #1a1a1a;
   --surface: #0d0d0d;
-  --border: #2a2a2a;
-  --muted: #6b6b6b;
-  --accent: #f97316;
-  --contrast-text: #0d0d0d;
 
-  /* Minecraft-специфичные токены */
-  --mc-green: #5aac44;          /* Крипер-зелёный */
-  --mc-green-dark: #3d7a2e;     /* Тень зелёного */
-  --mc-green-glow: rgba(90, 172, 68, 0.35);
-  --mc-orange: #f97316;         /* Огонь/лава */
+  /* Границы и Акценты */
+  --border: rgba(255, 255, 255, 0.08);
+  --color-border-accent: #2d322f;
+  --mc-pixel-border: 3px;
+
+  /* Brand Colors (Оливковый крипер / Тактический зеленый) */
+  --mc-green: #84a98c; 
+  --mc-green-dark: #52796f; 
+  --mc-green-glow: rgba(132, 169, 140, 0.25);
+  
+  /* Сигнальные цвета (Огонь / Лава / Danger) */
+  --mc-orange: #f97316; 
   --mc-orange-dark: #c2570f;
-  --mc-dirt: #8B6340;           /* Земля */
-  --mc-stone: #9a9a9a;          /* Камень */
-  --mc-obsidian: #1a0f2e;       /* Обсидиан */
-  --mc-coal: #1e1e1e;           /* Уголь */
-  --mc-pixel-border: 3px;       /* Толщина пиксельной обводки */
-}
+  --color-danger: #ff3333;
+  --color-warn: #ff9900;
 
-.dark {
-  --background: #111111;
-  --foreground: #d4d4d4;
-  --foreground-bright: #f5f5f5;
-  --card: #1a1a1a;
-  --surface: #0d0d0d;
-  --border: #2a2a2a;
-  --muted: #6b6b6b;
-  --accent: #f97316;
+  /* Текст */
+  --foreground: #f2f2f2;
+  --muted: #7d8581;
   --contrast-text: #0d0d0d;
-}
 
+  /* Sidebar & Layout */
+  --sidebar-w: 56px;
+  --sidebar-icon: 36px;
+}
 /* ── Base ───────────────────────────────────────────────────── */
 body {
   background-color: var(--background);
@@ -108,45 +106,33 @@ body {
    MINECRAFT КНОПКА
    Пиксельная, с объёмной тенью снизу — как в игре
 ════════════════════════════════════════════════════════════════ */
-.mc-button {
+.mc-button, .btn-tactical {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px 20px;
-  font-family: var(--font-minecraft-ten);
-  font-size: 14px;
+  padding: 8px 16px;
+  font-family: 'MinecraftTen';
+  font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
   color: #fff;
   background: var(--mc-green);
-  border: none;
   cursor: pointer;
-  position: relative;
-  /* Пиксельная объёмная тень — имитация кнопки в MC */
-  box-shadow:
-    0  4px 0 var(--mc-green-dark),
-    inset 0 1px 0 rgba(255,255,255,0.25),
-    inset 0 -1px 0 rgba(0,0,0,0.2);
-  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+  border: none;
+  box-shadow: 0 4px 0 var(--mc-green-dark), inset 0 1px 0 rgba(255,255,255,0.2);
+  transition: all 0.1s ease;
   image-rendering: pixelated;
-  text-decoration: none;
 }
 
 .mc-button:hover {
-  filter: brightness(1.15);
+  filter: brightness(1.1);
   transform: translateY(-1px);
-  box-shadow:
-    0  5px 0 var(--mc-green-dark),
-    inset 0 1px 0 rgba(255,255,255,0.3),
-    inset 0 -1px 0 rgba(0,0,0,0.2);
+  box-shadow: 0 5px 0 var(--mc-green-dark), inset 0 1px 0 rgba(255,255,255,0.3);
 }
 
 .mc-button:active {
   transform: translateY(3px);
-  box-shadow:
-    0  1px 0 var(--mc-green-dark),
-    inset 0 1px 0 rgba(0,0,0,0.2);
+  box-shadow: 0 1px 0 var(--mc-green-dark);
 }
 
 /* Оранжевый вариант кнопки */
