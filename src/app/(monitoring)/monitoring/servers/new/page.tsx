@@ -139,7 +139,7 @@ const COLORS = {
                 </div>
 
                 {/* Правая колонка */}
-                <aside className="w-full lg:w-[300px] shrink-0 flex flex-col gap-6 p-4">
+                <aside className="w-full lg:w-[300px] shrink-0 flex flex-col gap-6 p-1">
                   <div className="flex items-center gap-2 pb-2 border-b" style={{ borderColor: COLORS.border }}>
                     <div className="w-[2px] h-4 shrink-0" style={{ background: COLORS.brand }} />
                     <span className="font-mc-pixel text-[9px] text-[#7d8581] uppercase tracking-[0.2em]">

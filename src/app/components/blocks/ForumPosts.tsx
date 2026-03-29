@@ -2,6 +2,19 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { HiOutlineChatBubbleLeftRight, HiOutlineEye, HiOutlineHeart, HiPlus } from 'react-icons/hi2';
+import { getPlayerStats } from '@/lib/xp';
+
+// ── Константа бренда ─────────────────────────────────────────
+const BRAND = "#84a98c";
+
+// ── Цвет уровня ──────────────────────────────────────────────
+function getLevelColor(level: number): string {
+  if (level >= 50) return "#f2994a";   // легенда — оранжевый
+  if (level >= 30) return "#bb6bd9";   // ветеран — фиолетовый
+  if (level >= 15) return "#29a8eb";   // опытный — голубой
+  if (level >= 5)  return BRAND;       // новичок — зелёный
+  return "#7d8581";                    // совсем новый — серый
+}
 
 export default function ForumPosts() {
   const [posts,   setPosts]   = useState<any[]>([]);
@@ -21,20 +34,30 @@ export default function ForumPosts() {
   if (!loading && posts.length === 0) return null;
 
   return (
-    <div className="w-full bg-card border border-border overflow-hidden">
+    <div className="w-full">
 
       {/* ── Шапка ── */}
-      <div className="flex items-center justify-between px-3 py-2.5 border-b border-border bg-surface">
-        <div className="flex items-center gap-2">
-          <HiOutlineChatBubbleLeftRight className="w-3.5 h-3.5 text-muted shrink-0" />
-          <span className="font-mc-pixel text-[8px] uppercase tracking-widest text-muted">
+      <div
+        className="flex items-center justify-between px-2 py-2 border-b"
+        style={{ borderColor: "rgba(255,255,255,0.05)" }}
+      >
+        <div className="flex items-center gap-1.5">
+          <div className="w-1 h-3 flex-shrink-0" style={{ background: BRAND }} />
+          <span
+            className="font-mc-pixel text-[8px] uppercase tracking-widest"
+            style={{ color: BRAND }}
+          >
             Форум
           </span>
         </div>
-        <Link href="/forum"
-          className="font-mc-pixel text-[7px] uppercase tracking-widest text-muted/40
-            hover:text-muted transition-colors">
-          Все темы
+        <Link
+          href="/forum"
+          className="font-mc-pixel text-[7px] uppercase tracking-widest transition-colors"
+          style={{ color: "#7d8581" }}
+          onMouseEnter={e => (e.currentTarget.style.color = "#f2f2f2")}
+          onMouseLeave={e => (e.currentTarget.style.color = "#7d8581")}
+        >
+          Все темы →
         </Link>
       </div>
 
@@ -42,72 +65,156 @@ export default function ForumPosts() {
       <div className="flex flex-col">
         {loading ? (
           [1, 2, 3].map(i => (
-            <div key={i} className="px-3 py-3 border-b border-border animate-pulse">
-              <div className="h-2 w-10 bg-border mb-2" />
-              <div className="h-3 w-full bg-border mb-1.5" />
-              <div className="h-2 w-3/4 bg-border/60" />
+            <div
+              key={i}
+              className="px-2 py-3 border-b animate-pulse"
+              style={{ borderColor: "rgba(255,255,255,0.04)" }}
+            >
+              <div className="flex gap-2.5">
+                {/* Аватар-скелетон */}
+                <div className="w-9 h-9 flex-shrink-0" style={{ background: "rgba(255,255,255,0.05)" }} />
+                <div className="flex-1 space-y-2 pt-0.5">
+                  <div className="h-2 w-12" style={{ background: "rgba(255,255,255,0.05)" }} />
+                  <div className="h-3 w-full" style={{ background: "rgba(255,255,255,0.07)" }} />
+                  <div className="h-2 w-2/3" style={{ background: "rgba(255,255,255,0.04)" }} />
+                </div>
+              </div>
             </div>
           ))
-        ) : posts.map((post, i) => (
-          <Link
-            key={post._id}
-            href={`/forum/${post.slug}`}
-            className="group px-3 py-3 border-b border-border last:border-0
-              hover:bg-surface transition-colors duration-100"
-          >
-            {/* Категория */}
-            <div className="flex items-center gap-1.5 mb-1.5">
-              {/* Номер */}
-              <span className="font-mc-pixel text-[7px] text-muted/30">{i + 1}</span>
-              <span className="font-mc-pixel text-[7px] uppercase tracking-widest text-muted/50">
-                {post.category || 'Обсуждение'}
-              </span>
-            </div>
+        ) : posts.map((post, i) => {
+          const stats = post.author?.xp !== undefined
+            ? getPlayerStats(post.author.xp)
+            : null;
+          const level = stats?.level ?? 0;
+          const levelColor = getLevelColor(level);
 
-            {/* Заголовок */}
-            <h3 className="font-standard font-bold text-[12px] text-foreground-bright
-              leading-snug line-clamp-2 group-hover:text-[#5aac44] transition-colors duration-100">
-              {post.title}
-            </h3>
+          return (
+            <Link
+              key={post._id}
+              href={`/forum/${post.slug}`}
+              className="group px-2 py-3 border-b last:border-0 transition-colors duration-100"
+              style={{ borderColor: "rgba(255,255,255,0.04)" }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.02)"}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
+            >
+              <div className="flex gap-2.5">
 
-            {/* Мета */}
-            <div className="flex items-center justify-between mt-2">
-              {/* Автор */}
-              <div className="flex items-center gap-1.5 min-w-0">
-                <div className="w-4 h-4 bg-surface border border-border overflow-hidden shrink-0">
-                  {post.author?.avatar
-                    ? <img src={post.author.avatar} alt="" className="w-full h-full object-cover" />
-                    : <div className="w-full h-full bg-border" />}
+                {/* ── Аватар + уровень ── */}
+                <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                  <div
+                    className="w-9 h-9 overflow-hidden relative"
+                    style={{ border: `1px solid ${levelColor}40` }}
+                  >
+                    {post.author?.avatar
+                      ? <img src={post.author.avatar} alt="" className="w-full h-full object-cover" />
+                      : (
+                        <div
+                          className="w-full h-full flex items-center justify-center font-mc-pixel text-[9px]"
+                          style={{ background: "rgba(0,0,0,0.3)", color: levelColor }}
+                        >
+                          {post.author?.username?.[0]?.toUpperCase() || "?"}
+                        </div>
+                      )
+                    }
+                  </div>
+                  {/* Бейдж уровня */}
+                  <span
+                    className="font-mc-pixel text-[7px] uppercase px-1 leading-none py-0.5"
+                    style={{
+                      color: levelColor,
+                      background: `${levelColor}15`,
+                      border: `1px solid ${levelColor}30`,
+                    }}
+                  >
+                    {level}
+                  </span>
                 </div>
-                <span className="font-standard text-[10px] text-muted/60 truncate max-w-[70px]">
-                  {post.author?.username}
-                </span>
-              </div>
 
-              {/* Статы */}
-              <div className="flex items-center gap-2.5 shrink-0">
-                <span className="flex items-center gap-0.5 font-standard text-[10px] text-muted/50">
-                  <HiOutlineEye className="w-3 h-3" />
-                  {post.views || 0}
-                </span>
-                <span className="flex items-center gap-0.5 font-standard text-[10px] text-muted/50">
-                  <HiOutlineHeart className="w-3 h-3" />
-                  {post.likesCount || post.likes?.length || 0}
-                </span>
+                {/* ── Контент ── */}
+                <div className="flex-1 min-w-0">
+
+                  {/* Категория + номер */}
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span
+                      className="font-mc-pixel text-[7px] uppercase tracking-widest"
+                      style={{ color: "#7d8581" }}
+                    >
+                      #{i + 1}
+                    </span>
+                    <span
+                      className="font-mc-pixel text-[7px] uppercase tracking-widest px-1 py-0.5"
+                      style={{
+                        color: BRAND,
+                        background: `${BRAND}10`,
+                        border: `1px solid ${BRAND}20`,
+                      }}
+                    >
+                      {post.category || 'Обсуждение'}
+                    </span>
+                  </div>
+
+                  {/* Заголовок */}
+                  <h3
+                    className="font-mc-pixel text-[12px] leading-snug py-3 line-clamp-2 transition-colors duration-100"
+                    style={{ color: "#f2f2f2" }}
+                    onMouseEnter={e => (e.currentTarget.style.color = BRAND)}
+                    onMouseLeave={e => (e.currentTarget.style.color = "#f2f2f2")}
+                  >
+                    {post.title}
+                  </h3>
+
+                  {/* Мета: автор + статы */}
+                  <div className="flex items-center justify-between mt-1.5">
+                    <span
+                      className="font-mc-pixel text-[8px] truncate max-w-[80px]"
+                      style={{ color: "#7d8581" }}
+                    >
+                      {post.author?.username || "Аноним"}
+                    </span>
+
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span
+                        className="flex items-center gap-0.5 font-mc-pixel text-[7px]"
+                        style={{ color: "#7d8581" }}
+                      >
+                        <HiOutlineEye className="w-2.5 h-2.5" />
+                        {post.views || 0}
+                      </span>
+                      <span
+                        className="flex items-center gap-0.5 font-mc-pixel text-[7px]"
+                        style={{ color: "#7d8581" }}
+                      >
+                        <HiOutlineHeart className="w-2.5 h-2.5" />
+                        {post.likesCount || post.likes?.length || 0}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
 
       {/* ── Футер ── */}
-      <div className="p-2 border-t border-border bg-surface">
+      <div
+        className="p-2 border-t"
+        style={{ borderColor: "rgba(255,255,255,0.05)" }}
+      >
         <Link
           href="/forum/create-post"
-          className="flex items-center justify-center gap-1.5 w-full py-1.5
-            font-standard font-bold text-[11px] text-muted border border-border
-            hover:text-foreground-bright hover:border-foreground/20
-            transition-colors duration-100 bg-card"
+          className="flex items-center justify-center gap-1.5 w-full py-2 font-mc-pixel text-[8px] uppercase tracking-widest border transition-all"
+          style={{ color: "#7d8581", borderColor: "rgba(255,255,255,0.05)", background: "transparent" }}
+          onMouseEnter={e => {
+            const el = e.currentTarget as HTMLElement;
+            el.style.color = BRAND;
+            el.style.borderColor = `${BRAND}40`;
+          }}
+          onMouseLeave={e => {
+            const el = e.currentTarget as HTMLElement;
+            el.style.color = "#7d8581";
+            el.style.borderColor = "rgba(255,255,255,0.05)";
+          }}
         >
           <HiPlus className="w-3 h-3" />
           Создать тему

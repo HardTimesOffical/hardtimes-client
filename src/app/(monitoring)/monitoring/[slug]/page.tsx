@@ -73,13 +73,12 @@ export default async function Page({ params }: Props) {
 
   if (!serverData) {
     return (
-      <div className="p-10 text-center bg-[#1a1a1a] text-zinc-500 uppercase font-bold tracking-widest pt-32">
+      <div className="p-10 text-center bg-[#0a0b0b] text-zinc-500 uppercase font-bold tracking-widest pt-40 min-h-screen">
         [ Системная ошибка: Сервер не найден ]
       </div>
     );
   }
 
-  // JSON-LD разметка для Яндекса и Google (Rich Snippets)
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "GameServer",
@@ -90,17 +89,37 @@ export default async function Page({ params }: Props) {
     "serverStatus": serverData.status?.online ? "https://schema.org/OnlineFull" : "https://schema.org/OfflinePermanently",
     "playersOnline": serverData.status?.players || 0,
     "identifier": serverData.ipAddress?.address,
-    // Если у тебя есть система отзывов, можно добавить AggregateRating
   };
 
   return (
-    <>
-      {/* Вставляем микроразметку прямо в HTML */}
+    <div className="relative min-h-screen w-full overflow-x-hidden" style={{ backgroundColor: '#0a0b0b' }}>
+      {/* JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ServerPageClient slug={slug} initialData={serverData} />
-    </>
+
+      {/* ── ФОНОВОЕ ИЗОБРАЖЕНИЕ (Fixed) ── */}
+      <div 
+        className="fixed inset-0 z-0 pointer-events-none" 
+        style={{ 
+          backgroundImage: "url('https://i.pinimg.com/1200x/1c/86/12/1c86122cdfc9fac2b55523ee09b14ccb.jpg')", 
+          backgroundSize: "cover", 
+          backgroundPosition: "center", 
+          filter: "saturate(0.4) brightness(0.4)" 
+        }} 
+      />
+      
+      {/* Градиент в темноту */}
+      <div 
+        className="fixed inset-0 z-0 pointer-events-none" 
+        style={{ background: "linear-gradient(to bottom, transparent 0%, #0a0b0b 80%, #0a0b0b 100%)" }} 
+      />
+
+      {/* ── КОНТЕНТ ── */}
+      <div className="relative z-10">
+        <ServerPageClient slug={slug} initialData={serverData} />
+      </div>
+    </div>
   );
 }
