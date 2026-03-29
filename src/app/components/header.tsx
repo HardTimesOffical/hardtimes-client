@@ -74,16 +74,25 @@ const SectionDropdown = memo(({ label, items, activeId, onCreate, createLabel }:
 
   const isAnyActive = items.some(i => i.id === activeId);
 
+  // Константы стилей Синегорск
+  const BRAND_COLOR = "#84a98c";
+  const TEXT_DIM = "#7d8581";
+  const TEXT_BRIGHT = "#ffffff"; // Чистый белый для ховера
+
   return (
     <div ref={ref} className="relative flex items-stretch">
       <button
         onClick={() => setOpen(o => !o)}
-        style={isAnyActive ? MC_ACTIVE_STYLE : undefined}
-        className={`flex items-center gap-1.5 h-full px-4 font-mc-pixel font-bold text-[11px]
-          border-x border-border/60 transition-all duration-100 select-none
+        style={isAnyActive ? { 
+          borderTop: `2px solid ${BRAND_COLOR}`, 
+          backgroundColor: 'rgba(132, 169, 140, 0.1)',
+          color: BRAND_COLOR 
+        } : undefined}
+        className={`flex items-center gap-1.5 h-full px-4 font-mc-pixel text-[10px] uppercase tracking-widest
+          border-r border-white/5 transition-all duration-100 select-none
           ${isAnyActive
-            ? 'hover:brightness-110'
-            : 'bg-transparent text-muted hover:text-foreground-bright hover:bg-white/5'
+            ? 'hover:text-white'
+            : 'text-[#7d8581] hover:text-white hover:bg-white/5'
           }`}
       >
         {label}
@@ -92,21 +101,27 @@ const SectionDropdown = memo(({ label, items, activeId, onCreate, createLabel }:
 
       {open && (
         <div className="absolute top-full left-0 z-[200] min-w-[190px]
-          bg-card border-2 border-border
-          shadow-[4px_4px_0_rgba(0,0,0,0.6)]"
+          bg-[#161817] border border-white/10
+          shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
         >
-          {/* Создать */}
+          {/* Создать (Ховер: белый текст) */}
           {onCreate && (
             <button
               onClick={() => { onCreate(); setOpen(false); }}
               className="w-full flex items-center gap-2 px-3 py-2.5
-                font-mc-pixel text-[10px] uppercase border-b border-border
-                transition-colors"
-              style={{ color: '#5aac44' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#3c8527'; (e.currentTarget as HTMLElement).style.color = '#fff'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = '#5aac44'; }}
+                font-mc-pixel text-[9px] uppercase border-b border-white/5
+                transition-all group"
+              style={{ color: BRAND_COLOR }}
+              onMouseEnter={e => { 
+                (e.currentTarget as HTMLElement).style.background = 'rgba(132, 169, 140, 0.1)'; 
+                (e.currentTarget as HTMLElement).style.color = TEXT_BRIGHT; 
+              }}
+              onMouseLeave={e => { 
+                (e.currentTarget as HTMLElement).style.background = ''; 
+                (e.currentTarget as HTMLElement).style.color = BRAND_COLOR; 
+              }}
             >
-              <span className="text-sm leading-none font-bold">+</span>
+              <span className="text-[12px] leading-none font-bold">+</span>
               {createLabel ?? 'Создать'}
             </button>
           )}
@@ -115,19 +130,25 @@ const SectionDropdown = memo(({ label, items, activeId, onCreate, createLabel }:
             <button
               key={item.id}
               onClick={() => { router.push(item.href); setOpen(false); }}
-              style={item.id === activeId ? MC_ACTIVE_STYLE : undefined}
+              style={item.id === activeId ? { color: BRAND_COLOR, backgroundColor: 'rgba(132, 169, 140, 0.05)' } : { color: '#aaaaaa' }}
               className={`w-full flex items-center justify-between px-3 py-2.5
-                font-standard font-semibold text-[11px] transition-colors
+                font-mc-pixel text-[9px] uppercase tracking-wider transition-all
                 ${item.id === activeId
-                  ? 'hover:brightness-110'
-                  : 'text-foreground hover:bg-surface hover:text-foreground-bright'
+                  ? 'hover:text-white'
+                  : 'hover:bg-white/5 hover:text-white' // Белый текст при наведении на обычный пункт
                 }
-                ${idx !== items.length - 1 ? 'border-b border-border/30' : ''}`}
+                ${idx !== items.length - 1 ? 'border-b border-white/5' : ''}`}
+              onMouseEnter={e => { 
+                if (item.id !== activeId) (e.currentTarget as HTMLElement).style.color = TEXT_BRIGHT; 
+              }}
+              onMouseLeave={e => { 
+                if (item.id !== activeId) (e.currentTarget as HTMLElement).style.color = '#aaaaaa'; 
+              }}
             >
               <span>{item.label}</span>
               {item.count !== undefined && item.count > 0 && (
-                <span className={`font-mc-pixel text-[9px] px-1
-                  ${item.id === activeId ? 'text-white/60' : 'text-muted'}`}>
+                <span className={`font-mc-pixel text-[8px] px-1 transition-colors
+                  ${item.id === activeId ? 'text-[#84a98c]/60' : 'text-[#555555] group-hover:text-white/40'}`}>
                   {item.count}
                 </span>
               )}
@@ -146,19 +167,22 @@ const NavLink = memo(({ href, label, isActive, external }: {
 }) => {
   const props = external ? { target: '_blank', rel: 'noopener noreferrer' } : {};
   return (
-    <Link
+   <Link
       href={href}
       {...props}
-      style={isActive ? MC_ACTIVE_STYLE : undefined}
-      className={`flex items-center h-full px-4 font-mc-pixel font-bold text-[11px]
-        border-x border-border/60 transition-all duration-100 select-none
+      style={isActive ? { 
+        borderTop: '2px solid #84a98c', 
+        backgroundColor: 'rgba(132, 169, 140, 0.1)' 
+      } : undefined}
+      className={`flex items-center h-full px-4 font-mc-pixel text-[10px] uppercase tracking-widest
+        border-r border-white/5 transition-all duration-200 select-none
         ${isActive
-          ? 'hover:brightness-110'
-          : 'text-muted hover:text-foreground-bright hover:bg-white/5'
+          ? 'text-[#84a98c]'
+          : 'text-[#7d8581] hover:text-[#f2f2f2] hover:bg-white/5'
         }`}
     >
       {label}
-    </Link>
+  </Link>
   );
 });
 NavLink.displayName = 'NavLink';
@@ -168,14 +192,30 @@ const MobileMenu = memo(({ open, onClose, children }: {
   open: boolean; onClose: () => void; children: React.ReactNode;
 }) => (
   <>
-    {open && <div className="fixed inset-0 z-[105] bg-black/60" onClick={onClose} />}
-    <div className={`fixed top-14 left-0 right-0 z-[110] bg-card border-b-2 border-border
-      overflow-hidden transition-all duration-200 origin-top
-      ${open ? 'max-h-[80vh] opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}
+    {/* Затемнение фона с эффектом размытия */}
+    {open && (
+      <div 
+        className="fixed inset-0 z-[105] bg-black/40 backdrop-blur-sm transition-opacity animate-fade-in" 
+        onClick={onClose} 
+      />
+    )}
+
+    {/* Панель меню */}
+    <div className={`fixed top-14 left-0 right-0 z-[110] overflow-hidden transition-all duration-300 origin-top
+      ${open ? 'max-h-[85vh] opacity-100 translate-y-0' : 'max-h-0 opacity-0 -translate-y-4 pointer-events-none'}`}
+      style={{ 
+        backgroundColor: '#161817', 
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+      }}
     >
-      <div className="p-3 flex flex-col gap-1 overflow-y-auto max-h-[80vh]">
+      <div className="p-3 flex flex-col gap-1 overflow-y-auto max-h-[85vh]">
+        {/* Здесь будут находиться твои ссылки, которые при наведении станут белыми */}
         {children}
       </div>
+      
+      {/* Декоративная оливковая полоска в самом низу меню для стиля */}
+      <div className="h-[1px] w-full opacity-30" style={{ backgroundColor: '#84a98c' }} />
     </div>
   </>
 ));
@@ -185,27 +225,64 @@ MobileMenu.displayName = 'MobileMenu';
 const MobileLink = memo(({ href, label, isActive, onClick, isCreate }: {
   href?: string; label: string; isActive?: boolean; onClick: () => void; isCreate?: boolean;
 }) => {
-  const base = `w-full flex items-center gap-3 px-3 py-2.5 border
-    font-mc-pixel font-semibold text-[11px] text-left transition-all`;
-  const baseCreate = `w-full flex items-center gap-3 px-3 py-2.5 border
-    font-mc-title text-[10px] uppercase tracking-wide text-left transition-all`;
+  // Цвета Синегорск
+  const BRAND = "#84a98c";
+  const TEXT_DIM = "#7d8581";
+  const BG_HOVER = "rgba(255, 255, 255, 0.05)";
 
+  const base = `w-full flex items-center gap-3 px-4 py-3 border-l-2
+    font-mc-pixel text-[10px] uppercase tracking-widest text-left transition-all duration-200`;
+  
+  const baseCreate = `w-full flex items-center gap-3 px-4 py-3 border border-dashed
+    font-mc-pixel text-[9px] uppercase tracking-widest text-left transition-all duration-200`;
+
+  // Стили для активного состояния и ховера
+  const activeStyle = { 
+    borderColor: BRAND, 
+    backgroundColor: 'rgba(132, 169, 140, 0.1)', 
+    color: BRAND 
+  };
+
+  // 1. Кнопка создания
   if (isCreate) {
     return (
-      <button onClick={onClick} className={`${baseCreate} border-dashed border-border`}
-        style={{ color: '#5aac44' }}>
-        {label}
+      <button 
+        onClick={onClick} 
+        className={baseCreate}
+        style={{ color: BRAND, borderColor: 'rgba(132, 169, 140, 0.3)', backgroundColor: 'rgba(132, 169, 140, 0.05)' }}
+        onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = BRAND; }}
+        onMouseLeave={e => { e.currentTarget.style.color = BRAND; e.currentTarget.style.borderColor = 'rgba(132, 169, 140, 0.3)'; }}
+      >
+        <span className="text-[12px]">+</span> {label}
       </button>
     );
   }
+
+  // 2. Активная ссылка
   if (isActive) {
-    return href
-      ? <Link href={href} onClick={onClick} className={`${base} border-transparent`} style={MC_ACTIVE_STYLE}>{label}</Link>
-      : <button onClick={onClick} className={`${base} border-transparent`} style={MC_ACTIVE_STYLE}>{label}</button>;
+    const content = <>{label}</>;
+    const props = { 
+      onClick, 
+      className: `${base} border-l-[3px]`, 
+      style: activeStyle,
+      onMouseEnter: (e: any) => e.currentTarget.style.color = '#fff',
+      onMouseLeave: (e: any) => e.currentTarget.style.color = BRAND
+    };
+
+    return href ? <Link href={href} {...props}>{content}</Link> : <button {...props}>{content}</button>;
   }
-  return href
-    ? <Link href={href} onClick={onClick} className={`${base} border-transparent text-muted hover:bg-surface hover:text-foreground-bright hover:border-border`}>{label}</Link>
-    : <button onClick={onClick} className={`${base} border-transparent text-muted hover:bg-surface hover:text-foreground-bright hover:border-border`}>{label}</button>;
+
+  // 3. Обычная ссылка
+  const normalProps = {
+    onClick,
+    className: `${base} border-transparent text-[#7d8581] hover:bg-white/5 hover:text-white hover:border-l-white/20`,
+    onMouseEnter: (e: any) => e.currentTarget.style.color = '#fff',
+    onMouseLeave: (e: any) => e.currentTarget.style.color = TEXT_DIM
+  };
+
+  return href 
+    ? <Link href={href} {...normalProps}>{label}</Link> 
+    : <button {...normalProps}>{label}</button>;
 });
 MobileLink.displayName = 'MobileLink';
 
@@ -356,76 +433,139 @@ const Header = () => {
 
               {/* Пользователь */}
               <div ref={userMenuRef} className="relative flex items-stretch">
-                <button
-                  onClick={() => setUserMenuOpen(o => !o)}
-                  className="flex items-center gap-2 px-3 hover:bg-surface transition-colors">
-                  <div className="w-7 h-7 shrink-0 relative overflow-hidden">
-                    {user.avatar ? (
-                      <img src={user.avatar} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center
-                        font-mc-title text-[11px]" style={MC_ACTIVE_STYLE}>
-                        {user.username?.[0].toUpperCase()}
+               <button
+                    onClick={() => setUserMenuOpen(o => !o)}
+                    className="flex items-center gap-2.5 px-3 h-full hover:bg-white/5 transition-all group"
+                  >
+                    {/* Контейнер аватара */}
+                    <div className="w-7 h-7 shrink-0 relative p-[1px] bg-white/10 group-hover:bg-[#84a98c]/50 transition-colors">
+                      <div className="w-full h-full relative overflow-hidden bg-[#1a1c1a]">
+                        {user.avatar ? (
+                          <img src={user.avatar} alt="" className="w-full h-full object-cover pixelated" />
+                        ) : (
+                          <div 
+                            className="w-full h-full flex items-center justify-center font-mc-pixel text-[10px]" 
+                            style={{ backgroundColor: '#84a98c', color: '#161817' }}
+                          >
+                            {user.username?.[0].toUpperCase()}
+                          </div>
+                        )}
                       </div>
-                    )}
-                    <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border border-card"
-                      style={{ background: '#5aac44' }} />
-                  </div>
-                  <span className="hidden md:block font-mc-title text-[10px] text-foreground-bright">
+                      
+                      {/* Индикатор статуса (Оливковый) */}
+                      <div 
+                        className="absolute -bottom-0.5 -right-0.5 w-2 h-2 border-2 border-[#0a0b0b] rounded-full"
+                        style={{ background: '#84a98c', boxShadow: '0 0 4px rgba(132, 169, 140, 0.5)' }} 
+                      />
+                    </div>
+
+                  {/* Никнейм */}
+                  <span className="hidden md:block font-mc-pixel text-[10px] uppercase tracking-wider text-[#7d8581] group-hover:text-white transition-colors">
                     {user.username}
                   </span>
-                  <HiChevronDown className={`w-3 h-3 text-muted transition-transform duration-150
-                    ${userMenuOpen ? 'rotate-180' : ''}`} />
-                </button>
 
+                  {/* Стрелочка */}
+                  <HiChevronDown 
+                    className={`w-3 h-3 transition-all duration-150 
+                      ${userMenuOpen ? 'rotate-180 text-[#84a98c]' : 'text-[#555555] group-hover:text-white'}`} 
+                  />
+                </button>
                 {/* Дропдаун пользователя */}
-                {userMenuOpen && (
-                  <div className="absolute top-full right-0 z-[200] w-44
-                    bg-card border-2 border-border shadow-[4px_4px_0_rgba(0,0,0,0.6)]">
-                    <div className="px-3 py-2.5 border-b border-border">
-                      <p className="font-mc-title text-[11px] text-foreground-bright">{user.username}</p>
-                      {/* font-standard — читаемый шрифт для баланса */}
-                      <p className="font-standard text-[11px] font-bold mt-0.5" style={{ color: '#5aac44' }}>
-                        {user.balance ?? 0} звёзд
-                      </p>
-                    </div>
-                    <Link
-                      href={`/profile/${user.username}`}
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center px-3 py-2.5 border-b border-border/50
-                        font-mc-title text-[10px] text-muted
-                        hover:bg-surface hover:text-foreground-bright transition-colors">
-                      Профиль
-                    </Link>
-                    <button
-                      onClick={() => { logout(); setUserMenuOpen(false); }}
-                      className="w-full flex items-center px-3 py-2.5 text-left
-                        font-mc-title text-[10px] text-muted
-                        hover:bg-surface hover:text-foreground-bright transition-colors">
-                      Выйти
-                    </button>
-                  </div>
-                )}
+               {userMenuOpen && (
+              <div className="absolute top-full right-0 z-[200] w-44
+                bg-[#161817] border border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+                
+                {/* Шапка меню с балансом */}
+                <div className="px-3 py-2.5 border-b border-white/5 bg-white/[0.02]">
+                  <p className="font-mc-pixel text-[10px] text-[#f2f2f2] uppercase tracking-wider">{user.username}</p>
+                  <p className="font-mc-pixel text-[9px] mt-1 uppercase" style={{ color: '#84a98c' }}>
+                    {user.balance ?? 0} звёзд
+                  </p>
+                </div>
+
+                {/* Профиль */}
+                <Link
+                  href={`/profile/${user.username}`}
+                  onClick={() => setUserMenuOpen(false)}
+                  className="flex items-center px-3 py-2.5 border-b border-white/5
+                    font-mc-pixel text-[9px] text-[#7d8581] uppercase tracking-widest
+                    hover:bg-white/5 hover:text-white transition-all">
+                  Профиль
+                </Link>
+
+                {/* Выход (Красный акцент) */}
+                <button
+                  onClick={() => { logout(); setUserMenuOpen(false); }}
+                  className="w-full flex items-center px-3 py-2.5 text-left
+                    font-mc-pixel text-[9px] text-[#ff3333]/70 uppercase tracking-widest
+                    hover:bg-[#ff3333]/10 hover:text-[#ff3333] transition-all">
+                  Выйти
+                </button>
               </div>
+            )}
+            </div>
             </>
-          ) : (
-            <Link href="/login"
-              className="flex items-center px-4 font-mc-pixel text-[10px] transition-all hover:brightness-110"
-              style={MC_ACTIVE_STYLE}>
-              Войти
-            </Link>
-          )}
+            ) : (
+  <div className="flex items-center h-full px-2">
+    <Link 
+      href="/login"
+      className="flex items-center justify-center px-5 h-8 
+                 font-mc-pixel text-[10px] uppercase tracking-[0.15em] 
+                 transition-all duration-300 relative group overflow-hidden"
+      style={{ 
+        backgroundColor: '#49b664', 
+        color: '#ffffff',
+        boxShadow: 'inset 0 -2px 0 rgb(0, 0, 0), 0 4px 15px rgba(132, 169, 140, 0.2)'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = '#49b664';
+        e.currentTarget.style.transform = 'translateY(-1px)';
+        e.currentTarget.style.boxShadow = 'inset 0 -2px 0 rgba(0,0,0,0.2), 0 6px 20px rgba(132, 169, 140, 0.3)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = '#52b96c';
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = 'inset 0 -2px 0 rgba(0,0,0,0.2), 0 4px 15px rgba(132, 169, 140, 0.2)';
+      }}
+    >
+      {/* Декоративный "блик" при наведении */}
+      <div className="absolute inset-0 w-full h-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+      
+      {/* Пиксельные уголки */}
+      <div className="absolute top-0 left-0 w-1 h-1 bg-white/20" />
+      <div className="absolute bottom-0 right-0 w-1 h-1 bg-black/10" />
+
+      <span className="relative z-10 font-bold ">Войти</span>
+    </Link>
+  </div>
+)}
 
           {/* Мобильный бургер */}
           <button
             onClick={() => setMobileOpen(o => !o)}
-            className="md:hidden w-10 flex items-center justify-center
-              border-l border-border text-muted
-              hover:text-foreground-bright hover:bg-surface transition-colors"
-            aria-label="Меню">
-            {mobileOpen
-              ? <HiX className="w-4 h-4" />
-              : <span className="font-mc-pixel text-sm leading-none">≡</span>}
+            className="md:hidden w-12 flex flex-col items-center justify-center gap-[3px]
+              border-l border-white/5 transition-all duration-200 group relative"
+            style={{ backgroundColor: mobileOpen ? 'rgba(132, 169, 140, 0.1)' : 'transparent' }}
+            aria-label="Меню"
+          >
+            {mobileOpen ? (
+              // Крестик в пиксельном стиле через текст или иконку
+              <span className="font-mc-pixel text-[14px] text-[#ff3333] transition-colors group-hover:text-white">
+                ✕
+              </span>
+            ) : (
+              // Самодельный "бургер" из полосок для контроля стиля
+              <>
+                <div className="w-4 h-[2px] bg-[#7d8581] group-hover:bg-[#84a98c] transition-colors" />
+                <div className="w-4 h-[2px] bg-[#7d8581] group-hover:bg-[#84a98c] transition-colors" />
+                <div className="w-4 h-[2px] bg-[#7d8581] group-hover:bg-[#84a98c] transition-colors" />
+              </>
+            )}
+
+            {/* Нижняя подсветка при открытом меню */}
+            {mobileOpen && (
+              <div className="absolute bottom-0 left-0 w-full h-[2px]" style={{ backgroundColor: '#84a98c' }} />
+            )}
           </button>
         </div>
       </header>

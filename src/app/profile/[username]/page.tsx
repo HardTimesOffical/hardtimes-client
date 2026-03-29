@@ -78,7 +78,6 @@ export default function ProfilePage({ params }: { params: { username: string } }
               Профиль пользователя
             </span>
           </div>
-          {isOwner && <LogoutButton />}
         </div>
 
         <div className="p-4 space-y-6">
@@ -170,6 +169,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
                 <ProfileTabs user={profileUser} isOwner={isOwner} />
               </div>
             )}
+              {isOwner && <LogoutButton />}
           </div>
         </div>
       </div>
