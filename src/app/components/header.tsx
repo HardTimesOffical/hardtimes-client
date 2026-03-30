@@ -8,6 +8,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { NewProject } from './project/NewProject';
 import { HeaderBalance } from './header/HeaderBalance';
 import { PROJECT_TYPES_BY_GAME } from '@/constants/projectTypes';
+import NotificationMenu from './header/NotificationMenu';
 
 import { HiOutlineUser, HiMoon, HiSun, HiX, HiChevronDown } from 'react-icons/hi';
 
@@ -286,6 +287,35 @@ const MobileLink = memo(({ href, label, isActive, onClick, isCreate }: {
 });
 MobileLink.displayName = 'MobileLink';
 
+const PremiumLink = memo(({ href, label, isActive }: { 
+  href: string; label: string; isActive: boolean; 
+}) => {
+  return (
+    <Link
+      href={href}
+      className={`flex items-center h-full px-4 font-mc-pixel text-[10px] uppercase tracking-widest
+        border-r border-white/5 transition-all duration-300 select-none relative overflow-hidden
+        ${isActive 
+          ? 'text-white border-t-2 border-[#a855f7]' 
+          : 'text-[#7d8581] hover:text-white'
+        }`}
+      style={{
+        // Фиолетовый градиент (полупрозрачный)
+        background: isActive 
+          ? 'linear-gradient(180deg, rgba(168, 85, 247, 0.15) 0%, rgba(168, 85, 247, 0.05) 100%)' 
+          : 'transparent'
+      }}
+    >
+      {/* Эффект свечения снизу для активного состояния */}
+      {isActive && (
+        <div className="absolute inset-0 bg-[#a855f7]/5 blur-xl pointer-events-none" />
+      )}
+      <span className="relative z-10">{label}</span>
+    </Link>
+  );
+});
+PremiumLink.displayName = 'PremiumLink';
+
 // ═══════════════════════════════════════════════════════════════════
 // HEADER
 // ═══════════════════════════════════════════════════════════════════
@@ -407,13 +437,13 @@ const Header = () => {
             activeId={activeSection === 'monitoring' ? activePlatformId : undefined}
           />
 
-          <SectionDropdown
+          {/* <SectionDropdown
             label={activeSection === 'content' ? contentLabel : 'Контент'}
             items={contentDropdownItems}
             activeId={activeSection === 'content' ? (isInsideGame ? activeContentTypeId : currentGameId) : undefined}
             onCreate={activeSection === 'content' ? openNewProject : undefined}
             createLabel="Создать проект"
-          />
+          /> */}
 
           <NavLink
             href="/monitoring/workbench"
@@ -430,19 +460,37 @@ const Header = () => {
             label="Реклама"
             isActive={pathname === '/minecraft-ads'}
           />
+          <Link 
+            href="https://clc.li/minely-monitor3453"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center h-full px-4 font-mc-pixel text-[10px] uppercase tracking-widest
+              border-r border-white/5 transition-all duration-300 select-none relative overflow-hidden
+              text-[#a855f7] hover:text-white group"
+            style={{
+              background: 'linear-gradient(180deg, rgba(168, 85, 247, 0.1) 0%, rgba(168, 85, 247, 0.02) 100%)'
+            }}
+          >
+            <div className="absolute inset-0 bg-[#a855f7]/5 group-hover:bg-[#a855f7]/15 transition-colors duration-300" />
+            <div className="absolute top-0 left-0 right-0 h-[1px] bg-[#a855f7]/30 group-hover:bg-[#a855f7] transition-all" />
+
+            <span className="relative z-10 flex items-center gap-1.5">
+              Майнкрафт Хостинг
+            </span>
+          </Link>
         </nav>
 
         <div className="flex-1" />
 
         {/* ── Правая часть ────────────────────────────────────── */}
         <div className="flex items-stretch border-l border-border/60">
-
           {user ? (
             <>
               {/* Баланс — font-standard для читаемости */}
               <div className="hidden sm:flex items-center px-3 border-r border-border">
                 <HeaderBalance />
               </div>
+              <NotificationMenu />
 
               {/* Пользователь */}
               <div ref={userMenuRef} className="relative flex items-stretch">
