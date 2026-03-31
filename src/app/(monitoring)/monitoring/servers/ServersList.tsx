@@ -86,12 +86,10 @@ export default function ServerList({ game, filters, sort }: Props) {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-5xl mb-16">
+    <div className="flex flex-col w-full mb-16">
 
-      {/* ── Панель над списком ── */}
+      {/* Панель над списком */}
       <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-border">
-
-        {/* Кнопка добавить */}
         <button
           onClick={() => router.push(user ? "/monitoring/workbench" : "/login")}
           className="flex items-center gap-2 px-4 py-2 font-standard font-bold text-[12px] text-white
@@ -105,7 +103,6 @@ export default function ServerList({ game, filters, sort }: Props) {
           Добавить сервер
         </button>
 
-        {/* Пагинация сверху */}
         {!loading && totalCount > 0 && (
           <Pagination
             currentPage={currentPage}
@@ -116,8 +113,8 @@ export default function ServerList({ game, filters, sort }: Props) {
         )}
       </div>
 
-      {/* ── Список ── */}
-      <div className="flex flex-col gap-2 w-full">
+      {/* Список серверов */}
+      <div className="flex flex-col gap-3 w-full"> {/* Увеличил gap до 3 для воздуха */}
         {loading ? (
           Array.from({ length: 5 }).map((_, i) => <ServerCardSkeleton key={i} />)
         ) : servers.length > 0 ? (

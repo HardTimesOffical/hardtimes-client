@@ -198,7 +198,7 @@ export default function LauncherClient({ dict, lang }: { dict: LauncherDict; lan
               </a>
             ))}
             <a
-              href="https://github.com/HardTimesOffical/HardLauncher/releases/download/v1.0.10/HardLauncher-Setup-1.0.10.exe"
+              href="https://github.com/HardTimesOffical/HardLauncher/releases/download/v1.0.12/HardLauncher-Setup-1.0.12.exe"
               className="flex items-center gap-2 px-4 py-2 font-mc-pixel text-[9px] uppercase tracking-widest border transition-all no-underline"
               style={{ background: '#84a98c', color: '#0a0b0b', borderColor: '#84a98c' }}
               onMouseEnter={e => (e.currentTarget as HTMLElement).style.opacity = '0.85'}

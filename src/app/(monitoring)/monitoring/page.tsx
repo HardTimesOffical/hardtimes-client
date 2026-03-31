@@ -66,7 +66,7 @@ export const metadata: Metadata = {
 
 export default async function Home({ searchParams }: { searchParams: any }) {
   const filters = await searchParams;
-  const containerWidth = "max-w-[1132px]";
+  const containerWidth = "max-w-[1200px]";
   const COLORS = {
     brand: "#84a98c",
     border: "rgba(255, 255, 255, 0.08)", // Чуть отчетливее, так как нет ховера
