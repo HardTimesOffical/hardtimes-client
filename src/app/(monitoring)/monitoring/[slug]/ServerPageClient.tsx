@@ -198,6 +198,14 @@ export default function ServerPageClient({ slug, initialData }: Props) {
   const router = useRouter();
 
   useEffect(() => {
+    if (server?._id && user) {
+      api.get(`/follows/status/${server._id}`)
+        .then(res => setIsFollowed(res.data.followed))
+        .catch(err => console.error("Ошибка статуса подписки:", err));
+    }
+  }, [server?._id, user]);
+
+  useEffect(() => {
     if (server?._id) {
       // Запрашиваем только тех, кто подписан НА сервер
       api.get(`/follows/data/${server._id}?type=followers`)
@@ -214,9 +222,9 @@ export default function ServerPageClient({ slug, initialData }: Props) {
   }
 
   // Если авторизован — стандартная логика
-  setVoteLoading(true); // или создай отдельный стейт followLoading
+  setFollowLoading(true); // или создай отдельный стейт followLoading
   try {
-    const res = await api.post('/follow/toggle', { 
+    const res = await api.post('/follows/toggle', { 
       targetId: server?._id, 
       targetType: 'Server' 
     });
@@ -589,19 +597,26 @@ export default function ServerPageClient({ slug, initialData }: Props) {
                         {followers.length} {followers.length === 1 ? 'игрок' : 'игроков'}
                       </span>
                       <button
-                        onClick={handleFollow}
-                        disabled={followLoading} 
-                        className="px-4 py-1.5 font-mc-pixel text-[8px] uppercase tracking-widest border transition-all"
-                        style={{ 
-                          background: isFollowed ? "transparent" : BRAND, 
-                          color: isFollowed ? BRAND : "#0a0b0b",
-                          borderColor: BRAND,
-                          cursor: "pointer"
-                        }}
-                      >
-                        {/* Надпись всегда статична, никаких "Войдите" */}
-                        {isFollowed ? "Вы подписаны" : "Подписаться"}
-                    </button>
+                          onClick={handleFollow}
+                          disabled={followLoading}
+                          className="relative group overflow-hidden px-4 py-2 font-mc-pixel text-[9px] uppercase tracking-widest border-2 transition-all active:translate-y-[2px] disabled:opacity-50"
+                          style={{ 
+                            backgroundColor: isFollowed ? BRAND : "transparent",
+                            color: isFollowed ? "#0a0b0b" : BRAND,
+                            borderColor: BRAND,
+                            boxShadow: isFollowed ? `0 4px 0 0 ${BRAND}44` : `0 4px 0 0 ${BRAND}22`,
+                          }}
+                        >
+                          <span className="relative z-10 flex items-center gap-2">
+                            {voteLoading ? (
+                              <span className="animate-pulse">Загрузка...</span>
+                            ) : isFollowed ? (
+                              <>✓ Вы подписаны</>
+                            ) : (
+                              <>+ Подписаться</>
+                            )}
+                          </span>
+                        </button>
                     </div>
 
                     {/* Сетка аватарок */}
