@@ -126,6 +126,54 @@ export default function ProfilePage({ params }: { params: { username: string } }
               Профиль пользователя
             </span>
           </div>
+          {!isOwner && (
+                <button
+                  onClick={currentUser ? handleFollow : () => window.location.href = '/login'}
+                  disabled={followLoading}
+                  className={`
+                    relative group overflow-hidden
+                    px-4 py-2 
+                    font-mc-pixel text-[10px] uppercase tracking-tighter
+                    border-2 transition-all duration-200
+                    active:translate-y-[2px] active:shadow-none
+                    disabled:opacity-50 disabled:cursor-wait
+                  `}
+                  style={{ 
+                    borderColor: BRAND,
+                    color: isFollowed ? '#fff' : BRAND,
+                    backgroundColor: isFollowed ? BRAND : 'transparent',
+                    boxShadow: isFollowed ? `0 4px 0 0 ${BRAND}44` : `0 4px 0 0 ${BRAND}22`,
+                  }}
+                >
+                  {/* Эффект свечения при наведении */}
+                  <div 
+                    className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"
+                    style={{ backgroundColor: BRAND }}
+                  />
+
+                  <span className="relative z-10 flex items-center gap-2 justify-center">
+                    {followLoading ? (
+                      <span className="animate-pulse">Обработка...</span>
+                    ) : (
+                      <>
+                        {currentUser ? (
+                          isFollowed ? (
+                            <>
+                              <span className="text-[12px]">✓</span> Вы подписаны
+                            </>
+                          ) : (
+                            <>
+                              <span className="text-[12px]">+</span> Подписаться
+                            </>
+                          )
+                        ) : (
+                          "Войти и подписаться"
+                        )}
+                      </>
+                    )}
+                  </span>
+                </button>
+              )}
         </div>
 
         <div className="p-4 space-y-6">
@@ -148,35 +196,20 @@ export default function ProfilePage({ params }: { params: { username: string } }
                     </span>
                   </div>
                   <div className="flex gap-6 border-t border-white/5 pt-4">
-          <div className="cursor-pointer group" onClick={() => handleOpenList("followers")}>
-            <span className="block font-mc-pixel text-[8px] text-[#7d8581] uppercase">Подписчики</span>
-            <span className="font-mc-pixel text-[12px] text-[#f2f2f2] group-hover:text-[#84a98c]">
-              {profileUser?.followersCount || 0}
-            </span>
-          </div>
-          <div className="cursor-pointer group" onClick={() => handleOpenList("following")}>
-            <span className="block font-mc-pixel text-[8px] text-[#7d8581] uppercase">Подписки</span>
-            <span className="font-mc-pixel text-[12px] text-[#f2f2f2] group-hover:text-[#84a98c]">
-              {profileUser?.followingCount || 0}
-            </span>
-          </div>
-        </div>
+                    <div className="cursor-pointer group" onClick={() => handleOpenList("followers")}>
+                      <span className="block font-mc-pixel text-[8px] text-[#7d8581] uppercase">Подписчики</span>
+                      <span className="font-mc-pixel text-[12px] text-[#f2f2f2] group-hover:text-[#84a98c]">
+                        {profileUser?.followersCount || 0}
+                      </span>
+                    </div>
+                    <div className="cursor-pointer group" onClick={() => handleOpenList("following")}>
+                      <span className="block font-mc-pixel text-[8px] text-[#7d8581] uppercase">Подписки</span>
+                      <span className="font-mc-pixel text-[12px] text-[#f2f2f2] group-hover:text-[#84a98c]">
+                        {profileUser?.followingCount || 0}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                
-
-                {/* Кнопка подписки (только для чужих профилей) */}
-                {!isOwner && (
-                  <button
-                    onClick={currentUser ? handleFollow : () => window.location.href = '/login'}
-                    className="..."
-                    style={{ 
-                      borderColor: BRAND,
-                      color: BRAND
-                    }}
-                  >
-                    {currentUser ? (isFollowed ? "Отписаться" : "+ Подписаться") : "Войти чтобы подписаться"}
-                  </button>
-                )}
                 
               </div>
 

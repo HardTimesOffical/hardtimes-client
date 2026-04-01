@@ -200,7 +200,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
   useEffect(() => {
     if (server?._id) {
       // Запрашиваем только тех, кто подписан НА сервер
-      api.get(`/follow/data/${server._id}?type=followers`)
+      api.get(`/follows/data/${server._id}?type=followers`)
         .then(res => setFollowers(res.data))
         .catch(err => console.error("Ошибка загрузки подписчиков:", err));
     }
