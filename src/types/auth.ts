@@ -8,6 +8,7 @@ export interface User {
   avatar?: string;
   bio?: string;
   balance: number;
+  followersCount: number;
   // Добавляем роль. Используем union type для строгости
   role: 'admin' | 'moderator' | 'user'; 
 }

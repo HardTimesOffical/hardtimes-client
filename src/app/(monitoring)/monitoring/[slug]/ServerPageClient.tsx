@@ -14,6 +14,7 @@ import {
   HiOutlineClipboard, HiOutlineCheck,
 } from 'react-icons/hi2';
 import YandexAds from "@/app/components/yandex/YandexAds";
+import { useRouter } from "next/navigation";
 
 // ── Константы стиля ──────────────────────────────────────────
 const BRAND = "#84a98c";
@@ -86,12 +87,16 @@ function Section({
         style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.05)" }}
       >
         <div className="w-1 h-3 flex-shrink-0" style={{ background: accent || BRAND }} />
-        <span
-          className="font-mc-pixel text-[9px] uppercase tracking-widest"
-          style={{ color: accent || BRAND }}
-        >
-          {title}
-        </span>
+       <span
+        className="font-mc-pixel text-[9px] uppercase tracking-widest"
+        style={{ 
+          color: accent || BRAND,
+          lineHeight: "1.4", // Увеличивает пространство сверху и снизу текста
+          display: "inline-block" // Гарантирует корректное применение высоты строки
+        }}
+      >
+        {title}
+      </span>
       </div>
       <div className="p-5 space-y-4">{children}</div>
     </div>
@@ -186,6 +191,54 @@ export default function ServerPageClient({ slug, initialData }: Props) {
 
   const canEdit = server?.isOwner || (user && server?.owner === user._id);
   const defaultDescription = "Добро пожаловать на наш проект! Описание сервера скоро будет обновлено.";
+
+  const [isFollowed, setIsFollowed] = useState(false);
+  const [followers, setFollowers] = useState<any[]>([]);
+  const [followLoading, setFollowLoading] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (server?._id) {
+      // Запрашиваем только тех, кто подписан НА сервер
+      api.get(`/follow/data/${server._id}?type=followers`)
+        .then(res => setFollowers(res.data))
+        .catch(err => console.error("Ошибка загрузки подписчиков:", err));
+    }
+  }, [server?._id]);
+
+  const handleFollow = async () => {
+  // Если не авторизован — просто уводим на логин без лишних слов
+  if (!user || !accessToken) {
+    router.push('/login');
+    return;
+  }
+
+  // Если авторизован — стандартная логика
+  setVoteLoading(true); // или создай отдельный стейт followLoading
+  try {
+    const res = await api.post('/follow/toggle', { 
+      targetId: server?._id, 
+      targetType: 'Server' 
+    });
+    
+    setIsFollowed(res.data.followed);
+    
+    // Локальное обновление списка аватарок
+    if (res.data.followed) {
+      setFollowers(prev => [...prev, { 
+        _id: user._id, 
+        avatar: user.avatar, 
+        username: user.username 
+      }]);
+    } else {
+      setFollowers(prev => prev.filter(f => f._id !== user._id));
+    }
+  } catch (err) {
+    console.error("Follow error:", err);
+  } finally {
+    setVoteLoading(false);
+  }
+};
 
   useEffect(() => {
     if (server?._id) {
@@ -476,6 +529,7 @@ export default function ServerPageClient({ slug, initialData }: Props) {
                         </div>
                       )}
                     </Section>
+                    
                   )}
                 </div>
               )}
@@ -526,8 +580,70 @@ export default function ServerPageClient({ slug, initialData }: Props) {
 
             {/* ── Правая колонка ── */}
             <div className="space-y-4">
-              <YandexAds />
+              {/* Блок подписчиков проекта */}
+                <Section title="Следи за проектом и получай уведомления о новых событиях на сервере!" accent="#6fcf97">
+                  <div className="space-y-4">
+                    {/* Счетчик и кнопка (мы их уже обсудили) */}
+                    <div className="flex justify-between items-center">
+                      <span className="font-mc-pixel text-[10px] text-[#f2f2f2]">
+                        {followers.length} {followers.length === 1 ? 'игрок' : 'игроков'}
+                      </span>
+                      <button
+                        onClick={handleFollow}
+                        disabled={followLoading} 
+                        className="px-4 py-1.5 font-mc-pixel text-[8px] uppercase tracking-widest border transition-all"
+                        style={{ 
+                          background: isFollowed ? "transparent" : BRAND, 
+                          color: isFollowed ? BRAND : "#0a0b0b",
+                          borderColor: BRAND,
+                          cursor: "pointer"
+                        }}
+                      >
+                        {/* Надпись всегда статична, никаких "Войдите" */}
+                        {isFollowed ? "Вы подписаны" : "Подписаться"}
+                    </button>
+                    </div>
 
+                    {/* Сетка аватарок */}
+                    <div className="grid grid-cols-6 gap-2">
+                      {followers.slice(0, 11).map((f, idx) => (
+                        <Link 
+                          key={f._id} 
+                          href={`/profile/${f.username}`}
+                          className="aspect-square border border-white/5 hover:border-brand transition-all relative group bg-black/40"
+                          title={f.username}
+                        >
+                          {f.avatar ? (
+                            <img src={f.avatar} alt={f.username} className="w-full h-full object-cover opacity-80 group-hover:opacity-100" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[8px] text-white/20">
+                              {f.username[0].toUpperCase()}
+                            </div>
+                          )}
+                        </Link>
+                      ))}
+
+                      {/* Кнопка "Показать всех" */}
+                      {followers.length > 11 && (
+                        <button 
+                          onClick={() => {/* Здесь логика открытия модалки */}}
+                          className="aspect-square border border-white/5 bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all"
+                        >
+                          <span className="font-mc-pixel text-[8px] text-[#7d8581]">
+                            +{followers.length - 11}
+                          </span>
+                        </button>
+                      )}
+                    </div>
+
+                    {followers.length === 0 && (
+                      <p className="font-mc-pixel text-[8px] text-[#7d8581] text-center py-2 opacity-50">
+                        Станьте первым подписчиком!
+                      </p>
+                    )}
+                  </div>
+                </Section>
+                <YandexAds />
               {/* Голоса */}
               <div
                 className="relative border p-5 space-y-4"

@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import LogoutButton from "@/app/profile/[username]/LogoutButton";
 import ProfileTabs from "@/app/profile/[username]/profileTabs";
 import api from "@/lib/api";
+import FollowsModal from "@/app/profile/[username]/FollowsModal";
 
 interface ProfileUser {
   _id: string; // Добавили ID для подписки
@@ -19,6 +20,8 @@ interface ProfileUser {
   votesTotal: number;
   votesWeekly: number;
   balance: number;
+  followersCount: number;
+  followingCount : number;
 }
 
 export default function ProfilePage({ params }: { params: { username: string } }) {
@@ -33,6 +36,11 @@ export default function ProfilePage({ params }: { params: { username: string } }
   // Состояние подписки
   const [isFollowed, setIsFollowed] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [followItems, setFollowItems] = useState([]);
+  const [modalLoading, setModalLoading] = useState(false);
 
   const isOwner = currentUser?.username === username;
 
@@ -68,6 +76,22 @@ export default function ProfilePage({ params }: { params: { username: string } }
       console.error("Ошибка при подписке:", err);
     } finally {
       setFollowLoading(false);
+    }
+  };
+
+    const handleOpenList = async (type: "followers" | "following") => {
+    setModalTitle(type === "followers" ? "Подписчики" : "Подписки");
+    setModalOpen(true);
+    setModalLoading(true);
+
+    try {
+      // Вызываем твой API роут
+      const res = await api.get(`/follows/list/${profileUser?._id}?type=${type}`);
+      setFollowItems(res.data);
+    } catch (err) {
+      console.error("Ошибка загрузки списка:", err);
+    } finally {
+      setModalLoading(false);
     }
   };
 
@@ -123,7 +147,22 @@ export default function ProfilePage({ params }: { params: { username: string } }
                       {profileUser.role || "Игрок"}
                     </span>
                   </div>
+                  <div className="flex gap-6 border-t border-white/5 pt-4">
+          <div className="cursor-pointer group" onClick={() => handleOpenList("followers")}>
+            <span className="block font-mc-pixel text-[8px] text-[#7d8581] uppercase">Подписчики</span>
+            <span className="font-mc-pixel text-[12px] text-[#f2f2f2] group-hover:text-[#84a98c]">
+              {profileUser?.followersCount || 0}
+            </span>
+          </div>
+          <div className="cursor-pointer group" onClick={() => handleOpenList("following")}>
+            <span className="block font-mc-pixel text-[8px] text-[#7d8581] uppercase">Подписки</span>
+            <span className="font-mc-pixel text-[12px] text-[#f2f2f2] group-hover:text-[#84a98c]">
+              {profileUser?.followingCount || 0}
+            </span>
+          </div>
+        </div>
                 </div>
+                
 
                 {/* Кнопка подписки (только для чужих профилей) */}
                 {!isOwner && (
@@ -138,6 +177,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
                     {currentUser ? (isFollowed ? "Отписаться" : "+ Подписаться") : "Войти чтобы подписаться"}
                   </button>
                 )}
+                
               </div>
 
               <div className="space-y-1.5">
@@ -208,6 +248,13 @@ export default function ProfilePage({ params }: { params: { username: string } }
           </div>
         </div>
       </div>
+      <FollowsModal 
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={modalTitle}
+        items={followItems}
+        loading={modalLoading}
+      />
     </div>
   );
 }
