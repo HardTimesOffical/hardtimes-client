@@ -78,7 +78,7 @@ export default function FollowsModal({ isOpen, onClose, title, items, loading }:
               {items.map((item) => {
                 // Определяем тип контента для ссылки и отображения
                 const isServer = item.type === "Server" || !!item.slug;
-                const url = isServer ? `/servers/${item.slug}` : `/profile/${item.username}`;
+                const url = isServer ? `/monitoring/${item.slug}` : `/profile/${item.username}`;
                 const displayName = isServer ? item.name : item.username;
                 const displayImage = isServer ? item.logo : item.avatar;
                 const subText = isServer ? "Сервер" : (item.role || "Игрок");
