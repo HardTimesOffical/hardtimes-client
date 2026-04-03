@@ -3,7 +3,7 @@ import HomeClient from "./HomeClient"
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://minecraftmonitoring-mc.ru'),
+  metadataBase: new URL('https://hardmonitoring.ru'),
   title: {
     default: "Сервера Майнкрафт. Актуальный Мониторинг серверов Майнкрафт с IP",
     template: "%s" 
