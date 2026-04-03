@@ -15,6 +15,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: 'https://minecraftmonitoring-mc.ru//sitemap.xml',
+    sitemap: 'https://minecraftmonitoring-mc.ru/sitemap.xml',
   }
 }
