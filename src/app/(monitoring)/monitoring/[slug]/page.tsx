@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Описание с призывом к действию (CTR)
   const description = `Игровой сервер Майнкрафт ${server.serverName}. ⚡ IP: ${server.ipAddress?.address || 'указан на странице'}. Версия ${server.gameVersion}, режим: ${server.gameType || 'Выживание'}. ${server.description?.slice(0, 100)}...`;
 
-  const baseUrl = 'https://minecraftmonitoring-mc.ru';
+  const baseUrl = 'https://hardmonitoring.ru';
 
   return {
     title,

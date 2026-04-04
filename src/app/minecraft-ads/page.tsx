@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     "мониторинг с раскруткой"
   ],
   alternates: {
-    canonical: 'https://minecraftmonitoring-mc.ru/ads', // Укажи свой актуальный домен
+    canonical: 'https://hardmonitoring.ru/ads', // Укажи свой актуальный домен
   }
 };
 

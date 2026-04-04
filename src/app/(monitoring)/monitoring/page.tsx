@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     "добавить сервер майнкрафт в мониторинг",
   ],
   alternates: {
-    canonical: 'https://minecraftmonitoring-mc.ru',
+    canonical: 'https://hardmonitoring.ru',
   },
   robots: {
     index: true,
@@ -43,13 +43,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Мониторинг серверов Майнкрафт — топ серверов 2026",
     description: "Актуальный мониторинг серверов Майнкрафт. Топ серверов Minecraft Java и Bedrock с живым онлайном, IP-адресами и рейтингом.",
-    url: 'https://minecraftmonitoring-mc.ru',
+    url: 'https://hardmonitoring.ru',
     siteName: 'Мониторинг серверов Майнкрафт',
     locale: 'ru_RU',
     type: 'website',
     images: [
       {
-        url: 'https://minecraftmonitoring-mc.ru/og-image.jpg',
+        url: 'https://hardmonitoring.ru/og-image.jpg',
         width: 1200,
         height: 630,
         alt: 'Мониторинг серверов Майнкрафт — топ серверов',

@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     "найти сервер майнкрафт java",
   ],
   alternates: {
-    canonical: 'https://minecraftmonitoring-mc.ru/monitoring/servers/java',
+    canonical: 'https://hardmonitoring.ru/monitoring/servers/java',
   },
   robots: {
     index: true,
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Сервера Майнкрафт Java Edition — рейтинг серверов Minecraft",
     description: "Мониторинг серверов Майнкрафт Java Edition. Актуальный рейтинг серверов Minecraft с IP-адресами и живым онлайном.",
-    url: 'https://minecraftmonitoring-mc.ru/monitoring/servers/java',
+    url: 'https://hardmonitoring.ru/monitoring/servers/java',
     siteName: 'Мониторинг серверов Майнкрафт',
     locale: 'ru_RU',
     type: 'website',
@@ -56,7 +56,7 @@ const jsonLd = {
   "@type": "ItemList",
   "name": "Рейтинг серверов Майнкрафт Java Edition",
   "description": "Мониторинг серверов Minecraft Java Edition — актуальный рейтинг с IP-адресами и живым онлайном",
-  "url": "https://minecraftmonitoring-mc.ru/monitoring/servers/java",
+  "url": "https://hardmonitoring.ru/monitoring/servers/java",
 };
 
 export default async function JavaServersPage({ searchParams }: { searchParams: Promise<any> }) {

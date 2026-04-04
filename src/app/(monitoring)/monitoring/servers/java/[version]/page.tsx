@@ -44,13 +44,13 @@ export async function generateMetadata(
       `найти сервер майнкрафт ${version}`,
     ],
     alternates: {
-      canonical: `https://minecraftmonitoring-mc.ru/monitoring/servers/java/${versionSlug}`,
+      canonical: `https://hardmonitoring.ru/monitoring/servers/java/${versionSlug}`,
     },
     robots: { index: true, follow: true },
     openGraph: {
       title: `Сервера Майнкрафт ${version} — рейтинг серверов Minecraft`,
       description: `Мониторинг серверов Майнкрафт ${version}. Рейтинг серверов Minecraft с IP-адресами и онлайном.`,
-      url: `https://minecraftmonitoring-mc.ru/monitoring/servers/java/${versionSlug}`,
+      url: `https://hardmonitoring.ru/monitoring/servers/java/${versionSlug}`,
       siteName: "Мониторинг серверов Майнкрафт",
       locale: "ru_RU",
       type: "website",

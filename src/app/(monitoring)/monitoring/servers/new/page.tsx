@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     "рейтинг новых серверов майнкрафт",
   ],
   alternates: {
-    canonical: 'https://minecraftmonitoring-mc.ru/monitoring/servers/new',
+    canonical: 'https://hardmonitoring.ru/monitoring/servers/new',
   },
   robots: {
     index: true,
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Новые сервера Майнкрафт.  рейтинг серверов Minecraft c IP",
     description: "Мониторинг новых серверов Майнкрафт. Свежие сервера Minecraft с актуальным онлайном и IP-адресами.",
-    url: 'https://minecraftmonitoring-mc.ru/monitoring/servers/new',
+    url: 'https://hardmonitoring.ru/monitoring/servers/new',
     siteName: 'Мониторинг серверов Майнкрафт',
     locale: 'ru_RU',
     type: 'website',

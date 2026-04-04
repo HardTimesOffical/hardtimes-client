@@ -8,9 +8,9 @@ export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // ТЕПЕРЬ ГЛАВНЫЙ ДОМЕН
-  const baseUrl = 'https://minecraftmonitoring-mc.ru'; 
+  const baseUrl = 'https://hardmonitoring.ru';
   // ТЕПЕРЬ ДОПОЛНИТЕЛЬНЫЙ (БЫВШИЙ ХАРД)
-  const baseOld = 'https://hardmonitoring.ru';
+  const baseOld = 'https://minecraftmonitoring-mc.ru';
   
   const apiUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 

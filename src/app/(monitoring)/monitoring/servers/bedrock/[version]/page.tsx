@@ -34,7 +34,7 @@ export async function generateMetadata(
   
   if (!VERSIONS.includes(version)) return { title: "Сервера Майнкрафт Bedrock" };
 
-  const baseUrl = "https://minecraftmonitoring-mc.ru";
+  const baseUrl = "https://hardmonitoring.ru";
 
   return {
     title: `Сервера Майнкрафт ${version} Bedrock | Рейтинг лучших PE серверов`,
@@ -70,7 +70,7 @@ export default async function BedrockVersionPage({
 
   const filters = await searchParams;
   const containerWidth = "max-w-[1132px]";
-  const baseUrl = "https://minecraftmonitoring-mc.ru";
+  const baseUrl = "https://hardmonitoring.ru";
 
   const jsonLd = [
     {

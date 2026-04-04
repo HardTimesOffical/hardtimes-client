@@ -19,12 +19,12 @@ export const metadata: Metadata = {
     "сервера с модами"
   ],
   alternates: {
-    canonical: 'https://minecraftmonitoring-mc.ru/monitoring',
+    canonical: 'https://hardmonitoring.ru/monitoring',
   },
   openGraph: {
     title: "HardTimes — Рейтинг лучших майнкрафт серверов",
     description: "Найди свой идеальный сервер в нашем мониторинге. Реальный онлайн и честные отзывы.",
-    url: 'https://minecraftmonitoring-mc.ru/monitoring',
+    url: 'https://hardmonitoring.ru/monitoring',
     type: 'website',
   }
 };
