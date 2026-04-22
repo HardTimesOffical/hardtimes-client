@@ -44,7 +44,7 @@ export default function PromoBanner() {
           </Link>
           
           <Link 
-            href="https://t.me/constdev" 
+            href="https://t.me/SakuraMFS" 
             target="_blank"
             className="text-[9px] font-bold text-neutral-700 hover:text-green-500 uppercase transition-colors"
           >
