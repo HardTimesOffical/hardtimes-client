@@ -11,7 +11,7 @@ export default function ServerFilters() {
   const router      = useRouter();
   const pathname    = usePathname();
   const searchParams = useSearchParams();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   const isBedrockPage   = pathname.includes("bedrock");
   const currentVersions = isBedrockPage
